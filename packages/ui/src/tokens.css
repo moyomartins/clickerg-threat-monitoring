@@ -1,0 +1,95 @@
+/**
+ * @clickerg/ui — design tokens.
+ * Single source of truth for color, type, spacing, radii and elevation.
+ * Nothing in the app or in a component should ever hardcode a hex value or a
+ * magic pixel number; use these.
+ */
+:root {
+  /* --- Core palette --- */
+  --cg-cream: #f7f4ed;
+  --cg-charcoal: #1c1c1c;
+  --cg-offwhite: #fcfbf8;
+  --cg-muted: #5f5f5d;
+
+  /* Opacity-derived neutral scale: every gray is #1c1c1c, just thinner. */
+  --cg-charcoal-83: rgba(28, 28, 28, 0.83);
+  --cg-charcoal-82: rgba(28, 28, 28, 0.82);
+  --cg-charcoal-40: rgba(28, 28, 28, 0.4);
+  --cg-charcoal-12: rgba(28, 28, 28, 0.12);
+  --cg-charcoal-08: rgba(28, 28, 28, 0.08);
+  --cg-charcoal-04: rgba(28, 28, 28, 0.04);
+  --cg-charcoal-03: rgba(28, 28, 28, 0.03);
+
+  /* --- Surface & border --- */
+  --cg-surface: var(--cg-cream);
+  --cg-border: #eceae4;
+  --cg-border-interactive: var(--cg-charcoal-40);
+
+  /* --- Severity ---
+     A threat product has to encode risk, and the base palette is warm-neutral
+     by design. These are deliberately desaturated earth tones so they read as
+     severity without turning into a dashboard traffic light. */
+  --cg-sev-high: #8c3b2f;
+  --cg-sev-high-bg: rgba(140, 59, 47, 0.09);
+  /* Darkened from the #8a6b1f the palette suggests: on its own tint that only
+     reached 4.01:1, under the 4.5:1 floor. Accessibility wins the tie. */
+  --cg-sev-medium: #6d5416;
+  --cg-sev-medium-bg: rgba(138, 107, 31, 0.1);
+  --cg-sev-low: #3f6b47;
+  --cg-sev-low-bg: rgba(63, 107, 71, 0.09);
+  --cg-sev-neutral: var(--cg-muted);
+  --cg-sev-neutral-bg: var(--cg-charcoal-04);
+
+  /* --- Typography --- */
+  --cg-font-sans: 'Camera Plain Variable', ui-sans-serif, system-ui,
+    -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --cg-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --cg-text-display: 60px;
+  --cg-text-section: 48px;
+  --cg-text-sub: 36px;
+  --cg-text-title: 20px;
+  --cg-text-lg: 18px;
+  --cg-text-body: 16px;
+  --cg-text-sm: 14px;
+  --cg-text-xs: 12px;
+
+  --cg-tracking-display: -1.5px;
+  --cg-tracking-section: -1.2px;
+  --cg-tracking-sub: -0.9px;
+  --cg-tracking-normal: normal;
+
+  --cg-weight-body: 400;
+  --cg-weight-display: 480;
+  --cg-weight-heading: 600;
+
+  /* --- Spacing (8px base, generous at the top end) --- */
+  --cg-space-half: 4px;
+  --cg-space-1: 8px;
+  --cg-space-1-25: 10px;
+  --cg-space-1-5: 12px;
+  --cg-space-2: 16px;
+  --cg-space-3: 24px;
+  --cg-space-4: 32px;
+  --cg-space-5: 40px;
+  --cg-space-7: 56px;
+  --cg-space-10: 80px;
+  --cg-space-12: 96px;
+
+  /* --- Radii --- */
+  --cg-radius-micro: 4px;
+  --cg-radius-standard: 6px;
+  --cg-radius-comfortable: 8px;
+  --cg-radius-card: 12px;
+  --cg-radius-container: 16px;
+  --cg-radius-pill: 9999px;
+
+  /* --- Elevation --- */
+  --cg-shadow-inset: rgba(255, 255, 255, 0.2) 0 0.5px 0 0 inset,
+    rgba(0, 0, 0, 0.2) 0 0 0 0.5px inset, rgba(0, 0, 0, 0.05) 0 1px 2px 0;
+  --cg-shadow-focus: rgba(0, 0, 0, 0.1) 0 4px 12px;
+  --cg-ring: rgba(59, 130, 246, 0.5);
+
+  /* --- Layout --- */
+  --cg-container: 1200px;
+}
