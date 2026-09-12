@@ -27,6 +27,9 @@ export type { EmptyStateProps, SkeletonProps, ConfidenceMeterProps } from './Fee
 export { VisitEntry, Journey } from './VisitEntry';
 export type { VisitEntryProps, Channel } from './VisitEntry';
 
+export { ArrivalDisclosure } from './ArrivalDisclosure';
+export type { ArrivalDisclosureProps } from './ArrivalDisclosure';
+
 export {
   DecisionHero,
   DecisiveCell,

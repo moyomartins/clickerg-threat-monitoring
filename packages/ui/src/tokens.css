@@ -109,6 +109,19 @@
   --cg-dot-halo: 0 0 0 4px var(--cg-absence-halo);
   --cg-focus: 0 0 0 2px var(--cg-surface), 0 0 0 4px var(--cg-attention-text);
 
+  /* --- Decisive arrival reflection ---
+     A brief visual cue for the one arrival where blocking began. It stays
+     absent for most of its cycle, and never changes the card's base state. */
+  --cg-reflection-angle: -42deg;
+  --cg-reflection-duration: 11s;
+  --cg-reflection-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --cg-reflection-opacity: 1;
+  --cg-reflection-width: 190%;
+  --cg-reflection-logo-opacity: 0.4;
+  --cg-reflection-logo-size: 32%;
+  --cg-reflection-edge-opacity: 0.52;
+  --cg-reflection-specular-opacity: 0.7;
+
   --cg-container: 1280px;
   color-scheme: light;
 }

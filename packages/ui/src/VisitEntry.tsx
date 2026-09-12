@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { ArrivalDisclosure } from './ArrivalDisclosure';
 import { SignalChip, type SignalChipProps } from './SignalChip';
 import { PageReplay, type ReplayBehaviour } from './PageReplay';
 
@@ -19,17 +20,19 @@ export interface VisitEntryProps {
   source?: string;
   cost?: string;
   signals: SignalChipProps[];
-  note?: ReactNode;
+  /**
+   * Names the contextual disclosure and supplies its body — hover, focus, or
+   * tap on the card reveals it. Omit for a card with nothing to disclose
+   * (e.g. a Storybook example that isn't demonstrating the interaction).
+   */
+  explanation?: { title: string; content: ReactNode };
   /** Running confidence after this visit, 0–100. */
   confidence: number;
   /** Recorded engagement for this arrival; `null` when the tag never reported. */
   replay?: ReplayBehaviour | null;
-  /**
-   * The strip stacks notes beneath it so the visual comparison across arrivals
-   * is never interrupted by prose. Set true to render the note inline instead.
-   */
-  showNote?: boolean;
   decisive?: boolean;
+  /** Story-only frozen phase for reviewing the decorative decisive reflection. */
+  reflectionPhase?: 'inactive' | 'entering' | 'centred' | 'leaving' | 'exited';
   verdict?: ReactNode;
   last?: boolean;
   stage?: string;
@@ -42,15 +45,18 @@ export function VisitEntry({
   source,
   cost,
   signals,
-  note,
+  explanation,
   confidence,
   replay,
-  showNote = true,
   decisive = false,
+  reflectionPhase,
   verdict,
 }: VisitEntryProps) {
-  return (
-    <li className={`cg-visit${decisive ? ' cg-visit--decisive' : ''}`}>
+  const cardClassName = `cg-visit${decisive ? ' cg-visit--decisive' : ''}${reflectionPhase ? ` cg-visit--reflection-${reflectionPhase}` : ''}`;
+
+  const card = (
+    <>
+      {decisive && <span className="cg-visit__reflection-logo" aria-hidden="true" />}
       <div className="cg-visit__body">
         {replay !== undefined && <PageReplay behaviour={replay} size="strip" />}
 
@@ -77,10 +83,19 @@ export function VisitEntry({
           </div>
         )}
 
-        {showNote && note && <p className="cg-visit__note cg-visit__note--inline">{note}</p>}
         {verdict && <div className="cg-visit__verdict">{verdict}</div>}
       </div>
-    </li>
+    </>
+  );
+
+  if (!explanation) {
+    return <li className={cardClassName}>{card}</li>;
+  }
+
+  return (
+    <ArrivalDisclosure className={cardClassName} label={explanation.title} content={explanation.content}>
+      {card}
+    </ArrivalDisclosure>
   );
 }
 

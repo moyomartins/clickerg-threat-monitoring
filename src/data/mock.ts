@@ -234,15 +234,19 @@ function journeyFor(r: () => number, archetype: Archetype, ip: string): Visit[] 
   switch (archetype) {
     case 'clean-organic': {
       const n = intBetween(r, 1, 5);
-      return Array.from({ length: n }, (_, i) =>
-        v(i, {
+      /* One decision, not two independent rolls — `converted` and its value
+         must always agree, or a visit can convert for an unrecorded amount. */
+      const willConvert = r() < 0.25;
+      return Array.from({ length: n }, (_, i) => {
+        const last = i === n - 1;
+        return v(i, {
           at: NOW - (n - i) * DAY * between(r, 0.6, 4),
           channel: pick(r, ['organic', 'direct', 'referral'] as const),
           formFill: r() < 0.3 ? 'valid' : 'none',
-          converted: r() < 0.25 && i === n - 1,
-          conversionValueGbp: r() < 0.25 ? Number(between(r, 90, 480).toFixed(2)) : undefined,
-        }),
-      );
+          converted: last && willConvert,
+          conversionValueGbp: last && willConvert ? Number(between(r, 90, 480).toFixed(2)) : undefined,
+        });
+      });
     }
     case 'normal-prospect': {
       const n = intBetween(r, 2, 7);

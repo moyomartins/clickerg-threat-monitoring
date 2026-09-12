@@ -92,16 +92,4 @@ body { font-family: var(--cg-font-sans); color: var(--cg-ink); }
 
 .strip-caption { font-size: var(--cg-text-body); color: var(--cg-body); margin: 0 0 var(--cg-space-1-5); max-width: 70ch; }
 
-.notes { margin-top: var(--cg-space-4); border-top: 1px solid var(--cg-border); padding-top: var(--cg-space-2); }
-.notes__title { font-size: var(--cg-text-card); font-weight: var(--cg-weight-bold); letter-spacing: -0.01em;
-  margin: 0 0 var(--cg-space-1-5); }
-.note { font-size: var(--cg-text-body); line-height: var(--cg-leading-notes); color: var(--cg-body);
-  margin: 0 0 var(--cg-space-1); max-width: 92ch; }
-.note b { font-family: var(--cg-font-mono); font-size: var(--cg-text-mono-sm); color: var(--cg-ink);
-  margin-right: 8px; display: block; }
-/* 2px absence red is the system's decisive-arrival weight (see DESIGN.md Shapes);
-   this was 3px, which matched nothing else. */
-.note--decisive { border-left: var(--cg-border-w-strong) solid var(--cg-absence);
-  padding-left: var(--cg-space-1-25); }
-
 .skeleton-stack > * + * { margin-top: var(--cg-space-1); }

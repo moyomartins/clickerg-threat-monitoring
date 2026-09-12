@@ -151,7 +151,47 @@
 .cg-journey { display: grid; grid-template-columns: repeat(5, minmax(150px, 1fr)); gap: var(--cg-space-1-5);
   list-style: none; margin: 0; padding: 0 0 var(--cg-space-1); overflow-x: auto; }
 .cg-visit { background: var(--cg-surface); border: var(--cg-border-w) solid var(--cg-border); padding: var(--cg-space-1-25); }
-.cg-visit--decisive { border: var(--cg-border-w-strong) solid var(--cg-absence); }
+.cg-visit--decisive {
+  position: relative; isolation: isolate; overflow: hidden;
+  border: var(--cg-border-w-strong) solid var(--cg-absence);
+  animation: cg-decisive-reflection-position var(--cg-reflection-duration) var(--cg-reflection-easing) infinite;
+}
+@property --cg-reflection-x { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+@property --cg-reflection-y { syntax: '<percentage>'; inherits: true; initial-value: 100%; }
+@property --cg-reflection-presence { syntax: '<number>'; inherits: true; initial-value: 0; }
+/* A stationary mark under a moving mask: it never appears as a watermark. */
+.cg-visit__reflection-logo {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  opacity: var(--cg-reflection-logo-opacity); filter: grayscale(1) contrast(1.6);
+  background: url('./clickguard-mark.svg') center / var(--cg-reflection-logo-size) auto no-repeat;
+  -webkit-mask-image: linear-gradient(135deg, transparent 0 39%, rgba(0,0,0,.18) 45%, #000 49% 53%, rgba(0,0,0,.18) 59%, transparent 65% 100%);
+  -webkit-mask-size: 230% 230%; -webkit-mask-position: var(--cg-reflection-x) var(--cg-reflection-y);
+  mask-image: linear-gradient(135deg, transparent 0 39%, rgba(0,0,0,.18) 45%, #000 49% 53%, rgba(0,0,0,.18) 59%, transparent 65% 100%);
+  mask-size: 230% 230%; mask-position: var(--cg-reflection-x) var(--cg-reflection-y);
+}
+/* The light and mask share the same timed diagonal route. */
+.cg-visit--decisive::after {
+  content: ''; position: absolute; z-index: 1; pointer-events: none;
+  inset: 0; opacity: var(--cg-reflection-presence);
+  background: linear-gradient(135deg, transparent 0 20%, rgba(192,57,43,.08) 28%, rgba(192,57,43,.144) 36%, rgba(192,57,43,.24) 44%, rgba(192,57,43,.32) 49%, rgba(192,57,43,.256) 54%, rgba(192,57,43,.16) 62%, rgba(192,57,43,.08) 70%, transparent 80% 100%);
+  background-size: 230% 230%; background-position: var(--cg-reflection-x) var(--cg-reflection-y);
+}
+@keyframes cg-decisive-reflection-position {
+  0%, 8% { --cg-reflection-x: 0%; --cg-reflection-y: 100%; --cg-reflection-presence: 0; }
+  12% { --cg-reflection-presence: var(--cg-reflection-opacity); }
+  46% { --cg-reflection-x: 100%; --cg-reflection-y: 0%; --cg-reflection-presence: var(--cg-reflection-opacity); }
+  52%, 100% { --cg-reflection-x: 100%; --cg-reflection-y: 0%; --cg-reflection-presence: 0; }
+}
+.cg-visit--reflection-inactive::after, .cg-visit--reflection-inactive .cg-visit__reflection-logo,
+.cg-visit--reflection-exited::after, .cg-visit--reflection-exited .cg-visit__reflection-logo { opacity: 0; }
+.cg-visit--reflection-inactive, .cg-visit--reflection-exited { animation: none; }
+.cg-visit--reflection-entering { animation-delay: -1.65s; animation-play-state: paused; }
+.cg-visit--reflection-centred { animation-delay: -3.3s; animation-play-state: paused; }
+.cg-visit--reflection-leaving { animation-delay: -4.95s; animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .cg-visit--decisive { animation: none; }
+  .cg-visit--decisive::after, .cg-visit__reflection-logo { opacity: 0; }
+}
 .cg-visit__rail { display: none; }
 .cg-visit__body { min-width: 0; }
 .cg-visit__head { margin: var(--cg-space-1) 0 var(--cg-space-1); font-size: var(--cg-text-xs); line-height: var(--cg-leading-tight); }
@@ -161,14 +201,59 @@
 .cg-visit__meta, .cg-visit__tag { color: var(--cg-muted); font-size: var(--cg-text-xs); }
 .cg-visit__tag { display: inline-block; }
 .cg-visit__signals { display: grid; gap: 1px; margin-bottom: var(--cg-space-1); }
-.cg-visit__note { display: none; }          /* notes are stacked below the strip */
-.cg-visit__note--inline { display: block; font-size: var(--cg-text-xs); line-height: var(--cg-leading-card);
-  color: var(--cg-body); margin: var(--cg-space-1) 0 0; }
 .cg-visit__confidence { display: flex; align-items: center; gap: var(--cg-space-half);
   font-family: var(--cg-font-mono); font-size: var(--cg-text-marker); color: var(--cg-muted); }
 .cg-visit__verdict { margin-top: var(--cg-space-1); font-family: var(--cg-font-mono);
   font-size: var(--cg-text-marker); background: var(--cg-absence); color: var(--cg-on-ink);
   padding: 3px 6px; text-align: center; }
+
+/* ------------------------------------------------- arrival disclosure --- */
+/* The trigger sits at the foot of the card as a visible affordance — hover
+   works from anywhere on the card, but the row is what tells a user who has
+   never hovered it that more is available, and is what keyboard and touch
+   users actually activate. */
+.cg-disclose { display: block; width: 100%; margin-top: var(--cg-space-1); padding-top: var(--cg-space-1);
+  border: none; border-top: var(--cg-border-w) solid var(--cg-rule); background: transparent;
+  font-family: inherit; font-size: var(--cg-text-marker); color: var(--cg-muted); text-align: left;
+  cursor: pointer; transition: color 120ms ease; }
+.cg-disclose:hover { color: var(--cg-ink); }
+.cg-disclose[aria-expanded="true"] { color: var(--cg-ink); }
+
+/* The popover: a background step and a border, same as every other flat
+   surface in this system — never a shadow. Position is computed in JS
+   (viewport-fixed), so only the box itself is styled here. */
+.cg-arrival-pop { position: fixed; margin: 0; width: min(300px, calc(100vw - 16px));
+  background: var(--cg-surface); border: var(--cg-border-w) solid var(--cg-border);
+  padding: var(--cg-space-1-5); inset: auto; }
+.cg-arrival-pop:popover-open { display: block; }
+.cg-arrival-pop__title { font-size: var(--cg-text-sm); font-weight: var(--cg-weight-mid);
+  color: var(--cg-ink); margin: 0 0 var(--cg-space-1); }
+.cg-arrival-pop__body { font-size: var(--cg-text-sm); line-height: var(--cg-leading-notes);
+  color: var(--cg-body); margin: 0; }
+.cg-arrival-pop__facts { margin: var(--cg-space-1-25) 0 0; padding-top: var(--cg-space-1-25);
+  border-top: var(--cg-border-w) solid var(--cg-rule); display: grid; gap: 3px; }
+.cg-arrival-pop__facts div { display: flex; justify-content: space-between; gap: var(--cg-space-1); }
+.cg-arrival-pop__facts dt { color: var(--cg-muted); }
+/* Measured facts (confidence, cost) are mono; prose (source) never is. */
+.cg-arrival-pop__facts dd { font-size: var(--cg-text-mono-sm); color: var(--cg-ink); text-align: right; }
+.cg-arrival-pop__facts dd.cg-mono { font-size: var(--cg-text-mono-sm); }
+.cg-arrival-pop__flag { margin: var(--cg-space-1-25) 0 0; font-size: var(--cg-text-mono-sm);
+  font-family: var(--cg-font-mono); color: var(--cg-absence); }
+
+/* A brief rise-and-fade in, no exit animation — dismissal (Escape, outside
+   click, pointer leaving both card and popover) should never feel delayed. */
+.cg-arrival-pop:popover-open { opacity: 1; transform: translateY(0);
+  transition: opacity 100ms ease-out, transform 100ms ease-out; }
+@starting-style {
+  .cg-arrival-pop:popover-open { opacity: 0; transform: translateY(2px); }
+}
+.cg-arrival-pop--above:popover-open { transform: translateY(0); }
+@starting-style {
+  .cg-arrival-pop--above:popover-open { opacity: 0; transform: translateY(-2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cg-arrival-pop:popover-open { transition: none; }
+}
 
 .cg-meter { display: block; flex: 1; height: 3px; background: var(--cg-rule); overflow: hidden; }
 .cg-meter__fill { display: block; height: 100%; background: var(--cg-attention); }

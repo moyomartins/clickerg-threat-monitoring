@@ -175,6 +175,12 @@ components:
   hero-meta:
     textColor: "{colors.ink}"
     typography: "{typography.body}"
+  arrival-disclosure:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.body}"
+    typography: "{typography.body}"
+    rounded: "{rounded.flat}"
+    padding: "12px"
 ---
 
 # Design System: ClickerG
@@ -290,8 +296,9 @@ A 1280px centred container, 28px gutters, tightening to 20/16px under 640px.
 - **Stats strip:** an unboxed row above the filter bar, divided by 1px rules into three tiers — the lead figure, the count that produced it, then the scale context. Numbers sit directly on the ground; no card wraps them.
 - **Filter bar:** search takes its own full-width row; the controls beneath it are clustered by interaction kind (metadata selects, a threshold, a toggle), each cluster separated by a 1px rule that becomes a top rule when the bar stacks under 640px.
 - **Detail hero:** one bordered enclosure, `340px : 1.3fr : 1fr`, collapsing to two columns at 900px and one at 640px — the border states the verdict, and the replay sits inside it rather than beside a separate panel. **The hero has a height budget of roughly 360–460px.** It orients and concludes; the arrival strip below it carries the proof, and must be reachable inside the first viewport.
-- **Arrival strip:** `repeat(5, minmax(150px,1fr))` with `overflow-x: auto`, so all arrivals stay on one scrollable line rather than wrapping.
-- **Notes:** stacked full-width beneath the strip, capped at 92ch.
+- **Arrival strip:** `repeat(5, minmax(150px,1fr))` with `overflow-x: auto` — five tracks fill the row's width, and a journey beyond five visits wraps onto additional rows.
+- **Arrival explanation:** no longer a stacked block beneath the strip. Each card discloses its own
+  explanation contextually — see Components → Arrival disclosure.
 
 **The Strip-Scrolls-Not-Wraps Rule.** The arrival strip scrolls sideways and never wraps.
 Comparing arrivals side by side is the entire argument of the detail view; wrapping them into
@@ -309,6 +316,12 @@ three border weights and one background step (`ground` → `frame` → `surface`
 
 **The No-Shadow Rule.** If a surface needs separating, move it a background step or give it a
 border. Never a shadow.
+
+## Motion
+
+**The Decisive Reflection Rule.** Only the semantic decisive arrival (`.cg-visit--decisive`) receives a decorative smoked-glass reflection, helping an advertiser locate the exact moment ClickerG acted. A stationary ClickGuard mark is centred beneath the moving diagonal reflection. It is normally invisible, is revealed only where the moving reflection intersects it, reaches maximum visibility as the reflection crosses its centre, and disappears behind the trailing edge. Neither mark nor reflection remains visible between passes. The reflection and mask inherit one position from the decisive card, so the reveal is spatial rather than a separately timed fade.
+
+The treatment is driven by `--cg-reflection-angle`, `--cg-reflection-duration`, `--cg-reflection-easing`, `--cg-reflection-opacity`, `--cg-reflection-width`, `--cg-reflection-logo-opacity`, `--cg-reflection-logo-size`, `--cg-reflection-edge-opacity`, and `--cg-reflection-specular-opacity`. Its decisive-red band ranges from 8% to 32% opacity; the centred mark uses a static, small-scale refractive filter with dark edge definition. Its layers are non-interactive (`pointer-events: none`) and are disabled entirely under `prefers-reduced-motion: reduce`. No other arrival state, list card, replay, or hero receives it.
 
 ## Shapes
 
@@ -392,8 +405,31 @@ separately-bordered card inside the enclosure; the border is spent once, on the 
 
 ### Arrival panel
 A strip replay, a mono `visit N · NN%` line, timestamp, channel and source, up to five signal
-rows, and — on the decisive arrival — a filled absence-red `blocked here` bar. **Notes are not
-rendered in the panel**; they stack beneath the strip so the visual comparison is uninterrupted.
+rows, and — on the decisive arrival — a filled absence-red `blocked here` bar. The explanation is
+not rendered in the panel at rest; it discloses contextually — see below.
+
+### Arrival disclosure
+Each arrival card names its own explanation rather than a table of every card's explanation
+sitting in a block beneath the strip. Hovering, focusing, or tapping a card reveals a small,
+flat, bordered surface — same tokens as every other floating content in the system: `--cg-surface`
+background, `--cg-border`, no shadow. A quiet 11px label row at the foot of the card
+(`What this arrival showed`) is the visible affordance and the keyboard/touch trigger; the card
+itself also opens it on hover, and the label's own heading changes to match the arrival's state
+(`Why confidence increased`, `Why this arrival was decisive`, `What ClickerG could assess` for a
+visit with no engagement data). The popover's own facts (confidence before → after, cost or
+source) are set in mono for the measured values and left in prose for the source line, per the
+Monospace-for-Facts Rule — a referrer string is not a number.
+
+Mechanically this uses the native Popover API (`popover="auto"`), promoted to the browser's top
+layer so it is never clipped by the strip's `overflow-x: auto` — no portal, no manual overflow
+workaround. Position is computed from the trigger's own rect and flips above/clamps to the
+viewport near either edge of the strip; it re-tracks the trigger on scroll and closes if the
+trigger scrolls fully out of view rather than float over content it no longer names.
+
+**The One Explanation Rule.** An arrival's explanation exists in exactly one place: its own card.
+It is not duplicated in a second block elsewhere on the page, and it is generated from the same
+scoring output the card's signals and the hero's reason already read from — never a second,
+independently-authored explanation of the same visit.
 
 ### Signal rows
 Label left in muted, value right in mono, separated by a `#eef0f3` rule. High severity turns the
@@ -446,7 +482,9 @@ carries the name, weight 800 is spent only on the page title beneath it.
 - **Don't** spend weight 800 more than once per screen.
 - **Don't** wrap the arrival strip into rows.
 - **Don't** promote a table back to the list view — the card is the row, and it carries a drawn replay.
+- **Don't** stack every arrival's explanation in a block beneath the strip. Each card discloses its own, contextually, on hover, focus, or tap.
 - **Don't** let an unsettled call render like a settled one. Italic and body grey are what keep a judgement call honest.
 - **Don't** narrow a replay to buy space. The absence markers are nowrap at a 10px floor; losing them loses the argument.
-- **Don't** give a hero fact its own full-width section. Money, journey scale and dates share one flowing region; confidence and exclusion share one footer line.
+- **Don't** give a hero fact its own full-width section. The decisive moment and the money share one row of two cells; visit counts, dates, confidence and exclusion share one journey row.
 - **Don't** state the hero's conclusion more than once.
+- **Don't** add a second, separately-bordered card inside the hero enclosure. The border is spent once, on the whole thing — that's what makes the verdict legible before any text is read.
