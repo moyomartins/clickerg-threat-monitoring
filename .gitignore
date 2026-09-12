@@ -27,3 +27,10 @@ dist-ssr
 storybook-static
 
 storybook-static
+
+# Claude Code skill installs and local session state — machine-local tooling,
+# not project content. The design sidecar (.impeccable/design.json) is kept.
+.claude/skills/
+.claude/agents/
+.impeccable/hook.cache.json
+.impeccable/questions/

@@ -1,0 +1,56 @@
+/* 12 — Swimlane. One clock, one lane per visitor. */
+.stage.d12 { background: #141020; color: #e7e3f2; font-family: 'Familjen Grotesk', ui-sans-serif, sans-serif; padding: 26px 30px 70px; }
+.d12-head h1 { font-size: 36px; font-weight: 500; margin: 0 0 8px; letter-spacing: -.015em; }
+.d12-head p { max-width: 64ch; font-size: 15px; line-height: 1.6; color: #a79fc2; margin: 0 0 16px; }
+.d12-stats { display: flex; gap: 28px; flex-wrap: wrap; font-size: 12px; color: #a79fc2; }
+.d12-stats b { display: block; font-family: 'Azeret Mono', monospace; font-size: 16px; color: #f3f0fb; font-weight: 400; }
+.d12-ruler { display: flex; justify-content: space-between; margin: 24px 0 6px; padding-left: 210px;
+  font-family: 'Azeret Mono', monospace; font-size: 9.5px; letter-spacing: .1em; color: #7a6fa0; }
+.d12-ruler--detail { padding-left: 0; }
+.d12-lanes { border-top: 1px solid #2a2140; }
+.d12-lane { display: grid; grid-template-columns: 200px minmax(0,1fr) 118px; gap: 10px; align-items: center;
+  padding: 9px 0; border-bottom: 1px solid #221a36; }
+.d12-lane__id b { display: block; font-family: 'Azeret Mono', monospace; font-size: 11.5px; font-weight: 400; }
+.d12-lane__id span { font-size: 11px; color: #7a6fa0; }
+.d12-lane__track { position: relative; height: 26px; }
+.d12-grid { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(167,159,194,.12) 0 1px, transparent 1px 12.5%); }
+.d12-lane__track i { position: absolute; left: var(--x); top: 6px; width: 3px; height: 14px; background: #55e0d0; border-radius: 1px; }
+.d12-lane__track i.is-hot { background: #ffab3d; height: 18px; top: 4px; }
+.d12-lane--blocked .d12-lane__track i { background: #ff5c7a; }
+.d12-lane--blocked .d12-lane__track i.is-hot { background: #ff2d55; }
+.d12-lane--incomplete .d12-lane__track i { background: #4b4368; }
+.d12-lane__end { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.d12-lane__end em { font-family: 'Azeret Mono', monospace; font-style: normal; font-size: 11px; color: #a79fc2; }
+.d12-st { font-family: 'Azeret Mono', monospace; font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 6px; border: 1px solid #3b3159; white-space: nowrap; }
+.d12-st--blocked { background: #ff2d55; border-color: #ff2d55; color: #141020; }
+.d12-st--ambiguous { border-color: #ffab3d; color: #ffab3d; }
+.d12-st--incomplete { border-style: dashed; color: #7a6fa0; }
+.d12-register { width: 100%; border-collapse: collapse; margin-top: 32px; font-size: 12.5px; }
+.d12-register th { text-align: left; font-family: 'Azeret Mono', monospace; font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase;
+  color: #7a6fa0; font-weight: 400; padding: 7px 10px; border-bottom: 1px solid #2a2140; }
+.d12-register td { padding: 7px 10px; border-bottom: 1px solid #221a36; }
+.d12-ip { font-family: 'Azeret Mono', monospace; font-size: 11.5px; color: #9fe7dd; }
+.d12-why { color: #a79fc2; max-width: 40ch; }
+.d12-head--detail h1 { font-family: 'Azeret Mono', monospace; font-size: 30px; font-weight: 400; }
+.d12-solo { position: relative; height: 74px; border: 1px solid #2a2140; background: #191330; margin-bottom: 22px; }
+.d12-solo__m { position: absolute; left: var(--x); top: 18px; width: 5px; height: 30px; background: #55e0d0; }
+.d12-solo__m::after { content: attr(data-n); position: absolute; top: 34px; left: 50%; transform: translateX(-50%);
+  font-family: 'Azeret Mono', monospace; font-size: 9.5px; color: #7a6fa0; }
+.d12-solo__m.is-block { background: #ff2d55; height: 42px; top: 10px; }
+.d12-thresh { position: absolute; right: 10px; top: 8px; }
+.d12-thresh em { font-family: 'Azeret Mono', monospace; font-style: normal; font-size: 9.5px; color: #ff5c7a; }
+.d12-verdict { font-size: 16px; line-height: 1.6; max-width: 72ch; margin: 0 0 14px; }
+.d12-facts { display: flex; flex-wrap: wrap; gap: 4px 24px; font-family: 'Azeret Mono', monospace; font-size: 10.5px; margin: 0 0 24px; }
+.d12-facts div { display: flex; gap: 7px; } .d12-facts dt { color: #7a6fa0; } .d12-facts dd { margin: 0; }
+.d12-step { border-top: 1px solid #221a36; padding: 13px 0; }
+.d12-step.is-decisive { border-top: 2px solid #ff2d55; }
+.d12-step__head { display: flex; gap: 13px; align-items: baseline; flex-wrap: wrap; font-size: 13px; }
+.d12-step__head b { font-family: 'Azeret Mono', monospace; font-size: 11px; color: #7a6fa0; font-weight: 400; }
+.d12-step__head em { margin-left: auto; font-family: 'Azeret Mono', monospace; font-style: normal; color: #ff5c7a; }
+.d12-src { font-size: 12px; color: #7a6fa0; margin: 3px 0 8px; }
+.d12-sig { list-style: none; margin: 0 0 8px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill,minmax(175px,1fr)); gap: 1px 16px; font-size: 12.5px; }
+.d12-sig li { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid #221a36; padding: 2px 0; }
+.d12-sig span { color: #7a6fa0; } .d12-sig b { font-family: 'Azeret Mono', monospace; font-size: 10.5px; font-weight: 400; }
+.d12-sig .sev-high b { color: #ff5c7a; } .d12-sig .sev-medium b { color: #ffab3d; }
+.d12-step p { font-size: 13px; line-height: 1.6; color: #a79fc2; margin: 0; }
+.d12-trailing { font-size: 12px; color: #7a6fa0; margin-top: 14px; }

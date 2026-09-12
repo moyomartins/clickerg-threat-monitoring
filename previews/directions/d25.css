@@ -1,0 +1,43 @@
+/* 25 — Punch Card */
+.stage.d25 { background: #10120f; color: #e6e9df; font-family: 'Work Sans', ui-sans-serif, sans-serif; padding: 28px 30px 70px; }
+.d25-head h1 { font-family: 'Major Mono Display', monospace; font-size: 34px; margin: 0 0 10px; letter-spacing: -.01em; }
+.d25-head p { max-width: 66ch; font-size: 14.5px; line-height: 1.62; color: #97a08d; margin: 0 0 14px; }
+.d25-stats { display: flex; gap: 28px; flex-wrap: wrap; font-size: 11.5px; color: #7b8473; border-top: 1px solid #23271f; padding-top: 12px; }
+.d25-stats b { display: block; font-family: 'Major Mono Display', monospace; font-size: 17px; color: #c9ff5e; }
+.d25-deck { display: grid; grid-template-columns: repeat(auto-fill,minmax(268px,1fr)); gap: 16px; margin-top: 20px; }
+.d25-item { background: #171a14; border: 1px solid #23271f; padding: 14px; }
+.d25-item--blocked { border-color: #c9ff5e; }
+.d25-item--ambiguous { border-style: dashed; border-color: #e0b341; }
+.d25-item--incomplete { border-style: dotted; }
+.d25-card { background: #0c0e0a; border: 1px solid #23271f; padding: 8px; }
+.d25-grid { position: relative; display: grid; grid-template-columns: repeat(var(--cols), 1fr); grid-template-rows: repeat(var(--rows), 1fr); gap: 1px; aspect-ratio: 24/7; }
+.d25-card--big .d25-grid { aspect-ratio: 24/9; }
+.d25-grid i { background: #181c15; }
+.d25-punch { grid-column: calc(var(--c) + 1); grid-row: calc(var(--r) + 1); background: #c9ff5e; }
+.d25-item--ambiguous .d25-punch { background: #e0b341; }
+.d25-none { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); font-family: 'Major Mono Display', monospace;
+  font-size: 10px; color: #7b8473; border: 1px dotted #3b4234; padding: 3px 8px; background: #0c0e0a; white-space: nowrap; }
+.d25-axis { display: flex; justify-content: space-between; font-family: 'Major Mono Display', monospace; font-size: 9px; color: #5f6857; margin-top: 5px; }
+.d25-ip { display: block; font-family: 'Major Mono Display', monospace; font-size: 14px; margin-top: 10px; }
+.d25-loc { display: block; font-size: 11.5px; color: #7b8473; margin-bottom: 7px; }
+.d25-st { display: inline-block; font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; border: 1px solid #3b4234; padding: 2px 7px; margin-bottom: 8px; }
+.d25-item--blocked .d25-st { background: #c9ff5e; color: #10120f; border-color: #c9ff5e; }
+.d25-item--ambiguous .d25-st { color: #e0b341; border-color: #e0b341; border-style: dashed; }
+.d25-item--incomplete .d25-st { border-style: dotted; color: #7b8473; }
+.d25-item p { font-size: 12.5px; line-height: 1.55; color: #97a08d; margin: 0; }
+.d25-hero { display: grid; grid-template-columns: 420px minmax(0,1fr); gap: 32px; align-items: start; margin: 20px 0 24px; }
+.d25-verdict { font-size: 16px; line-height: 1.6; max-width: 66ch; margin: 0 0 12px; }
+.d25-read { font-size: 13.5px; line-height: 1.6; color: #c9ff5e; margin: 0 0 14px; }
+.d25-facts { display: flex; flex-wrap: wrap; gap: 4px 24px; font-family: 'Major Mono Display', monospace; font-size: 10.5px; margin: 0; }
+.d25-facts div { display: flex; gap: 7px; } .d25-facts dt { color: #7b8473; } .d25-facts dd { margin: 0; }
+.d25-ev { border-top: 1px solid #23271f; padding: 12px 0; }
+.d25-ev.is-decisive { border-top: 2px solid #c9ff5e; }
+.d25-ev__h { display: flex; gap: 13px; align-items: baseline; flex-wrap: wrap; font-size: 13px; }
+.d25-ev__h b { font-family: 'Major Mono Display', monospace; color: #7b8473; }
+.d25-ev__h em { margin-left: auto; font-style: normal; font-family: 'Major Mono Display', monospace; color: #c9ff5e; }
+.d25-sig { list-style: none; margin: 7px 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); gap: 1px 16px; font-size: 12px; }
+.d25-sig li { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid #1b1f18; padding: 1px 0; }
+.d25-sig span { color: #7b8473; } .d25-sig b { font-family: 'Major Mono Display', monospace; font-size: 10.5px; }
+.d25-sig .sev-high b { color: #c9ff5e; } .d25-sig .sev-medium b { color: #e0b341; }
+.d25-ev p { font-size: 13px; line-height: 1.6; color: #97a08d; margin: 0; }
+.d25-trailing { font-size: 12px; color: #7b8473; margin-top: 12px; }

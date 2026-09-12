@@ -1,0 +1,45 @@
+/* 23 — Seismograph */
+.stage.d23 { background: #fbf9f4; color: #1a1a18; font-family: 'Archivo Narrow', ui-sans-serif, sans-serif; padding: 28px 30px 70px; }
+.d23-head h1 { font-family: 'Archivo Narrow', sans-serif; font-weight: 700; font-size: 40px; letter-spacing: -.01em; margin: 0 0 8px; }
+.d23-head p { max-width: 66ch; font-size: 14.5px; line-height: 1.6; color: #55544e; margin: 0 0 14px; }
+.d23-stats { display: flex; gap: 28px; flex-wrap: wrap; font-size: 11.5px; color: #7a786f; border-top: 1px solid #ded9cc; padding-top: 12px; }
+.d23-stats b { display: block; font-family: 'Cousine', monospace; font-size: 16px; color: #1a1a18; }
+.d23-drum { margin-top: 20px; border-top: 1px solid #1a1a18; }
+.d23-line { display: grid; grid-template-columns: 190px minmax(0,1fr) 120px; gap: 0 14px; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid #ece7da; }
+.d23-line__id b { display: block; font-family: 'Cousine', monospace; font-size: 12px; }
+.d23-line__id span { font-size: 11px; color: #7a786f; }
+.d23-trace { width: 100%; height: 46px; display: block; }
+.d23-trace polyline { fill: none; stroke: #1a1a18; stroke-width: 1.1; }
+.d23-trace .base { stroke: #ded9cc; stroke-width: 1; }
+.d23-line--blocked .d23-trace polyline { stroke: #b32d1f; stroke-width: 1.4; }
+.d23-line--ambiguous .d23-trace polyline { stroke: #8a6a12; }
+.d23-line--incomplete .d23-trace polyline { stroke: #b6b2a6; stroke-dasharray: 3 4; }
+.d23-line__end { text-align: right; }
+.d23-line__end em { font-style: normal; font-family: 'Cousine', monospace; font-size: 13px; margin-left: 8px; }
+.d23-st { font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid #1a1a18; padding: 1px 6px; white-space: nowrap; }
+.d23-st--blocked { background: #1a1a18; color: #fbf9f4; }
+.d23-st--ambiguous { border-style: dashed; color: #8a6a12; }
+.d23-st--incomplete { border-style: dotted; color: #7a786f; }
+.d23-line__why { grid-column: 2 / -1; font-size: 12px; color: #55544e; margin: 0; }
+.d23-key { font-family: 'Cousine', monospace; font-size: 10.5px; color: #7a786f; margin-top: 12px; }
+.d23-big { margin: 20px 0 18px; border: 1px solid #1a1a18; padding: 14px; background: #fff; }
+.d23-trace--big { height: 150px; }
+.d23-trace--big polyline { stroke: #b32d1f; stroke-width: 1.3; }
+.d23-trace .mark { stroke: #ded9cc; stroke-width: 1; }
+.d23-trace .mark.hot { stroke: #b32d1f; stroke-width: 2; }
+.d23-big__cap { font-family: 'Cousine', monospace; font-size: 11px; color: #7a786f; margin: 8px 0 0; }
+.d23-verdict { font-size: 16px; line-height: 1.6; max-width: 72ch; margin: 0 0 12px; }
+.d23-facts { display: flex; flex-wrap: wrap; gap: 5px 24px; font-family: 'Cousine', monospace; font-size: 11px; margin: 0 0 22px; }
+.d23-facts div { display: flex; gap: 7px; } .d23-facts dt { color: #7a786f; } .d23-facts dd { margin: 0; }
+.d23-ev { border-top: 1px solid #ece7da; padding: 12px 0; }
+.d23-ev.is-decisive { border-top: 2px solid #b32d1f; }
+.d23-ev__h { display: flex; gap: 13px; align-items: baseline; flex-wrap: wrap; font-size: 13px; }
+.d23-ev__h b { font-family: 'Cousine', monospace; color: #7a786f; }
+.d23-ev__h em { margin-left: auto; font-style: normal; font-family: 'Cousine', monospace; color: #b32d1f; }
+.d23-sig { list-style: none; margin: 7px 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); gap: 1px 16px; font-size: 12px; }
+.d23-sig li { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dotted #ded9cc; padding: 1px 0; }
+.d23-sig span { color: #7a786f; } .d23-sig b { font-family: 'Cousine', monospace; font-size: 11px; }
+.d23-sig .sev-high b { color: #b32d1f; } .d23-sig .sev-medium b { color: #8a6a12; }
+.d23-ev p { font-size: 13px; line-height: 1.6; color: #55544e; margin: 0; }
+.d23-trailing { font-size: 12px; color: #7a786f; margin-top: 12px; }

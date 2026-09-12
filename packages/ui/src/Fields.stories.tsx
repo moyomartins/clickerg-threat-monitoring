@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from 'storybook/test';
-import { Field, FilterBar, RangeField, Select, TextInput, Toggle } from './Fields';
+import { Field, FilterBar, FilterGroup, RangeField, Select, TextInput, Toggle } from './Fields';
 import { Button } from './Button';
 
 const meta = {
@@ -39,22 +39,28 @@ function Demo({ disabled = false }: { disabled?: boolean }) {
           onChange={(e) => setQuery(e.target.value)}
         />
       </Field>
-      <Field label="Status" htmlFor="status">
-        <Select
-          id="status"
-          value={status}
-          disabled={disabled}
-          onChange={(e) => setStatus(e.target.value)}
-          options={[
-            { value: 'all', label: 'All statuses' },
-            { value: 'blocked', label: 'Blocked' },
-            { value: 'review', label: 'Under review' },
-            { value: 'allowed', label: 'Not blocked' },
-          ]}
-        />
-      </Field>
-      <RangeField id="bot" label="Bot probability" value={bot} onChange={setBot} />
-      <Toggle label="Paid clicks only" checked={paidOnly} onChange={setPaidOnly} disabled={disabled} />
+      <FilterGroup label="Filter by category">
+        <Field label="Status" htmlFor="status">
+          <Select
+            id="status"
+            value={status}
+            disabled={disabled}
+            onChange={(e) => setStatus(e.target.value)}
+            options={[
+              { value: 'all', label: 'All statuses' },
+              { value: 'blocked', label: 'Blocked' },
+              { value: 'review', label: 'Under review' },
+              { value: 'allowed', label: 'Not blocked' },
+            ]}
+          />
+        </Field>
+      </FilterGroup>
+      <FilterGroup label="Bot probability threshold">
+        <RangeField id="bot" label="Bot probability" value={bot} onChange={setBot} />
+      </FilterGroup>
+      <FilterGroup label="Paid traffic only">
+        <Toggle label="Paid clicks only" checked={paidOnly} onChange={setPaidOnly} disabled={disabled} />
+      </FilterGroup>
       <Button variant="ghost" size="sm" disabled={disabled}>
         Reset
       </Button>

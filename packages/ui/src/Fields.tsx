@@ -8,6 +8,20 @@ export function FilterBar({ children }: { children: ReactNode }) {
   );
 }
 
+export interface FilterGroupProps {
+  label: string;
+  children: ReactNode;
+}
+
+/** Clusters controls of one interaction kind (metadata filters, a threshold, a toggle) within a FilterBar. */
+export function FilterGroup({ label, children }: FilterGroupProps) {
+  return (
+    <div className="cg-filterbar__group" role="group" aria-label={label}>
+      {children}
+    </div>
+  );
+}
+
 export interface FieldProps {
   label: string;
   htmlFor?: string;
@@ -55,13 +69,18 @@ export interface ToggleProps {
 
 export function Toggle({ label, checked, onChange, disabled = false }: ToggleProps) {
   return (
-    <label className={`cg-toggle${checked ? ' cg-toggle--on' : ''}`}>
+    <label className={`cg-switch${checked ? ' cg-switch--on' : ''}`}>
       <input
         type="checkbox"
+        role="switch"
+        aria-checked={checked}
         checked={checked}
         disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
       />
+      <span className="cg-switch__track" aria-hidden="true">
+        <span className="cg-switch__thumb" />
+      </span>
       {label}
     </label>
   );
@@ -90,16 +109,24 @@ export function RangeField({
 }: RangeFieldProps) {
   return (
     <Field label={`${label} ≥ ${format(value)}`} htmlFor={id}>
-      <input
-        id={id}
-        type="range"
-        className="cg-range cg-focusable"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
+      <div className="cg-range-row">
+        <span className="cg-range-row__bound" aria-hidden="true">
+          {format(min)}
+        </span>
+        <input
+          id={id}
+          type="range"
+          className="cg-range cg-focusable"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+        />
+        <span className="cg-range-row__bound" aria-hidden="true">
+          {format(max)}
+        </span>
+      </div>
     </Field>
   );
 }

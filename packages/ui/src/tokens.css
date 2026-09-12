@@ -1,95 +1,114 @@
 /**
- * @clickerg/ui — design tokens.
- * Single source of truth for color, type, spacing, radii and elevation.
- * Nothing in the app or in a component should ever hardcode a hex value or a
- * magic pixel number; use these.
+ * @clickerg/ui — design tokens. World: Replay (direction 22).
+ *
+ * The premise: stop describing behaviour in numbers and show it happening.
+ * Every visitor is rendered as the page they landed on, with their behaviour
+ * drawn onto it — scroll depth shaded, mouse path traced, clicks marked, and
+ * absence drawn explicitly rather than left blank.
+ *
+ * Values carried from the approved preview. Three were corrected for WCAG 2.2
+ * AA and are marked; nothing else changed. No component hardcodes a value.
  */
 :root {
-  /* --- Core palette --- */
-  --cg-cream: #f7f4ed;
-  --cg-charcoal: #1c1c1c;
-  --cg-offwhite: #fcfbf8;
-  --cg-muted: #5f5f5d;
+  /* --- Surfaces --- */
+  --cg-ground: #eceef1;        /* the page behind everything */
+  --cg-surface: #ffffff;       /* cards, replay pages */
+  --cg-frame: #f5f6f8;         /* the surround a replay sits in */
+  --cg-border: #d6dae0;
+  --cg-page-border: #e4e7eb;   /* the thin edge of a replayed page */
+  --cg-rule: #eef0f3;          /* signal row dividers */
 
-  /* Opacity-derived neutral scale: every gray is #1c1c1c, just thinner. */
-  --cg-charcoal-83: rgba(28, 28, 28, 0.83);
-  --cg-charcoal-82: rgba(28, 28, 28, 0.82);
-  --cg-charcoal-40: rgba(28, 28, 28, 0.4);
-  --cg-charcoal-12: rgba(28, 28, 28, 0.12);
-  --cg-charcoal-08: rgba(28, 28, 28, 0.08);
-  --cg-charcoal-04: rgba(28, 28, 28, 0.04);
-  --cg-charcoal-03: rgba(28, 28, 28, 0.03);
+  /* --- Ink --- */
+  --cg-ink: #16181d;
+  --cg-body: #5a616e;
+  /* AA: preview used #78808e at 3.42:1 on the ground. Same hue, 4.76:1. */
+  --cg-muted: #626975;
+  --cg-on-ink: #ffffff;
 
-  /* --- Surface & border --- */
-  --cg-surface: var(--cg-cream);
-  --cg-border: #eceae4;
-  --cg-border-interactive: var(--cg-charcoal-40);
+  /* --- The two signal colours ---
+     Attention blue is a GRAPHIC (scroll band, mouse path) and clears the 3:1
+     bar at 3.16:1, so it keeps its preview value. Where the same blue carries
+     text it uses the darkened variant instead — collapsing the two would dull
+     the direction for no accessibility gain. */
+  --cg-attention: #3b82f6;
+  --cg-attention-wash: rgba(59, 130, 246, 0.16);
+  --cg-attention-text: #0b5fe9;
 
-  /* --- Severity ---
-     A threat product has to encode risk, and the base palette is warm-neutral
-     by design. These are deliberately desaturated earth tones so they read as
-     severity without turning into a dashboard traffic light. */
-  --cg-sev-high: #8c3b2f;
-  --cg-sev-high-bg: rgba(140, 59, 47, 0.09);
-  /* Darkened from the #8a6b1f the palette suggests: on its own tint that only
-     reached 4.01:1, under the 4.5:1 floor. Accessibility wins the tie. */
-  --cg-sev-medium: #6d5416;
-  --cg-sev-medium-bg: rgba(138, 107, 31, 0.1);
-  --cg-sev-low: #3f6b47;
-  --cg-sev-low-bg: rgba(63, 107, 71, 0.09);
+  /* Absence red: the marker for behaviour that never happened. */
+  --cg-absence: #c0392b;
+  --cg-absence-dot: rgba(192, 57, 43, 0.35);
+  --cg-absence-halo: rgba(192, 57, 43, 0.15);
+
+  /* --- Severity --- */
+  --cg-sev-high: #c0392b;
+  --cg-sev-medium: #82641c;    /* AA: was #8a6a1e at 4.34:1. Now 4.77:1. */
+  --cg-sev-low: #1c6b47;
   --cg-sev-neutral: var(--cg-muted);
-  --cg-sev-neutral-bg: var(--cg-charcoal-04);
+  --cg-sev-high-bg: rgba(192, 57, 43, 0.08);
+  --cg-sev-medium-bg: rgba(130, 100, 28, 0.1);
+  --cg-sev-low-bg: rgba(28, 107, 71, 0.09);
+  --cg-sev-neutral-bg: rgba(98, 105, 117, 0.08);
 
-  /* --- Typography --- */
-  --cg-font-sans: 'Camera Plain Variable', ui-sans-serif, system-ui,
-    -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --cg-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* --- Wireframe greys: the page being replayed --- */
+  --cg-wf-nav: #dfe3e8;
+  --cg-wf-hero: #e8ebef;
+  --cg-wf-cta: #c7ced7;
+  --cg-wf-bar: #eef0f3;
 
-  --cg-text-display: 60px;
-  --cg-text-section: 48px;
-  --cg-text-sub: 36px;
-  --cg-text-title: 20px;
-  --cg-text-lg: 18px;
-  --cg-text-body: 16px;
-  --cg-text-sm: 14px;
-  --cg-text-xs: 12px;
+  /* --- Type --- */
+  --cg-font-sans: 'Manrope', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --cg-font-mono: 'Fira Code', ui-monospace, 'SF Mono', Menlo, monospace;
 
-  --cg-tracking-display: -1.5px;
-  --cg-tracking-section: -1.2px;
-  --cg-tracking-sub: -0.9px;
+  --cg-text-display: 48px;
+  --cg-text-title: 36px;   /* page title, weight 800, -.025em */
+  --cg-text-sub: 24px;
+  --cg-text-card: 20px;
+  --cg-text-lg: 16px;      /* verdict */
+  --cg-text-lede: 15px;
+  --cg-text-body: 13px;
+  --cg-text-sm: 12.5px;
+  --cg-text-xs: 11px;
+  --cg-text-mono: 12.5px;
+  --cg-text-mono-sm: 10.5px;
+  --cg-text-marker: 10px;  /* raised from the preview's 8.5px — see README */
+
+  --cg-tracking-title: -0.025em;
+  --cg-tracking-label: 0.1em;
   --cg-tracking-normal: normal;
 
   --cg-weight-body: 400;
-  --cg-weight-display: 480;
-  --cg-weight-heading: 600;
+  --cg-weight-mid: 500;
+  --cg-weight-bold: 700;
+  --cg-weight-display: 800;
 
-  /* --- Spacing (8px base, generous at the top end) --- */
+  --cg-leading-tight: 1.4;
+  --cg-leading-body: 1.6;
+  --cg-leading-card: 1.5;
+  --cg-leading-notes: 1.65;
+
+  /* --- Spacing --- */
   --cg-space-half: 4px;
   --cg-space-1: 8px;
   --cg-space-1-25: 10px;
   --cg-space-1-5: 12px;
   --cg-space-2: 16px;
-  --cg-space-3: 24px;
-  --cg-space-4: 32px;
-  --cg-space-5: 40px;
-  --cg-space-7: 56px;
-  --cg-space-10: 80px;
-  --cg-space-12: 96px;
+  --cg-space-3: 20px;
+  --cg-space-4: 28px;
+  --cg-space-5: 32px;
+  --cg-space-7: 48px;
+  --cg-space-10: 70px;
 
-  /* --- Radii --- */
-  --cg-radius-micro: 4px;
-  --cg-radius-standard: 6px;
-  --cg-radius-comfortable: 8px;
-  --cg-radius-card: 12px;
-  --cg-radius-container: 16px;
-  --cg-radius-pill: 9999px;
+  /* --- Shape: flat. One radius, on the click dot only. --- */
+  --cg-radius: 0;
+  --cg-radius-dot: 999px;
+  --cg-border-w: 1px;
+  --cg-border-w-strong: 2px;
 
-  /* --- Elevation --- */
-  --cg-shadow-inset: rgba(255, 255, 255, 0.2) 0 0.5px 0 0 inset,
-    rgba(0, 0, 0, 0.2) 0 0 0 0.5px inset, rgba(0, 0, 0, 0.05) 0 1px 2px 0;
-  --cg-shadow-focus: rgba(0, 0, 0, 0.1) 0 4px 12px;
-  --cg-ring: rgba(59, 130, 246, 0.5);
+  /* --- Depth: none, except the click dot's halo. --- */
+  --cg-shadow-none: none;
+  --cg-dot-halo: 0 0 0 4px var(--cg-absence-halo);
+  --cg-focus: 0 0 0 2px var(--cg-surface), 0 0 0 4px var(--cg-attention-text);
 
-  /* --- Layout --- */
-  --cg-container: 1200px;
+  --cg-container: 1280px;
+  color-scheme: light;
 }

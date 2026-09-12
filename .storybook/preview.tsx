@@ -1,6 +1,11 @@
 import type { Preview } from '@storybook/react-vite';
 import '@clickerg/ui/styles.css';
 
+const font = document.createElement('link');
+font.rel = 'stylesheet';
+font.href = 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Fira+Code:wght@400;500&display=swap';
+document.head.appendChild(font);
+
 const preview: Preview = {
   parameters: {
     controls: {
@@ -8,8 +13,8 @@ const preview: Preview = {
     },
     backgrounds: {
       options: {
-        cream: { name: 'Cream (page)', value: '#f7f4ed' },
-        charcoal: { name: 'Charcoal', value: '#1c1c1c' },
+        ground: { name: 'Ground', value: '#eceef1' },
+        surface: { name: 'Surface', value: '#ffffff' },
       },
     },
     viewport: {
@@ -22,10 +27,10 @@ const preview: Preview = {
     a11y: { test: 'error' },
     docs: { toc: true },
   },
-  initialGlobals: { backgrounds: { value: 'cream' } },
+  initialGlobals: { backgrounds: { value: 'ground' } },
   decorators: [
     (Story) => (
-      <div className="cg-root" style={{ padding: 'var(--cg-space-3)', background: 'var(--cg-cream)' }}>
+      <div className="cg-root" style={{ padding: 'var(--cg-space-3)', background: 'var(--cg-ground)' }}>
         <Story />
       </div>
     ),

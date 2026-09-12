@@ -7,7 +7,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Every colour, radius, space and type step in ClickerG comes from `packages/ui/src/tokens.css`. These swatches read the live CSS variables — if a token changes, this page changes with it, and so does every screen.',
+          'Every colour, type step, space and border in ClickerG comes from `packages/ui/src/tokens.css`. These swatches read the live CSS variables — change a token and this page changes with it, and so does every screen.',
       },
     },
   },
@@ -16,27 +16,35 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const COLORS = [
-  ['--cg-cream', 'Page + surface'],
-  ['--cg-charcoal', 'Text, dark buttons'],
-  ['--cg-offwhite', 'Text on dark'],
-  ['--cg-muted', 'Secondary text'],
-  ['--cg-border', 'Passive border'],
-  ['--cg-border-interactive', 'Interactive border'],
-  ['--cg-charcoal-04', 'Hover tint'],
-  ['--cg-sev-high', 'Severity: high'],
-  ['--cg-sev-medium', 'Severity: medium'],
-  ['--cg-sev-low', 'Severity: low'],
+const COLORS: [string, string][] = [
+  ['--cg-ground', 'Page ground'],
+  ['--cg-surface', 'Cards, replay pages'],
+  ['--cg-frame', 'Replay surround'],
+  ['--cg-border', 'Border'],
+  ['--cg-ink', 'Primary text'],
+  ['--cg-body', 'Body text'],
+  ['--cg-muted', 'Muted text (AA-corrected)'],
+  ['--cg-attention', 'Attention blue — graphics only'],
+  ['--cg-attention-text', 'Attention blue — as text'],
+  ['--cg-absence', 'Absence red'],
+  ['--cg-sev-medium', 'Severity: medium (AA-corrected)'],
+  ['--cg-sev-low', 'Severity: favourable'],
+  ['--cg-wf-nav', 'Wireframe: nav'],
+  ['--cg-wf-hero', 'Wireframe: hero'],
+  ['--cg-wf-cta', 'Wireframe: call to action'],
+  ['--cg-wf-bar', 'Wireframe: body bar'],
 ];
 
-const TYPE = [
-  ['Display', '--cg-text-display', '--cg-tracking-display', 600],
-  ['Section', '--cg-text-section', '--cg-tracking-section', 600],
-  ['Sub-heading', '--cg-text-sub', '--cg-tracking-sub', 600],
-  ['Card title', '--cg-text-title', '--cg-tracking-normal', 400],
-  ['Body', '--cg-text-body', '--cg-tracking-normal', 400],
-  ['Caption', '--cg-text-sm', '--cg-tracking-normal', 400],
-] as const;
+const TYPE: [string, string, number][] = [
+  ['Page title', '--cg-text-title', 800],
+  ['Section', '--cg-text-sub', 700],
+  ['Card title', '--cg-text-card', 700],
+  ['Verdict', '--cg-text-lg', 400],
+  ['Lede', '--cg-text-lede', 400],
+  ['Body', '--cg-text-body', 400],
+  ['Caption', '--cg-text-sm', 400],
+  ['Label', '--cg-text-xs', 400],
+];
 
 export const Color: Story = {
   render: () => (
@@ -46,14 +54,13 @@ export const Color: Story = {
           <div
             style={{
               height: 44,
-              borderRadius: 'var(--cg-radius-standard)',
               background: `var(${token})`,
               border: '1px solid var(--cg-border)',
               marginBottom: 8,
             }}
           />
-          <div className="cg-mono" style={{ fontSize: 12 }}>{token}</div>
-          <div style={{ fontSize: 12, color: 'var(--cg-muted)' }}>{role}</div>
+          <div className="cg-mono" style={{ fontSize: 11 }}>{token}</div>
+          <div style={{ fontSize: 11, color: 'var(--cg-muted)' }}>{role}</div>
         </div>
       ))}
     </div>
@@ -63,21 +70,13 @@ export const Color: Story = {
 export const Typography: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {TYPE.map(([name, size, tracking, weight]) => (
+      {TYPE.map(([name, size, weight]) => (
         <div key={name}>
-          <div className="cg-mono" style={{ fontSize: 12, color: 'var(--cg-muted)' }}>
+          <div className="cg-mono" style={{ fontSize: 11, color: 'var(--cg-muted)' }}>
             {name} · var({size}) · weight {weight}
           </div>
-          <div
-            style={{
-              fontSize: `var(${size})`,
-              letterSpacing: `var(${tracking})`,
-              fontWeight: weight,
-              lineHeight: 1.1,
-              color: 'var(--cg-charcoal)',
-            }}
-          >
-            Blocking is cumulative
+          <div style={{ fontSize: `var(${size})`, fontWeight: weight, letterSpacing: '-0.02em', color: 'var(--cg-ink)' }}>
+            What they actually did
           </div>
         </div>
       ))}
@@ -85,29 +84,29 @@ export const Typography: Story = {
   ),
 };
 
-export const SpacingAndRadii: Story = {
+export const SpacingAndShape: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div>
-        <p className="cg-mono" style={{ fontSize: 12, color: 'var(--cg-muted)' }}>Spacing — 8px base</p>
+        <p className="cg-mono" style={{ fontSize: 11, color: 'var(--cg-muted)' }}>Spacing</p>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
           {['--cg-space-1', '--cg-space-1-5', '--cg-space-2', '--cg-space-3', '--cg-space-4', '--cg-space-5', '--cg-space-7'].map((t) => (
             <div key={t} style={{ textAlign: 'center' }}>
-              <div style={{ width: `var(${t})`, height: `var(${t})`, background: 'var(--cg-charcoal-12)', borderRadius: 2 }} />
+              <div style={{ width: `var(${t})`, height: `var(${t})`, background: 'var(--cg-wf-cta)' }} />
               <div className="cg-mono" style={{ fontSize: 10, marginTop: 4 }}>{t.replace('--cg-space-', '')}</div>
             </div>
           ))}
         </div>
       </div>
       <div>
-        <p className="cg-mono" style={{ fontSize: 12, color: 'var(--cg-muted)' }}>Radii</p>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          {['--cg-radius-micro', '--cg-radius-standard', '--cg-radius-comfortable', '--cg-radius-card', '--cg-radius-container', '--cg-radius-pill'].map((t) => (
-            <div key={t} style={{ textAlign: 'center' }}>
-              <div style={{ width: 72, height: 48, border: '1px solid var(--cg-border-interactive)', borderRadius: `var(${t})` }} />
-              <div className="cg-mono" style={{ fontSize: 10, marginTop: 4 }}>{t.replace('--cg-radius-', '')}</div>
-            </div>
-          ))}
+        <p className="cg-mono" style={{ fontSize: 11, color: 'var(--cg-muted)' }}>
+          Shape — this world is flat. Radius 0 everywhere; the click dot is the only round thing, and the
+          only shadow in the system is its halo.
+        </p>
+        <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+          <div style={{ width: 90, height: 54, border: '1px solid var(--cg-border)', background: 'var(--cg-surface)' }} />
+          <div style={{ width: 90, height: 54, border: '2px solid var(--cg-ink)', background: 'var(--cg-surface)' }} />
+          <span className="cg-replay__click" style={{ position: 'relative', left: 0, top: 0, margin: 0 }} />
         </div>
       </div>
     </div>

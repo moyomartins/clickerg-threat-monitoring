@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { SignalChip, type SignalChipProps } from './SignalChip';
-import { ConfidenceMeter } from './Feedback';
+import { PageReplay, type ReplayBehaviour } from './PageReplay';
 
 export type Channel = 'paid' | 'organic' | 'direct' | 'referral';
 
@@ -16,21 +16,23 @@ export interface VisitEntryProps {
   index: number;
   timestamp: string;
   channel: Channel;
-  /** Campaign / keyword / referrer detail for this visit. */
   source?: string;
-  /** Only paid visits cost money. */
   cost?: string;
   signals: SignalChipProps[];
-  /** Plain-language note about what this visit changed. */
   note?: ReactNode;
   /** Running confidence after this visit, 0–100. */
   confidence: number;
-  /** The visit where the system crossed its blocking threshold. */
+  /** Recorded engagement for this arrival; `null` when the tag never reported. */
+  replay?: ReplayBehaviour | null;
+  /**
+   * The strip stacks notes beneath it so the visual comparison across arrivals
+   * is never interrupted by prose. Set true to render the note inline instead.
+   */
+  showNote?: boolean;
   decisive?: boolean;
-  /** Verdict copy, shown in a dark panel under the decisive visit. */
   verdict?: ReactNode;
-  /** Hides the connector line on the final entry. */
   last?: boolean;
+  stage?: string;
 }
 
 export function VisitEntry({
@@ -42,24 +44,29 @@ export function VisitEntry({
   signals,
   note,
   confidence,
+  replay,
+  showNote = true,
   decisive = false,
   verdict,
-  last = false,
 }: VisitEntryProps) {
   return (
     <li className={`cg-visit${decisive ? ' cg-visit--decisive' : ''}`}>
-      <div className="cg-visit__rail" aria-hidden="true">
-        <span className="cg-visit__node">{index}</span>
-        {!last && <span className="cg-visit__line" />}
-      </div>
       <div className="cg-visit__body">
+        {replay !== undefined && <PageReplay behaviour={replay} size="strip" />}
+
         <div className="cg-visit__head">
-          <span className="cg-visit__time">{timestamp}</span>
-          <span className={`cg-visit__tag${channel === 'paid' ? ' cg-visit__tag--paid' : ''}`}>
-            {CHANNEL_LABELS[channel]}
+          <span className="cg-visit__no">
+            visit {index} · {confidence}%
           </span>
-          {cost && <span className="cg-visit__meta cg-mono">{cost}</span>}
-          {source && <span className="cg-visit__meta">{source}</span>}
+          <span className="cg-visit__time">{timestamp}</span>
+          <span className="cg-visit__tag">{CHANNEL_LABELS[channel]}</span>
+          {cost && <span className="cg-visit__meta"> · {cost}</span>}
+          {source && (
+            <>
+              <br />
+              <span className="cg-visit__meta">{source}</span>
+            </>
+          )}
         </div>
 
         {signals.length > 0 && (
@@ -70,8 +77,7 @@ export function VisitEntry({
           </div>
         )}
 
-        {note && <p className="cg-visit__note">{note}</p>}
-        <ConfidenceMeter value={confidence} label={`Confidence after visit ${index}`} />
+        {showNote && note && <p className="cg-visit__note cg-visit__note--inline">{note}</p>}
         {verdict && <div className="cg-visit__verdict">{verdict}</div>}
       </div>
     </li>
@@ -79,5 +85,5 @@ export function VisitEntry({
 }
 
 export function Journey({ children }: { children: ReactNode }) {
-  return <ol className="cg-journey" style={{ listStyle: 'none', margin: 0, padding: 0 }}>{children}</ol>;
+  return <ol className="cg-journey">{children}</ol>;
 }

@@ -1,14 +1,15 @@
 import {
   Button,
-  Card,
   ConfidenceMeter,
   EmptyState,
   Journey,
+  PageReplay,
   StatusPill,
   VisitEntry,
   type SignalChipProps,
   type VisitorStatus,
 } from '@clickerg/ui';
+import { behaviourOf, representativeBehaviour } from './behaviour';
 import type { Visit, Visitor } from './data/types';
 import { deltaFor, reasonsFor } from './data/scoring';
 import { dateTime, money, relative } from './format';
@@ -206,55 +207,61 @@ export function VisitorDetail({ visitor, onBack, onStatusChange }: Props) {
         </div>
       </div>
 
-      <div className="detail__grid">
+      {visitor.dataGap && <p className="gap-note">{visitor.dataGap}</p>}
+
+      <div className="detail__hero">
+        <PageReplay behaviour={representativeBehaviour(visitor)} size="hero" />
         <div>
-          {visitor.dataGap && <p className="gap-note">{visitor.dataGap}</p>}
-
-          <Card title="What we saw" style={{ marginBottom: 'var(--cg-space-3)' }}>
-            <p className="verdict">{visitor.verdict}</p>
-          </Card>
-
-          <Card title={`The journey — ${visitor.visits.length} visits`}>
-            <Journey>
-              {visitor.visits.map((visit, i) => (
-                <VisitEntry
-                  key={visit.id}
-                  index={i + 1}
-                  timestamp={dateTime(visit.at)}
-                  channel={visit.channel}
-                  source={sourceFor(visit)}
-                  cost={visit.costGbp !== undefined ? money(visit.costGbp) : undefined}
-                  signals={signalsFor(visit)}
-                  note={noteFor(visit)}
-                  confidence={visitor.confidence[i]}
-                  decisive={i === visitor.decisiveIndex}
-                  verdict={i === visitor.decisiveIndex ? visitor.verdict : undefined}
-                  last={i === visitor.visits.length - 1}
-                />
-              ))}
-            </Journey>
-          </Card>
-        </div>
-
-        <Card title="At a glance" density="compact">
-          <ConfidenceMeter value={peak} label="Peak confidence" />
-          <dl className="facts" style={{ marginTop: 'var(--cg-space-2)' }}>
-            <dt>Visits</dt>
-            <dd>{visitor.visits.length}</dd>
-            <dt>Paid clicks</dt>
-            <dd>{visitor.paidVisits}</dd>
-            <dt>Free visits</dt>
-            <dd>{visitor.visits.length - visitor.paidVisits}</dd>
-            <dt>Ad spend</dt>
-            <dd className="cg-mono">{money(visitor.spendGbp)}</dd>
-            <dt>Revenue</dt>
-            <dd className="cg-mono">{money(visitor.revenueGbp)}</dd>
-            <dt>First seen</dt>
-            <dd>{dateTime(visitor.firstSeen)}</dd>
-            <dt>Last seen</dt>
-            <dd>{dateTime(visitor.lastSeen)}</dd>
+          <p className="verdict">{visitor.verdict}</p>
+          <dl className="facts">
+            <div><dt>Visits</dt><dd>{visitor.visits.length}</dd></div>
+            <div><dt>Paid clicks</dt><dd>{visitor.paidVisits}</dd></div>
+            <div><dt>Free visits</dt><dd>{visitor.visits.length - visitor.paidVisits}</dd></div>
+            <div><dt>Ad spend</dt><dd className="cg-mono">{money(visitor.spendGbp)}</dd></div>
+            <div><dt>Revenue</dt><dd className="cg-mono">{money(visitor.revenueGbp)}</dd></div>
+            <div><dt>First seen</dt><dd>{dateTime(visitor.firstSeen)}</dd></div>
+            <div><dt>Last seen</dt><dd>{dateTime(visitor.lastSeen)}</dd></div>
           </dl>
-        </Card>
+          <ConfidenceMeter value={peak} label="Peak confidence" />
+        </div>
+      </div>
+
+      <p className="strip-caption">
+        Every arrival, replayed in order — {visitor.visits.length} of them. Scroll the strip: the
+        finding is how little changes from one to the next.
+      </p>
+
+      <Journey>
+        {visitor.visits.map((visit, i) => (
+          <VisitEntry
+            key={visit.id}
+            index={i + 1}
+            timestamp={dateTime(visit.at)}
+            channel={visit.channel}
+            source={sourceFor(visit)}
+            cost={visit.costGbp !== undefined ? money(visit.costGbp) : undefined}
+            signals={signalsFor(visit).slice(0, 5)}
+            note={noteFor(visit)}
+            showNote={false}
+            replay={behaviourOf(visit)}
+            confidence={visitor.confidence[i]}
+            decisive={i === visitor.decisiveIndex}
+            verdict={i === visitor.decisiveIndex ? 'blocked here' : undefined}
+          />
+        ))}
+      </Journey>
+
+      <div className="notes">
+        <h2 className="notes__title">What each arrival showed</h2>
+        {visitor.visits.map((visit, i) => (
+          <p key={visit.id} className={`note${i === visitor.decisiveIndex ? ' note--decisive' : ''}`}>
+            <b>
+              visit {i + 1} · {dateTime(visit.at)}
+              {visit.costGbp !== undefined ? ` · ${money(visit.costGbp)}` : ''}
+            </b>
+            {noteFor(visit)}
+          </p>
+        ))}
       </div>
     </>
   );

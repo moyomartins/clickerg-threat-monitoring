@@ -1,21 +1,21 @@
 import { useMemo, useState } from 'react';
 import {
   Button,
-  Card,
-  DataTable,
   EmptyState,
   Field,
   FilterBar,
+  FilterGroup,
+  PageReplay,
   RangeField,
   Select,
   Skeleton,
   StatusPill,
   TextInput,
   Toggle,
-  type Column,
   type SortState,
   type VisitorStatus,
 } from '@clickerg/ui';
+import { representativeBehaviour } from './behaviour';
 import type { Visitor } from './data/types';
 import { NOW } from './data/mock';
 import { money, relative } from './format';
@@ -122,96 +122,6 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
     setMinBot(0);
   };
 
-  const columns: Column<Visitor>[] = [
-    {
-      key: 'status',
-      header: 'Status',
-      sortable: true,
-      width: '160px',
-      render: (v) => <StatusPill status={v.status} />,
-    },
-    {
-      key: 'ip',
-      header: 'IP address',
-      sortable: true,
-      width: '150px',
-      render: (v) => <span className="cg-mono">{v.ip}</span>,
-    },
-    {
-      key: 'location',
-      header: 'Location',
-      sortable: true,
-      render: (v) => (
-        <>
-          {v.city}
-          <span className="cell__sub">{v.country}</span>
-        </>
-      ),
-    },
-    {
-      key: 'visits',
-      header: 'Visits',
-      sortable: true,
-      width: '120px',
-      render: (v) => (
-        <>
-          {v.visits.length}
-          <span className="cell__sub">
-            {v.paidVisits} paid · {v.visits.length - v.paidVisits} free
-          </span>
-        </>
-      ),
-    },
-    {
-      key: 'spend',
-      header: 'Paid spend',
-      sortable: true,
-      width: '110px',
-      render: (v) => <span className="cg-mono">{money(v.spendGbp)}</span>,
-    },
-    {
-      key: 'confidence',
-      header: 'Confidence',
-      sortable: true,
-      width: '110px',
-      render: (v) => <span className="cg-mono">{Math.max(...v.confidence)}%</span>,
-    },
-    {
-      key: 'lastSeen',
-      header: 'Last seen',
-      sortable: true,
-      width: '130px',
-      render: (v) => (
-        <>
-          {relative(v.lastSeen)}
-          <span className="cell__sub">{v.visits.length > 1 ? `first seen ${relative(v.firstSeen)}` : 'single visit'}</span>
-        </>
-      ),
-    },
-    {
-      key: 'why',
-      header: 'Why',
-      render: (v) => <span className="cell__why" title={v.summary}>{v.summary}</span>,
-    },
-    {
-      key: 'open',
-      header: '',
-      width: '120px',
-      render: (v) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpen(v.ip);
-          }}
-        >
-          View journey
-        </Button>
-      ),
-    },
-  ];
-
   const blocked = visitors.filter((v) => v.status === 'blocked');
   const wasted = blocked.reduce((s, v) => s + v.spendGbp, 0);
 
@@ -224,26 +134,32 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
       </p>
 
       <div className="stats">
-        <Card density="compact">
-          <span className="stat__value">{loading ? <Skeleton width="60px" height="28px" /> : visitors.length}</span>
-          <span className="stat__label">Visitors seen</span>
-        </Card>
-        <Card density="compact">
-          <span className="stat__value">{loading ? <Skeleton width="60px" height="28px" /> : blocked.length}</span>
-          <span className="stat__label">Blocked</span>
-        </Card>
-        <Card density="compact">
-          <span className="stat__value">
-            {loading ? <Skeleton width="90px" height="28px" /> : money(wasted)}
+        <div className="stats__lead">
+          <span className="stat__value stat__value--lead">
+            {loading ? <Skeleton width="110px" height="34px" /> : money(wasted)}
           </span>
           <span className="stat__label">Spend behind blocked IPs</span>
-        </Card>
-        <Card density="compact">
-          <span className="stat__value">
-            {loading ? <Skeleton width="60px" height="28px" /> : visitors.reduce((s, v) => s + v.paidVisits, 0)}
+        </div>
+        <div className="stats__support">
+          <span className="stat__value stat__value--support">
+            {loading ? <Skeleton width="40px" height="22px" /> : blocked.length}
           </span>
-          <span className="stat__label">Paid clicks</span>
-        </Card>
+          <span className="stat__label">Blocked</span>
+        </div>
+        <div className="stats__context">
+          <div>
+            <span className="stat__value stat__value--context">
+              {loading ? <Skeleton width="40px" height="17px" /> : visitors.length}
+            </span>
+            <span className="stat__label">Visitors seen</span>
+          </div>
+          <div>
+            <span className="stat__value stat__value--context">
+              {loading ? <Skeleton width="40px" height="17px" /> : visitors.reduce((s, v) => s + v.paidVisits, 0)}
+            </span>
+            <span className="stat__label">Paid clicks</span>
+          </div>
+        </div>
       </div>
 
       <FilterBar>
@@ -257,44 +173,78 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
             onChange={(e) => setQuery(e.target.value)}
           />
         </Field>
-        <Field label="Status" htmlFor="status">
-          <Select
-            id="status"
-            value={status}
-            disabled={loading}
-            onChange={(e) => setStatus(e.target.value)}
-            options={[
-              { value: 'all', label: 'All statuses' },
-              { value: 'blocked', label: 'Blocked' },
-              { value: 'ambiguous', label: 'Judgement call' },
-              { value: 'review', label: 'Under review' },
-              { value: 'allowed', label: 'Not blocked' },
-              { value: 'incomplete', label: 'Incomplete data' },
-            ]}
-          />
-        </Field>
-        <Field label="Country" htmlFor="country">
-          <Select
-            id="country"
-            value={country}
-            disabled={loading}
-            onChange={(e) => setCountry(e.target.value)}
-            options={[{ value: 'all', label: 'Everywhere' }, ...countries.map((c) => ({ value: c, label: c }))]}
-          />
-        </Field>
-        <Field label="Last seen" htmlFor="window">
-          <Select
-            id="window"
-            value={window}
-            disabled={loading}
-            onChange={(e) => setWindow(e.target.value)}
-            options={WINDOWS}
-          />
-        </Field>
-        <RangeField id="bot" label="Bot probability" value={minBot} onChange={setMinBot} />
-        <Toggle label="Paid clicks only" checked={paidOnly} onChange={setPaidOnly} disabled={loading} />
+        <FilterGroup label="Filter by category">
+          <Field label="Status" htmlFor="status">
+            <Select
+              id="status"
+              value={status}
+              disabled={loading}
+              onChange={(e) => setStatus(e.target.value)}
+              options={[
+                { value: 'all', label: 'All statuses' },
+                { value: 'blocked', label: 'Blocked' },
+                { value: 'ambiguous', label: 'Judgement call' },
+                { value: 'review', label: 'Under review' },
+                { value: 'allowed', label: 'Not blocked' },
+                { value: 'incomplete', label: 'Incomplete data' },
+              ]}
+            />
+          </Field>
+          <Field label="Country" htmlFor="country">
+            <Select
+              id="country"
+              value={country}
+              disabled={loading}
+              onChange={(e) => setCountry(e.target.value)}
+              options={[{ value: 'all', label: 'Everywhere' }, ...countries.map((c) => ({ value: c, label: c }))]}
+            />
+          </Field>
+          <Field label="Last seen" htmlFor="window">
+            <Select
+              id="window"
+              value={window}
+              disabled={loading}
+              onChange={(e) => setWindow(e.target.value)}
+              options={WINDOWS}
+            />
+          </Field>
+          <Field label="Sort by" htmlFor="sort">
+            <div className="cg-sortfield">
+              <Select
+                id="sort"
+                value={sort.key}
+                disabled={loading}
+                onChange={(e) => setSort((x) => ({ ...x, key: e.target.value }))}
+                options={[
+                  { value: 'lastSeen', label: 'Last seen' },
+                  { value: 'status', label: 'Status' },
+                  { value: 'confidence', label: 'Confidence' },
+                  { value: 'spend', label: 'Spend' },
+                  { value: 'visits', label: 'Visit count' },
+                  { value: 'ip', label: 'IP address' },
+                  { value: 'location', label: 'Location' },
+                ]}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={loading}
+                aria-label={`Sort ${sort.direction === 'desc' ? 'descending' : 'ascending'}, change direction`}
+                onClick={() => setSort((x) => ({ ...x, direction: x.direction === 'desc' ? 'asc' : 'desc' }))}
+              >
+                {sort.direction === 'desc' ? '↓ Desc' : '↑ Asc'}
+              </Button>
+            </div>
+          </Field>
+        </FilterGroup>
+        <FilterGroup label="Bot probability threshold">
+          <RangeField id="bot" label="Bot probability" value={minBot} onChange={setMinBot} />
+        </FilterGroup>
+        <FilterGroup label="Paid traffic only">
+          <Toggle label="Paid clicks only" checked={paidOnly} onChange={setPaidOnly} disabled={loading} />
+        </FilterGroup>
         {filtersActive && (
-          <Button variant="ghost" size="sm" onClick={reset}>
+          <Button variant="ghost" size="sm" className="filterbar__reset" onClick={reset}>
             Reset
           </Button>
         )}
@@ -306,27 +256,26 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
         </span>
       </div>
 
-      <DataTable
-        caption="Visitors, their status and the reason behind it"
-        columns={columns}
-        rows={rows}
-        rowKey={(v) => v.ip}
-        sort={sort}
-        loading={loading}
-        skeletonRows={10}
-        onSortChange={(key) =>
-          setSort((s) => ({
-            key,
-            direction: s.key === key && s.direction === 'desc' ? 'asc' : 'desc',
-          }))
-        }
-        onRowClick={(v) => onOpen(v.ip)}
-        isRowFlagged={(v) => v.status === 'blocked'}
-        empty={
-          visitors.length === 0 ? (
+      {loading ? (
+        <div className="replays">
+          {Array.from({ length: 12 }, (_, i) => (
+            <article className="replay-card" key={`skeleton-${i}`} aria-hidden="true">
+              <PageReplay behaviour={null} loading />
+              <div className="replay-card__meta">
+                <Skeleton width="11ch" height="13px" />
+                <Skeleton width="70%" height="11px" />
+                <Skeleton width="90%" height="11px" />
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : rows.length === 0 ? (
+        <div className="replay-empty">
+          <PageReplay behaviour={null} caption={false} />
+          {visitors.length === 0 ? (
             <EmptyState
               title="No traffic yet"
-              body="Once your ads start running, every click that reaches your site will show up here within a few seconds."
+              body="Once your ads start running, every click that reaches your site will show up here as a replay within a few seconds."
             />
           ) : (
             <EmptyState
@@ -338,9 +287,41 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
                 </Button>
               }
             />
-          )
-        }
-      />
+          )}
+        </div>
+      ) : (
+        <div className="replays">
+          {rows.map((v) => (
+            <article
+              key={v.ip}
+              className={`replay-card replay-card--${v.status}`}
+              tabIndex={0}
+              role="button"
+              aria-label={`${v.ip}, ${v.city}. ${v.summary}`}
+              onClick={() => onOpen(v.ip)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onOpen(v.ip);
+                }
+              }}
+            >
+              <PageReplay behaviour={representativeBehaviour(v)} />
+              <div className="replay-card__meta">
+                <p className="replay-card__id">
+                  <span className="cg-mono">{v.ip}</span>
+                  <StatusPill status={v.status} />
+                </p>
+                <p className="replay-card__loc">
+                  {v.city}, {v.country} · {v.visits.length} visits · {v.paidVisits} paid ·{' '}
+                  {money(v.spendGbp)} · {relative(v.lastSeen)}
+                </p>
+                <p className="replay-card__why">{v.summary}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </>
   );
 }

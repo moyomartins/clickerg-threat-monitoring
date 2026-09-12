@@ -1,0 +1,46 @@
+/* 11 — Verdict & Doubt. Two registers that refuse to average. */
+.stage.d11 { background: #f2efe9; color: #171412; font-family: 'Petrona', Georgia, serif; padding: 30px 34px 70px; }
+.d11-head h1 { font-family: 'Archivo Black', sans-serif; font-size: 42px; line-height: 1; margin: 0 0 10px; text-transform: uppercase; letter-spacing: -.01em; }
+.d11-head p { max-width: 62ch; font-size: 16px; line-height: 1.65; color: #4a433d; margin: 0 0 28px; }
+.d11-rule { display: flex; align-items: baseline; gap: 16px; border-bottom: 6px solid #171412; padding-bottom: 6px; margin: 0 0 18px; }
+.d11-rule h2 { font-family: 'Archivo Black', sans-serif; font-size: 19px; text-transform: uppercase; margin: 0; letter-spacing: .02em; }
+.d11-rule span { font-size: 13px; color: #6b625a; }
+.d11-rule--thin { border-bottom: 1px solid #c9c0b4; }
+.d11-rule--thin h2 { font-family: 'Petrona', serif; font-weight: 400; font-style: italic; text-transform: none; font-size: 21px; color: #5b6470; }
+.d11-side--sure { margin-bottom: 46px; }
+.d11-sure-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(236px,1fr)); gap: 12px; }
+.d11-card { background: #fff; border: 2px solid #171412; padding: 14px; }
+.d11-stamp { display: inline-block; font-family: 'Archivo Black', sans-serif; font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  background: #6d1a1a; color: #fff; padding: 4px 9px; margin-bottom: 10px; }
+.d11-stamp--big { font-size: 13px; padding: 7px 14px; }
+.d11-card b { font-family: 'Archivo Black', sans-serif; font-size: 16px; display: block; letter-spacing: -.01em; }
+.d11-loc { display: block; font-size: 12.5px; color: #6b625a; margin-bottom: 8px; }
+.d11-card p { font-size: 13.5px; line-height: 1.55; margin: 0 0 10px; }
+.d11-nums { display: flex; justify-content: space-between; font-family: 'Archivo Black', sans-serif; font-size: 10.5px; border-top: 2px solid #171412; padding-top: 7px; }
+/* Doubt: thin, pale, italic, nothing filled. */
+.d11-side--doubt { background: #f7f9fb; padding: 24px 26px; border: 1px solid #dfe5ec; }
+.d11-doubt { padding: 16px 0; border-bottom: 1px dotted #c9d3de; }
+.d11-doubt:last-child { border-bottom: none; }
+.d11-mark { font-size: 11px; font-style: italic; letter-spacing: .04em; color: #5b6470; border-bottom: 1px dotted #9fadbd; padding-bottom: 1px; }
+.d11-doubt b { display: block; font-family: 'Petrona', serif; font-weight: 400; font-size: 19px; color: #3d4652; margin-top: 4px; }
+.d11-doubt .d11-loc { color: #7c8794; }
+.d11-doubt p { font-size: 14.5px; font-style: italic; line-height: 1.7; color: #4e5866; margin: 0; max-width: 70ch; }
+.d11-head--detail { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.d11-head--detail h1 { font-size: 36px; margin: 8px 0 0; }
+.d11-verdict { font-size: 18px; line-height: 1.65; max-width: 70ch; margin: 22px 0 18px; }
+.d11-facts { display: flex; flex-wrap: wrap; gap: 5px 28px; font-size: 13px; margin: 0 0 30px; }
+.d11-facts div { display: flex; gap: 8px; } .d11-facts dt { color: #6b625a; } .d11-facts dd { margin: 0; font-family: 'Archivo Black', sans-serif; font-size: 11px; }
+.d11-entry { display: grid; grid-template-columns: 54px minmax(0,1fr); gap: 18px; padding: 18px 0; border-bottom: 1px solid #ddd6cc; }
+.d11-entry.is-decisive { border-bottom: 6px solid #171412; }
+.d11-entry__n { font-family: 'Archivo Black', sans-serif; font-size: 26px; color: #c9c0b4; }
+.d11-entry.is-decisive .d11-entry__n { color: #6d1a1a; }
+.d11-entry__body b { font-family: 'Archivo Black', sans-serif; font-size: 14px; }
+.d11-sig { list-style: none; margin: 8px 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); gap: 2px 18px; font-size: 13px; }
+.d11-sig li { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid #e3ddd4; padding: 2px 0; }
+.d11-sig span { color: #6b625a; } .d11-sig b { font-family: 'Archivo Black', sans-serif; font-size: 10.5px; }
+.d11-sig .sev-high b { color: #6d1a1a; } .d11-sig .sev-medium b { color: #6b5410; }
+.d11-entry__body p { font-size: 14.5px; line-height: 1.65; margin: 0 0 6px; max-width: 74ch; }
+.d11-conf { font-family: 'Archivo Black', sans-serif; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #6b625a; }
+.d11-stamped { display: inline-block; margin-top: 10px; font-family: 'Archivo Black', sans-serif; font-size: 11px; letter-spacing: .14em;
+  background: #6d1a1a; color: #fff; padding: 7px 12px; }
+.d11-trailing { font-size: 14px; font-style: italic; color: #6b625a; margin-top: 18px; }

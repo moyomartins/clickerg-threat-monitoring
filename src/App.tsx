@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
-import { Button, EmptyState, type VisitorStatus } from '@clickerg/ui';
+import { Button, EmptyState, Wordmark, type VisitorStatus } from '@clickerg/ui';
 import { VisitorList } from './VisitorList';
 import { VisitorDetail } from './VisitorDetail';
 import { fetchVisitors } from './data/mock';
@@ -81,7 +81,8 @@ export default function App() {
     <div className="app cg-root">
       <header className="app__masthead">
         <div className="app__wordmark">
-          ClickerG <span>· click-fraud protection</span>
+          <Wordmark />
+          <span>· click-fraud protection</span>
         </div>
         {phase === 'ready' && route.name === 'list' && (
           <Button variant="cream" size="sm" onClick={load}>
