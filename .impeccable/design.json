@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-12T02:04:42.624Z",
+  "generatedAt": "2026-09-12T17:01:18.622835Z",
   "title": "Design System: ClickerG",
   "extensions": {
     "colorMeta": {
@@ -346,9 +346,9 @@
       "name": "Visitor Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "A replay plus its readable record. Blocked cards take a 2px ink border.",
-      "html": "<article class=\"ds-card\"><div class=\"ds-cardin\"><b>41.203.88.7</b><span class=\"ds-tag\">Blocked</span><span class=\"ds-loc\">Lagos, Nigeria · 29 visits · £158.38</span><p>29 paid clicks, scored 78% on our automation model</p></div></article>",
-      "css": ".ds-card{background:#fff;border:2px solid #16181d;padding:12px;font-family:Manrope,system-ui,sans-serif;width:232px}.ds-cardin b{font-family:\"Fira Code\",monospace;font-size:12.5px;color:#16181d}.ds-tag{font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:1px 6px;margin-left:6px;background:#16181d;color:#fff;border:1px solid #16181d}.ds-loc{display:block;font-size:11px;color:#626975;margin:5px 0}.ds-card p{font-size:12.5px;line-height:1.5;color:#5a616e;margin:0}"
+      "description": "Four tiers in a fixed order: verdict, reason, supporting facts, then the drawn replay. Blocked cards take a 2px ink border.",
+      "html": "<article class=\"ds-card\"><p class=\"ds-verdict\"><span class=\"ds-ip\">41.203.88.7</span><span class=\"ds-tag\">Blocked</span></p><p class=\"ds-why\">29 paid clicks, scored 78% on our automation model</p><p class=\"ds-facts\">Lagos, Nigeria · 29 visits · 29 paid · £158.38 · 2h ago</p><div class=\"ds-evidence\"><span class=\"ds-replay\">replay</span></div></article>",
+      "css": ".ds-card{background:#fff;border:2px solid #16181d;padding:12px;font-family:Manrope,system-ui,sans-serif;width:232px}.ds-verdict{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 8px}.ds-ip{font-family:\"Fira Code\",monospace;font-size:16px;color:#16181d}.ds-tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:1px 6px;background:#16181d;color:#fff;border:1px solid #16181d}.ds-why{font-size:13px;font-weight:500;line-height:1.5;color:#16181d;margin:0 0 5px}.ds-facts{font-size:11px;color:#626975;margin:0}.ds-evidence{margin-top:12px;padding-top:12px;border-top:1px solid #eef0f3}.ds-replay{display:block;aspect-ratio:4/3;background:#f5f6f8;border:1px solid #d6dae0;font-family:\"Fira Code\",monospace;font-size:10px;color:#626975;display:flex;align-items:center;justify-content:center}"
     },
     {
       "name": "Absence Marker",
@@ -389,13 +389,29 @@
       "description": "Marks the decisive arrival in the per-visit strip.",
       "html": "<p class=\"ds-blocked\">blocked here</p>",
       "css": ".ds-blocked{font-family:\"Fira Code\",monospace;font-size:10px;background:#c0392b;color:#fff;padding:3px 6px;margin:0;text-align:center;width:180px}"
+    },
+    {
+      "name": "Switch",
+      "kind": "custom",
+      "refersTo": "switch-track",
+      "description": "A binary filter. State is position and fill together, never a button that fills in, and radius stays 0.",
+      "html": "<label class=\"ds-switch\"><span class=\"ds-switch-track\"><span class=\"ds-switch-thumb\"></span></span>Paid clicks only</label>",
+      "css": ".ds-switch{display:inline-flex;align-items:center;gap:8px;font-family:Manrope,system-ui,sans-serif;font-size:11px;color:#5a616e;cursor:pointer}.ds-switch-track{position:relative;width:30px;height:17px;flex-shrink:0;border:1px solid #d6dae0;background:#fff;transition:border-color 120ms ease}.ds-switch-thumb{position:absolute;top:1px;left:1px;width:13px;height:13px;background:#626975;transition:transform 120ms ease,background-color 120ms ease}.ds-switch:hover .ds-switch-track{border-color:#16181d}.ds-switch:hover .ds-switch-thumb{transform:translateX(13px);background:#16181d}"
+    },
+    {
+      "name": "Decision Hero",
+      "kind": "custom",
+      "refersTo": "hero-enclosure",
+      "description": "The detail hero as one bordered enclosure rather than a replay beside a summary. Border weight and style state the verdict (2px ink blocked, dashed judgement call, dotted incomplete); the replay sits inside the same border, in its own column.",
+      "html": "<section class=\"ds-hero ds-hero--blocked\"><div class=\"ds-hero-replay\">replay</div><div class=\"ds-hero-head\"><span class=\"ds-ip\">41.203.88.7</span><span class=\"ds-tag\">Blocked</span><button class=\"ds-btn\">Remove from exclusion list</button></div><p class=\"ds-hero-why\">29 paid clicks repeated the same zero-engagement pattern. ClickerG blocked the IP at paid click 3, once confidence crossed 80%.</p><div class=\"ds-hero-cell ds-hero-decisive\"><span class=\"ds-label\" style=\"color:#c0392b\">Blocked at paid click 3</span><span class=\"ds-stamp\">13 Aug 2025 · 11:44 UTC</span></div><div class=\"ds-hero-cell ds-hero-money\"><span class=\"ds-label\">Ad spend</span><span class=\"ds-money\">£158.38</span><span class=\"ds-label\">Revenue</span><span class=\"ds-money\">£0.00</span></div><div class=\"ds-hero-journey\"><span class=\"ds-meta\">29 · 29 paid · 0 free</span><span class=\"ds-meta\">2 days</span></div></section>",
+      "css": ".ds-hero{display:grid;grid-template-columns:340px 1.3fr 1fr;border:2px solid #16181d;background:#fff;font-family:Manrope,system-ui,sans-serif}.ds-hero-replay{grid-row:1/span 3;padding:16px;border-right:1px solid #eef0f3;background:#f5f6f8;min-height:200px}.ds-hero-head{grid-column:2/span 2;display:flex;align-items:baseline;gap:12px;padding:16px;border-bottom:1px solid #eef0f3}.ds-ip{font-family:\"Fira Code\",monospace;font-size:24px;color:#16181d}.ds-tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:1px 6px;background:#16181d;color:#fff;border:1px solid #16181d}.ds-btn{margin-left:auto;border:1px solid #d6dae0;background:transparent;padding:8px 16px;font-size:13px;cursor:pointer}.ds-hero-why{grid-column:2/span 2;padding:16px;border-bottom:1px solid #eef0f3;font-size:16px;font-weight:500;color:#16181d;margin:0;max-width:62ch}.ds-hero-cell{padding:16px;display:flex;flex-direction:column;gap:12px}.ds-hero-decisive{border-right:1px solid #eef0f3}.ds-hero-money{border-right:1px solid #eef0f3}.ds-stamp{font-family:\"Fira Code\",monospace;font-size:16px;color:#16181d}.ds-money{font-family:\"Fira Code\",monospace;font-size:24px;color:#16181d}.ds-hero-journey{grid-column:1/-1;display:flex;gap:32px;padding:16px;border-top:1px solid #eef0f3}.ds-meta{font-family:\"Fira Code\",monospace;font-size:13px;color:#16181d}.ds-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#626975;display:block}"
     }
   ],
   "narrative": {
     "northStar": "The Replay",
     "overview": "ClickerG blocks traffic silently inside someone else’s ad platform. The advertiser never sees the product work — they see traffic disappear and are asked to believe it was the right traffic. Every other way of answering that question describes behaviour: a bot probability, a scroll percentage, a dwell time. This system shows it instead. The primary object on screen is a wireframe of the page the visitor actually landed on, with what they did drawn onto it — how far down they got, where the mouse went, where they clicked, and, most importantly, where none of that happened.\n\nThat last part is the whole argument. A click farm’s replay is a page with a two-percent shaded band, no mouse line anywhere, and a bordered marker in the middle reading no mouse movement recorded. An advertiser does not need the bot probability explained to them; they can see that nobody was there.\n\nThe surface is deliberately plain: near-white, one hairline, no shadow, no radius. This is not a minimalist preference, it is deference. Everything decorative competes with a picture whose job is to be believed.",
     "keyCharacteristics": [
-      "The page replay is the evidence, not an illustration beside it",
+      "The page replay is the evidence, not an illustration beside it — leading the detail view, and sitting beneath the verdict on a list card because a grid is scanned before it is read",
       "Absence is drawn explicitly — a bordered marker, never a blank space or a dash",
       "Blue means behaviour was recorded; red means it was not. Nothing else carries either colour",
       "Flat by construction: no radius, no shadow, one hairline border",
@@ -457,16 +473,33 @@
         "name": "The Marks-Must-Be-Real Rule",
         "body": "Everything drawn on a replay must come from recorded data. The scroll band, the no-mouse marker and the click count are backed today. A mouse path and click positions are not. Until the tag records coordinates, draw only what is real and let absence carry the argument.",
         "section": "components"
+      },
+      {
+        "name": "The Unsettled-Reason Rule",
+        "body": "A reason only gets ink and weight 500 when the call is settled (blocked, not blocked). A judgement call, an under-review visitor or an incomplete one renders its reason in body grey, weight 400, italic — the same treatment an unknown signal value gets. An open question may never borrow a closed one's authority. Where there is no reason to state, the em-dash placeholder drops to muted so an absence cannot read as a finding.",
+        "section": "components"
+      },
+      {
+        "name": "The Hero-Is-Not-The-Case-File Rule",
+        "body": "The hero states the conclusion exactly once. It does not restate it as a verdict, a reason, a heading, an event sentence and a list of observations; that repetition is what pushed the evidence off the screen. If a sentence belongs to a single arrival, it belongs to that arrival's card.",
+        "section": "components"
+      },
+      {
+        "name": "The Enclosure-Is-The-Verdict Rule",
+        "body": "A visitor's status is legible from the hero's silhouette before any text is read — the border weight and style are the determination, the way the click farm's absence markers are legible before the caption underneath them is. Do not add a second, separately-bordered card inside the enclosure; the border is spent once, on the whole thing.",
+        "section": "components"
       }
     ],
     "dos": [
-      "Do let the replay lead. The picture is the evidence; the numbers support it.",
+      "Do keep the replay whole wherever it appears — shorten it before you ever crop or shrink it past its markers.",
+      "Do lead a list card with the verdict and its reason; let the replay carry them from underneath.",
       "Do draw absence explicitly, in a bordered marker, where the behaviour would have been.",
       "Do keep blue for recorded behaviour and red for its absence — and switch blue to #0b5fe9 the moment it becomes text.",
       "Do set every quantity in Fira Code and every piece of language in Manrope.",
       "Do separate surfaces with the ground/frame/surface scale and a hairline.",
       "Do let the arrival strip scroll sideways rather than wrap.",
-      "Do verify any new colour against the composited background, not the raw token."
+      "Do verify any new colour against the composited background, not the raw token.",
+      "Do keep the detail hero inside its height budget. If a fact will not fit, it moves below the hero — the hero never grows to hold one more sentence."
     ],
     "donts": [
       "Don’t draw a mouse path or a click position that is not in the data. Say it is not recorded.",
@@ -474,8 +507,12 @@
       "Don’t introduce a third hue, or spend blue or red on anything but their one meaning.",
       "Don’t render text below 10px, markers included.",
       "Don’t darken the wireframe greys until they compete with the behaviour drawn on top.",
-      "Don’t let the replay become decoration beside a table.",
-      "Don’t wrap or stack the per-arrival strip — the side-by-side comparison is the finding."
+      "Don’t let the replay become decoration beside a table — the card is the row, and it carries a drawn replay.",
+      "Don’t wrap or stack the per-arrival strip — the side-by-side comparison is the finding.",
+      "Don’t let an unsettled call render like a settled one. Italic and body grey are what keep a judgement call honest.",
+      "Don’t narrow a replay to buy space. The absence markers are nowrap at a 10px floor; losing them loses the argument.",
+      "Don’t give a hero fact its own full-width section. Money, journey scale and dates share one flowing region; confidence and exclusion share one footer line.",
+      "Don’t state the hero's conclusion more than once."
     ]
   }
 }

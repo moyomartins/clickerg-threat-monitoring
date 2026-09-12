@@ -91,25 +91,27 @@ export default function App() {
         )}
       </header>
 
-      {phase === 'error' ? (
-        <EmptyState
-          title="We could not load your visitors"
-          body={`${error} Your protection is still running — this is a problem with the dashboard, not with blocking.`}
-          action={<Button onClick={load}>Try again</Button>}
-        />
-      ) : route.name === 'detail' ? (
-        <VisitorDetail
-          visitor={visitors.find((v) => v.ip === route.ip)}
-          onBack={() => navigate('#/')}
-          onStatusChange={setStatus}
-        />
-      ) : (
-        <VisitorList
-          visitors={visitors}
-          loading={phase === 'loading'}
-          onOpen={(ip) => navigate(`#/visitor/${encodeURIComponent(ip)}`)}
-        />
-      )}
+      <main>
+        {phase === 'error' ? (
+          <EmptyState
+            title="We could not load your visitors"
+            body={`${error} Your protection is still running — this is a problem with the dashboard, not with blocking.`}
+            action={<Button onClick={load}>Try again</Button>}
+          />
+        ) : route.name === 'detail' ? (
+          <VisitorDetail
+            visitor={visitors.find((v) => v.ip === route.ip)}
+            onBack={() => navigate('#/')}
+            onStatusChange={setStatus}
+          />
+        ) : (
+          <VisitorList
+            visitors={visitors}
+            loading={phase === 'loading'}
+            onOpen={(ip) => navigate(`#/visitor/${encodeURIComponent(ip)}`)}
+          />
+        )}
+      </main>
     </div>
   );
 }

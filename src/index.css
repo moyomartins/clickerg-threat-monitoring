@@ -51,38 +51,46 @@ body { font-family: var(--cg-font-sans); color: var(--cg-ink); }
 .replay-card:hover { border-color: var(--cg-ink); }
 .replay-card:focus-visible { outline: none; box-shadow: var(--cg-focus); }
 .replay-card--blocked { border-width: 2px; border-color: var(--cg-ink); }
-.replay-card__meta { padding-top: var(--cg-space-1-25); display: grid; gap: 5px; }
-.replay-card__id { display: flex; align-items: center; gap: var(--cg-space-1); flex-wrap: wrap; margin: 0; }
-.replay-card__loc { font-size: var(--cg-text-xs); color: var(--cg-muted); margin: 0; }
-.replay-card__why { font-size: var(--cg-text-sm); line-height: var(--cg-leading-card); color: var(--cg-body); margin: 0; }
+/* The card reads in the order an advertiser needs it:
+   verdict → reason → supporting facts → the drawn evidence behind them. */
+
+/* 1 — the verdict. Who it was and what we decided, in one line.
+   The pill sits hard right so status is scannable straight down the grid. */
+.replay-card__verdict { display: flex; align-items: center; justify-content: space-between;
+  gap: var(--cg-space-1); flex-wrap: wrap; margin: 0 0 var(--cg-space-1); }
+.replay-card__ip { font-family: var(--cg-font-mono); font-size: var(--cg-text-lg); color: var(--cg-ink); }
+.replay-card .cg-status { font-size: var(--cg-text-xs); }
+
+/* 2 — the reason, in the advertiser's own language. A settled call states itself;
+   an open one stays visibly open rather than borrowing a blocked card's certainty. */
+.replay-card__why { font-size: var(--cg-text-body); line-height: var(--cg-leading-card);
+  font-weight: var(--cg-weight-mid); color: var(--cg-ink); margin: 0 0 5px; }
+.replay-card__why--open { font-weight: var(--cg-weight-body); font-style: italic; color: var(--cg-body); }
+.replay-card__why--none { font-weight: var(--cg-weight-body); color: var(--cg-muted); }
+
+/* 3 — the facts the reason rests on. */
+.replay-card__facts { font-size: var(--cg-text-xs); color: var(--cg-muted); margin: 0; }
+
+/* 4 — the evidence, kept whole and still drawn, but no longer leading the card. */
+.replay-card__evidence { margin-top: var(--cg-space-1-5); padding-top: var(--cg-space-1-5);
+  border-top: 1px solid var(--cg-rule); }
+.replay-card__evidence .cg-replay__page { aspect-ratio: 4 / 3; }
 .replay-empty { display: grid; grid-template-columns: 232px minmax(0, 1fr); gap: var(--cg-space-4);
   align-items: center; border: 1px solid var(--cg-border); background: var(--cg-surface); padding: var(--cg-space-3); }
 @media (max-width: 700px) { .replay-empty { grid-template-columns: minmax(0, 1fr); } }
 
 /* ------------------------------------------------------------- detail --- */
 
-.detail__back { margin-bottom: var(--cg-space-2); }
-.detail__head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--cg-space-3);
-  flex-wrap: wrap; margin-bottom: var(--cg-space-3); }
-.detail__ip { font-family: var(--cg-font-mono); font-size: var(--cg-text-sub); margin: 0; }
-.detail__where { color: var(--cg-muted); font-size: var(--cg-text-sm); margin: 4px 0 var(--cg-space-1); }
-.detail__actions { display: flex; gap: var(--cg-space-1); flex-wrap: wrap; }
+.detail__back { margin-bottom: var(--cg-space-1-5); }
 
-.detail__hero { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: var(--cg-space-5);
-  align-items: start; margin: 0 0 var(--cg-space-3); }
-@media (max-width: 900px) { .detail__hero { grid-template-columns: minmax(0, 1fr); } }
+/* The hero composition itself lives in @clickerg/ui so Storybook renders the
+   same thing the app does; only the page-level spacing around it is here. */
+.detail { display: block; margin-bottom: var(--cg-space-3); }
 
-.verdict { font-size: var(--cg-text-lg); line-height: var(--cg-leading-body); color: var(--cg-ink);
-  margin: 0 0 var(--cg-space-2); max-width: 68ch; }
-.facts { display: flex; flex-wrap: wrap; gap: 5px var(--cg-space-4); font-family: var(--cg-font-mono);
-  font-size: var(--cg-text-mono-sm); margin: 0 0 var(--cg-space-2); }
-.facts div { display: flex; gap: 7px; }
-.facts dt { color: var(--cg-muted); }
-.facts dd { margin: 0; }
+.gap-note { border: 1px dotted var(--cg-muted); padding: var(--cg-space-1-25); font-size: var(--cg-text-sm);
+  color: var(--cg-body); margin: 0 0 var(--cg-space-2); background: var(--cg-surface); }
 
 .strip-caption { font-size: var(--cg-text-body); color: var(--cg-body); margin: 0 0 var(--cg-space-1-5); max-width: 70ch; }
-.gap-note { border: 1px dotted var(--cg-muted); padding: var(--cg-space-1-25); font-size: var(--cg-text-sm);
-  color: var(--cg-body); margin-bottom: var(--cg-space-2); background: var(--cg-surface); }
 
 .notes { margin-top: var(--cg-space-4); border-top: 1px solid var(--cg-border); padding-top: var(--cg-space-2); }
 .notes__title { font-size: var(--cg-text-card); font-weight: var(--cg-weight-bold); letter-spacing: -0.01em;
@@ -91,6 +99,9 @@ body { font-family: var(--cg-font-sans); color: var(--cg-ink); }
   margin: 0 0 var(--cg-space-1); max-width: 92ch; }
 .note b { font-family: var(--cg-font-mono); font-size: var(--cg-text-mono-sm); color: var(--cg-ink);
   margin-right: 8px; display: block; }
-.note--decisive { border-left: 3px solid var(--cg-absence); padding-left: var(--cg-space-1-25); }
+/* 2px absence red is the system's decisive-arrival weight (see DESIGN.md Shapes);
+   this was 3px, which matched nothing else. */
+.note--decisive { border-left: var(--cg-border-w-strong) solid var(--cg-absence);
+  padding-left: var(--cg-space-1-25); }
 
 .skeleton-stack > * + * { margin-top: var(--cg-space-1); }

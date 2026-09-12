@@ -91,7 +91,7 @@ export function PageReplay({ behaviour, size = 'card', caption = true, loading =
               </p>
               <p className="cg-replay__measure">
                 <span className="cg-replay__measure-label">clicks</span>
-                <span className="cg-replay__tally" aria-label={`${clicks} clicks recorded`}>
+                <span className="cg-replay__tally" role="img" aria-label={`${clicks} clicks recorded`}>
                   {Array.from({ length: Math.min(clicks, 8) }, (_, i) => (
                     <i key={i} />
                   ))}

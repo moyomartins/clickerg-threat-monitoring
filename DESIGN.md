@@ -69,6 +69,18 @@ typography:
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "normal"
+  mono-lead:
+    fontFamily: "Fira Code, ui-monospace, SF Mono, Menlo, monospace"
+    fontSize: "16px"
+    fontWeight: 400
+    lineHeight: 1.5
+    letterSpacing: "normal"
+  reason:
+    fontFamily: "Manrope, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "13px"
+    fontWeight: 500
+    lineHeight: 1.5
+    letterSpacing: "normal"
 rounded:
   flat: "0"
   dot: "999px"
@@ -133,6 +145,36 @@ components:
     typography: "{typography.body}"
     rounded: "{rounded.flat}"
     padding: "6px 8px"
+  switch-track:
+    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.flat}"
+    width: "30px"
+    height: "17px"
+  switch-thumb:
+    backgroundColor: "{colors.muted}"
+    rounded: "{rounded.flat}"
+    width: "13px"
+    height: "13px"
+  switch-thumb-on:
+    backgroundColor: "{colors.ink}"
+    rounded: "{rounded.flat}"
+    width: "13px"
+    height: "13px"
+  wordmark:
+    textColor: "{colors.ink}"
+    height: "28px"
+  hero-enclosure:
+    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.flat}"
+  hero-reason:
+    textColor: "{colors.ink}"
+    typography: "{typography.verdict}"
+  hero-money-lead:
+    textColor: "{colors.ink}"
+    typography: "{typography.section}"
+  hero-meta:
+    textColor: "{colors.ink}"
+    typography: "{typography.body}"
 ---
 
 # Design System: ClickerG
@@ -158,7 +200,7 @@ click dot, no shadow anywhere except that dot's halo, and exactly two accent col
 what happened, one for what did not.
 
 **Key Characteristics:**
-- The page replay is the primary object; numbers support it and never replace it
+- The page replay is the argument; numbers support it and never replace it. **Where it sits depends on the surface**: in the detail view it leads, full size. On a list card it sits beneath the verdict as the evidence behind it, because a grid is scanned before it is read
 - Every mark comes from recorded engagement, never from the visitor's status
 - **Positional data is drawn on the page; counted data is read out beneath it** — the tag records depths and counts, not coordinates, so no path or click position is ever invented
 - **Absence is drawn** — no mouse and no tag report are both explicit labelled markers
@@ -227,9 +269,11 @@ facts an advertiser could paste into their ad platform.
 - **Verdict** (400, 16px, 1.6): the determination, capped at 68ch.
 - **Lede** (400, 15px, 1.6): the paragraph under the page title, capped at 64ch.
 - **Body** (400, 13px, 1.6): notes and running copy, capped at 92ch.
+- **Reason** (500, 13px, 1.5): the one-line plain-language explanation on a list card. The only place weight 500 carries prose, and it is what makes the reason outrank the facts beneath it.
 - **Caption** (400, 12.5px, 1.5): card copy, signal labels, controls.
 - **Label** (400, 11px, `0.1em`, uppercase): field labels, status tags.
-- **Mono** (400, 12.5px / 10.5px): IPs, money, percentages, signal values, replay captions.
+- **Mono lead** (400, 16px): the IP at the head of a list card — the one fact a card is identified by.
+- **Mono** (400, 12.5px / 10.5px): IPs in running context, money, percentages, signal values, replay captions.
 
 ### Named Rules
 
@@ -242,8 +286,10 @@ earns attention through position and the replay, not through weight.
 
 A 1280px centred container, 28px gutters, tightening to 20/16px under 640px.
 
-- **List:** `repeat(auto-fill, minmax(232px, 1fr))` at a 16px gap — a grid of replay cards. There is no table on this screen; the replay is the row.
-- **Detail hero:** `340px minmax(0,1fr)` at a 32px gap, collapsing to one column at 900px — a large replay beside the verdict and facts.
+- **List:** `repeat(auto-fill, minmax(232px, 1fr))` at a 16px gap — a grid of replay cards. There is no table on this screen; the card is the row. Each card reads top to bottom in one fixed order: **verdict → reason → supporting facts → replay**.
+- **Stats strip:** an unboxed row above the filter bar, divided by 1px rules into three tiers — the lead figure, the count that produced it, then the scale context. Numbers sit directly on the ground; no card wraps them.
+- **Filter bar:** search takes its own full-width row; the controls beneath it are clustered by interaction kind (metadata selects, a threshold, a toggle), each cluster separated by a 1px rule that becomes a top rule when the bar stacks under 640px.
+- **Detail hero:** one bordered enclosure, `340px : 1.3fr : 1fr`, collapsing to two columns at 900px and one at 640px — the border states the verdict, and the replay sits inside it rather than beside a separate panel. **The hero has a height budget of roughly 360–460px.** It orients and concludes; the arrival strip below it carries the proof, and must be reachable inside the first viewport.
 - **Arrival strip:** `repeat(5, minmax(150px,1fr))` with `overflow-x: auto`, so all arrivals stay on one scrollable line rather than wrapping.
 - **Notes:** stacked full-width beneath the strip, capped at 92ch.
 
@@ -277,7 +323,10 @@ dotted for incomplete — so the screen survives with colour removed.
 ## Components
 
 ### Page replay (signature)
-A `3/4` page (`4/3` for the hero) on white, inside a `#f5f6f8` frame. Absolutely positioned
+A `3/4` page in the arrival strip, `4/3` on the detail hero and on a list card, on white inside a
+`#f5f6f8` frame. The list card takes the shorter ratio so the replay stays whole without
+out-weighing the verdict above it — **the width never shrinks**, because the absence markers are
+nowrap 10px mono and clipping them would delete the argument. Absolutely positioned
 wireframe: nav `top 5% height 5%`, hero `top 14% height 16%`, CTA `left 6% width 26% top 33%
 height 6%`, body bars at 46 / 56 (70% wide) / 70 / 80% (52% wide). Over it, only what the tag
 positionally recorded: the scroll band from the top with a 2px blue bottom edge, and the absence
@@ -291,6 +340,55 @@ eight, then `+n`). Where nothing was recorded at all the read-out is a single li
 ### Cards
 White, 1px border, 12px padding. Blocked takes a 2px ink border. Hover darkens the border to ink —
 no lift. The whole card is the click target, keyboard-operable with a visible focus ring.
+
+A visitor card carries four tiers, in this order and no other:
+
+1. **Verdict** — the IP in 16px mono ink, with the status tag pushed hard right so status reads
+   straight down a column of cards. Wraps rather than truncates.
+2. **Reason** — the one-line plain-language explanation, 13px weight 500 in ink. This is the
+   sentence the product is judged on, so it sits second and is the only prose given extra weight.
+3. **Supporting facts** — location, visit count, paid count, spend and time-ago on one 11px muted
+   line. Context for the verdict, never competing with it.
+4. **Evidence** — the page replay, under a `#eef0f3` rule and a 12px gap. Still whole, still drawn
+   from recorded engagement; it just no longer opens the card.
+
+**The Unsettled-Reason Rule.** A reason only gets ink and weight 500 when the call is settled
+(blocked, not blocked). A judgement call, an under-review visitor or an incomplete one renders its
+reason in body grey, weight 400, *italic* — the same treatment an unknown signal value gets. An
+open question may never borrow a closed one's authority. Where there is no reason to state, the
+em-dash placeholder drops to muted so an absence cannot read as a finding.
+
+### Decision hero (detail hero)
+The detail hero as **one enclosure**, not a replay beside a summary. DESIGN.md already carries
+status as border weight and style rather than a colour fill; this hero takes that rule literally
+and promotes it to the whole composition. The border states the verdict — `2px` ink for blocked,
+dashed severity-medium for a judgement call, dotted muted for incomplete, `1px` severity-low for
+not blocked — and the replay sits *inside* that border, in its own column, rather than floating
+beside a separately-bordered panel.
+
+Inside the enclosure, a `340px : 1.3fr : 1fr` grid, hairlines standing in for every division a
+lesser layout would spend a card on:
+
+- **The replay** occupies the full left column, all three rows tall.
+- **The head** — IP at 24px mono, the status tag beside it, location and recency on one 11px muted
+  line, the exclusion-management action aligned right — spans both right-hand columns as row one.
+- **The why** — one reason, 16px weight 500, capped at 62ch — spans both columns as row two,
+  under its own rule. Stated once; never restated as a heading, an event sentence, or a list of
+  observations. If a sentence belongs to a single arrival, it belongs to that arrival's card.
+- **The decisive cell** (left of the two, row three) carries the moment ClickerG acted: an 11px
+  label — absence red when it names a block — over a 16px mono timestamp, then which paid click
+  it was. A right-hand rule separates it from money.
+- **The money cell** (right of the two) holds spend at 24px mono leading, revenue beside it —
+  favourable green only on a verified conversion, muted italic *"Not captured"* when telemetry
+  never arrived, never a bare `£0.00` standing in for unknown.
+- **The journey row** spans the full enclosure beneath both cells, because its items — visit
+  counts, active period, first/last seen, confidence, exclusion state — are mixed-width facts that
+  wrap badly in a column no wider than the replay. One `<dl>`, one flex row, six items.
+
+**The Enclosure-Is-The-Verdict Rule.** A visitor's status is legible from the hero's silhouette
+before any text is read — the border weight and style *are* the determination, the way the click
+farm's absence markers are legible before the caption underneath them is. Do not add a second,
+separately-bordered card inside the enclosure; the border is spent once, on the whole thing.
 
 ### Arrival panel
 A strip replay, a mono `visit N · NN%` line, timestamp, channel and source, up to five signal
@@ -308,13 +406,32 @@ value absence red, medium `#82641c`, favourable `#1c6b47`, unknown muted italic.
 White fields with 1px borders, hovering to ink. Because the list has no table header, **sorting is
 an explicit control** — a Sort by select plus a direction toggle in the filter bar.
 
+Controls are grouped by what kind of interaction they are, not laid out as one undifferentiated
+row. Sort by and its direction toggle are **one compound control**: the select drops its right
+border so the button abuts it on a shared 1px edge, both under the single Sort by label. A
+threshold gets a wide track (200px floor) flanked by mono bound labels, so it reads as a range
+rather than a field.
+
+### Switch
+A binary filter is a switch, never a button that fills in. A 30×17px track, 1px border, holding a
+13×13px block that sits left in muted when off and slides 13px right in ink when on. Radius stays
+0 — the shape is a sliding block, not a pill, because this system has one curve and it belongs to
+the click dot. State is carried by position and fill together, so it survives colour removal.
+
+### Brand mark
+The ClickerG wordmark, a vector lockup set in `currentColor` at 28px tall, inheriting ink. It sits
+in the masthead beside the `· click-fraud protection` tagline in 11px muted. Because the mark
+carries the name, weight 800 is spent only on the page title beneath it.
+
 ## Do's and Don'ts
 
 ### Do:
 - **Do** derive every mark from recorded engagement, and say so where it is not available.
 - **Do** keep positional drawing to positional data. Counts belong in the read-out, not on the page.
 - **Do** draw absence explicitly, with a border and a label.
-- **Do** keep the replay primary — signals support the picture.
+- **Do** keep the replay whole wherever it appears — shorten it before you ever crop or shrink it past its markers.
+- **Do** lead a list card with the verdict and its reason; let the replay carry them from underneath.
+- **Do** keep the detail hero inside its height budget. If a fact will not fit, it moves below the hero — the hero never grows to hold one more sentence.
 - **Do** let the arrival strip scroll sideways rather than wrap.
 - **Do** keep `#3b82f6` for graphics and `#0b5fe9` where the blue is text.
 - **Do** use border weight and style for status, so the screen reads with colour removed.
@@ -328,4 +445,8 @@ an explicit control** — a Sort by select plus a direction toggle in the filter
 - **Don't** introduce a third accent colour; severity borrows blue and red.
 - **Don't** spend weight 800 more than once per screen.
 - **Don't** wrap the arrival strip into rows.
-- **Don't** promote a table back to the list view — the replay is the row.
+- **Don't** promote a table back to the list view — the card is the row, and it carries a drawn replay.
+- **Don't** let an unsettled call render like a settled one. Italic and body grey are what keep a judgement call honest.
+- **Don't** narrow a replay to buy space. The absence markers are nowrap at a 10px floor; losing them loses the argument.
+- **Don't** give a hero fact its own full-width section. Money, journey scale and dates share one flowing region; confidence and exclusion share one footer line.
+- **Don't** state the hero's conclusion more than once.

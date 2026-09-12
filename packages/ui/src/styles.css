@@ -175,6 +175,102 @@
 .cg-meter__fill--medium { background: var(--cg-sev-medium); }
 .cg-meter__fill--high { background: var(--cg-sev-high); }
 
+/* --------------------------------------------------------- decision hero --- */
+/* The detail hero as an enclosure. DESIGN.md already carries status as border
+   weight and style rather than a colour fill; this hero promotes that rule to
+   the whole composition — the border states the verdict, the replay sits
+   inside the same enclosure rather than beside it, and hairlines divide the
+   argument within it. One reason, stated once; the arrival strip below carries
+   the per-visit evidence, so nothing here restates it. */
+
+.cg-label { font-size: var(--cg-text-xs); text-transform: uppercase; letter-spacing: var(--cg-tracking-label);
+  color: var(--cg-muted); margin: 0; font-weight: var(--cg-weight-body); }
+
+.cg-hero { display: grid; grid-template-columns: 340px minmax(0, 1.3fr) minmax(0, 1fr);
+  border: var(--cg-border-w) solid var(--cg-border); background: var(--cg-surface); }
+/* Blocked is a 2px ink border, not a fill — the same rule the list card and
+   the arrival strip's decisive marker already follow. */
+.cg-hero--blocked { border-width: var(--cg-border-w-strong); border-color: var(--cg-ink); }
+.cg-hero--ambiguous { border-style: dashed; border-color: var(--cg-sev-medium); }
+.cg-hero--review { border-color: var(--cg-sev-medium); }
+.cg-hero--incomplete { border-style: dotted; border-color: var(--cg-muted); }
+.cg-hero--allowed { border-color: var(--cg-sev-low); }
+
+.cg-hero__replay { grid-row: 1 / span 3; margin: 0; padding: var(--cg-space-2);
+  border-right: var(--cg-border-w) solid var(--cg-rule); min-width: 0; }
+
+.cg-hero__head { grid-column: 2 / span 2; display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline; gap: var(--cg-space-half) var(--cg-space-3); padding: var(--cg-space-2);
+  border-bottom: var(--cg-border-w) solid var(--cg-rule); }
+.cg-hero__id { display: flex; align-items: center; gap: var(--cg-space-1-5); flex-wrap: wrap; min-width: 0; }
+.cg-hero__ip { font-family: var(--cg-font-mono); font-size: var(--cg-text-sub);
+  font-weight: var(--cg-weight-body); color: var(--cg-ink); line-height: var(--cg-leading-tight); margin: 0; }
+.cg-hero__where { grid-column: 1; font-size: var(--cg-text-xs); color: var(--cg-muted); margin: 0; }
+.cg-hero__action { grid-column: 2; grid-row: 1 / span 2; align-self: center;
+  display: flex; gap: var(--cg-space-1); flex-wrap: wrap; }
+
+.cg-hero__why { grid-column: 2 / span 2; padding: var(--cg-space-2);
+  border-bottom: var(--cg-border-w) solid var(--cg-rule); }
+.cg-hero__reason { font-size: var(--cg-text-lg); line-height: var(--cg-leading-body);
+  font-weight: var(--cg-weight-mid); color: var(--cg-ink); margin: 0; max-width: 62ch; }
+.cg-hero__reason--open { font-weight: var(--cg-weight-body); font-style: italic; color: var(--cg-body); }
+
+.cg-hero__cell { padding: var(--cg-space-2); margin: 0; display: flex; flex-direction: column;
+  gap: var(--cg-space-1-5); min-width: 0; }
+.cg-hero__cell > div { display: flex; flex-direction: column-reverse; gap: 2px; }
+.cg-hero__cell--decisive { border-right: var(--cg-border-w) solid var(--cg-rule); }
+
+.cg-mark { display: flex; flex-direction: column; gap: 1px; margin: 0; }
+.cg-mark--decisive .cg-label { color: var(--cg-absence); }
+.cg-mark__stamp { font-family: var(--cg-font-mono); font-size: var(--cg-text-lg); color: var(--cg-ink);
+  line-height: var(--cg-leading-tight); }
+.cg-hero__click { display: flex; flex-direction: column; gap: 1px; margin: 0; }
+.cg-hero__click-value { font-family: var(--cg-font-mono); font-size: var(--cg-text-lg);
+  color: var(--cg-absence); line-height: var(--cg-leading-tight); }
+.cg-hero__click-value--none { color: var(--cg-muted); }
+
+.cg-hero__money { border-right: var(--cg-border-w) solid var(--cg-rule); }
+.cg-money { font-family: var(--cg-font-mono); font-size: var(--cg-text-sub); color: var(--cg-ink);
+  margin: 0; line-height: var(--cg-leading-tight); white-space: nowrap; }
+.cg-money--favourable { color: var(--cg-sev-low); }
+.cg-money--absent { font-family: var(--cg-font-sans); font-size: var(--cg-text-body);
+  font-style: italic; color: var(--cg-muted); }
+
+/* The journey runs the full width of the enclosure as its last row — in the
+   narrow replay-height column its items (especially exclusion) wrap three ways. */
+.cg-hero__journey { grid-column: 1 / -1; display: flex; flex-direction: row; flex-wrap: wrap;
+  gap: var(--cg-space-1-5) var(--cg-space-5); border-top: var(--cg-border-w) solid var(--cg-rule); }
+.cg-hero__journey > div { flex-direction: column-reverse; }
+.cg-meta { font-family: var(--cg-font-mono); font-size: var(--cg-text-body); color: var(--cg-ink);
+  margin: 0; line-height: var(--cg-leading-tight); }
+.cg-meta span { color: var(--cg-muted); }
+
+.cg-conf { display: flex; align-items: center; gap: var(--cg-space-1); flex-wrap: wrap; }
+.cg-conf__value { font-family: var(--cg-font-mono); font-size: var(--cg-text-body); color: var(--cg-ink); }
+.cg-conf__meter { width: 72px; height: 4px; flex: 0 0 auto; }
+.cg-conf__note { font-size: var(--cg-text-body); color: var(--cg-muted); }
+.cg-conf__absent { font-size: var(--cg-text-body); font-style: italic; color: var(--cg-muted); }
+
+.cg-ex { display: inline-flex; gap: var(--cg-space-half); font-size: var(--cg-text-body); color: var(--cg-ink); }
+.cg-ex + .cg-ex { margin-left: var(--cg-space-1-5); }
+.cg-ex__state { color: var(--cg-muted); }
+
+@media (max-width: 900px) {
+  .cg-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .cg-hero__replay { grid-row: auto; grid-column: 1 / -1; border-right: none;
+    border-bottom: var(--cg-border-w) solid var(--cg-rule); }
+  .cg-hero__replay .cg-replay { max-width: 340px; }
+  .cg-hero__head, .cg-hero__why { grid-column: 1 / -1; }
+}
+
+@media (max-width: 640px) {
+  .cg-hero { grid-template-columns: minmax(0, 1fr); }
+  .cg-hero__head { grid-template-columns: minmax(0, 1fr); }
+  .cg-hero__action { grid-column: 1; grid-row: auto; margin-top: var(--cg-space-1); }
+  .cg-hero__cell--decisive, .cg-hero__money { border-right: none;
+    border-bottom: var(--cg-border-w) solid var(--cg-rule); }
+}
+
 /* ---------------------------------------------------------- filter bar --- */
 
 .cg-filterbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--cg-space-2);

@@ -28,6 +28,17 @@ const STATUS_RANK: Record<VisitorStatus, number> = {
   allowed: 4,
 };
 
+/* A settled call states itself plainly; an open one must not borrow that authority,
+   so its reason keeps the lighter, italic treatment the system uses for unresolved values.
+   A visitor with nothing notable to say carries an em-dash, which is a placeholder rather
+   than a finding and is kept quiet so it cannot read as the card's headline. */
+const SETTLED = new Set<VisitorStatus>(['blocked', 'allowed']);
+
+const whyTone = (v: Visitor) => {
+  if (v.summary.trim() === '—') return ' replay-card__why--none';
+  return SETTLED.has(v.status) ? '' : ' replay-card__why--open';
+};
+
 const WINDOWS = [
   { value: 'all', label: 'All time' },
   { value: '1', label: 'Last 24 hours' },
@@ -260,11 +271,18 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
         <div className="replays">
           {Array.from({ length: 12 }, (_, i) => (
             <article className="replay-card" key={`skeleton-${i}`} aria-hidden="true">
-              <PageReplay behaviour={null} loading />
-              <div className="replay-card__meta">
-                <Skeleton width="11ch" height="13px" />
-                <Skeleton width="70%" height="11px" />
-                <Skeleton width="90%" height="11px" />
+              <div className="replay-card__verdict">
+                <Skeleton width="11ch" height="17px" />
+                <Skeleton width="62px" height="14px" />
+              </div>
+              <div className="replay-card__why">
+                <Skeleton width="92%" height="13px" />
+              </div>
+              <div className="replay-card__facts">
+                <Skeleton width="78%" height="11px" />
+              </div>
+              <div className="replay-card__evidence">
+                <PageReplay behaviour={null} loading />
               </div>
             </article>
           ))}
@@ -306,17 +324,17 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
                 }
               }}
             >
-              <PageReplay behaviour={representativeBehaviour(v)} />
-              <div className="replay-card__meta">
-                <p className="replay-card__id">
-                  <span className="cg-mono">{v.ip}</span>
-                  <StatusPill status={v.status} />
-                </p>
-                <p className="replay-card__loc">
-                  {v.city}, {v.country} · {v.visits.length} visits · {v.paidVisits} paid ·{' '}
-                  {money(v.spendGbp)} · {relative(v.lastSeen)}
-                </p>
-                <p className="replay-card__why">{v.summary}</p>
+              <p className="replay-card__verdict">
+                <span className="replay-card__ip">{v.ip}</span>
+                <StatusPill status={v.status} />
+              </p>
+              <p className={`replay-card__why${whyTone(v)}`}>{v.summary}</p>
+              <p className="replay-card__facts">
+                {v.city}, {v.country} · {v.visits.length} visits · {v.paidVisits} paid ·{' '}
+                {money(v.spendGbp)} · {relative(v.lastSeen)}
+              </p>
+              <div className="replay-card__evidence">
+                <PageReplay behaviour={representativeBehaviour(v)} />
               </div>
             </article>
           ))}

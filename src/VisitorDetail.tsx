@@ -1,8 +1,14 @@
 import {
   Button,
-  ConfidenceMeter,
+  ConfidenceInline,
+  DecisionHero,
+  DecisiveCell,
   EmptyState,
+  ExclusionInline,
+  FinancialCell,
   Journey,
+  JourneyItem,
+  JourneyRow,
   PageReplay,
   StatusPill,
   VisitEntry,
@@ -12,7 +18,8 @@ import {
 import { behaviourOf, representativeBehaviour } from './behaviour';
 import type { Visit, Visitor } from './data/types';
 import { deltaFor, reasonsFor } from './data/scoring';
-import { dateTime, money, relative } from './format';
+import { dateTime, money } from './format';
+import { heroFacts } from './heroFacts';
 
 const VPN_COPY: Record<Visit['vpn'], string> = {
   none: 'None',
@@ -170,7 +177,30 @@ export function VisitorDetail({ visitor, onBack, onStatusChange }: Props) {
     );
   }
 
-  const peak = Math.max(...visitor.confidence);
+  const facts = heroFacts(visitor);
+  /* An incomplete journey has no evidence to act on, so the control says so
+     rather than offering a block it cannot justify. */
+  const insufficient = visitor.status === 'incomplete';
+
+  const action =
+    visitor.status === 'blocked' ? (
+      <Button variant="ghost" onClick={() => onStatusChange(visitor.ip, 'allowed')}>
+        Remove from exclusion list
+      </Button>
+    ) : insufficient ? (
+      <Button variant="ghost" disabled title="Unavailable until sufficient evidence is captured.">
+        Add to exclusion list
+      </Button>
+    ) : (
+      <>
+        {visitor.status === 'ambiguous' && (
+          <Button variant="ghost" onClick={() => onStatusChange(visitor.ip, 'allowed')}>
+            Mark as legitimate
+          </Button>
+        )}
+        <Button onClick={() => onStatusChange(visitor.ip, 'blocked')}>Add to exclusion list</Button>
+      </>
+    );
 
   return (
     <>
@@ -180,51 +210,68 @@ export function VisitorDetail({ visitor, onBack, onStatusChange }: Props) {
         </Button>
       </div>
 
-      <div className="detail__head">
-        <div>
-          <h1 className="detail__ip cg-mono">{visitor.ip}</h1>
-          <p className="detail__where">
-            {visitor.city}
-            {visitor.region ? `, ${visitor.region}` : ''} · {visitor.country} · last seen {relative(visitor.lastSeen)}
-          </p>
-          <StatusPill status={visitor.status} />
-        </div>
-        <div className="detail__actions">
-          {visitor.status === 'blocked' ? (
-            <Button variant="ghost" onClick={() => onStatusChange(visitor.ip, 'allowed')}>
-              Remove from exclusion list
-            </Button>
-          ) : (
-            <>
-              {visitor.status === 'ambiguous' && (
-                <Button variant="ghost" onClick={() => onStatusChange(visitor.ip, 'allowed')}>
-                  Mark as legitimate
-                </Button>
-              )}
-              <Button onClick={() => onStatusChange(visitor.ip, 'blocked')}>Add to exclusion list</Button>
-            </>
-          )}
-        </div>
-      </div>
-
       {visitor.dataGap && <p className="gap-note">{visitor.dataGap}</p>}
 
-      <div className="detail__hero">
-        <PageReplay behaviour={representativeBehaviour(visitor)} size="hero" />
-        <div>
-          <p className="verdict">{visitor.verdict}</p>
-          <dl className="facts">
-            <div><dt>Visits</dt><dd>{visitor.visits.length}</dd></div>
-            <div><dt>Paid clicks</dt><dd>{visitor.paidVisits}</dd></div>
-            <div><dt>Free visits</dt><dd>{visitor.visits.length - visitor.paidVisits}</dd></div>
-            <div><dt>Ad spend</dt><dd className="cg-mono">{money(visitor.spendGbp)}</dd></div>
-            <div><dt>Revenue</dt><dd className="cg-mono">{money(visitor.revenueGbp)}</dd></div>
-            <div><dt>First seen</dt><dd>{dateTime(visitor.firstSeen)}</dd></div>
-            <div><dt>Last seen</dt><dd>{dateTime(visitor.lastSeen)}</dd></div>
-          </dl>
-          <ConfidenceMeter value={peak} label="Peak confidence" />
-        </div>
-      </div>
+      <DecisionHero
+        status={visitor.status}
+        headingId="visitor-heading"
+        identity={visitor.ip}
+        statusPill={<StatusPill status={visitor.status} />}
+        where={
+          <>
+            {visitor.city}
+            {visitor.region ? `, ${visitor.region}` : ''} · {visitor.country} · last seen {facts.lastSeen.relative}
+          </>
+        }
+        action={action}
+        reason={facts.reason}
+        settled={facts.settled}
+        replayLabel="Replay of this visitor’s most recent reporting arrival"
+        replay={<PageReplay behaviour={representativeBehaviour(visitor)} size="hero" />}
+      >
+        <DecisiveCell
+          label={facts.decisive.label}
+          tone={facts.decisive.tone}
+          iso={facts.decisive.iso}
+          stamp={`${facts.decisive.date} · ${facts.decisive.time}`}
+          clickLabel="Decisive arrival"
+          click={facts.decisiveClick ? `paid click ${facts.decisiveClick}` : null}
+        />
+
+        <FinancialCell
+          label="Financial outcome"
+          spendLabel="Ad spend"
+          spend={facts.spend}
+          revenueLabel="Revenue"
+          revenue={facts.revenue}
+          revenueTone={facts.converted ? 'favourable' : 'muted'}
+        />
+
+        <JourneyRow label="Journey summary and exclusion">
+          <JourneyItem label="Visits">
+            {facts.visits} <span>· {facts.paid} paid · {facts.free} free</span>
+          </JourneyItem>
+          <JourneyItem label="Active">{facts.active}</JourneyItem>
+          <JourneyItem label="First seen">
+            <time dateTime={facts.firstSeen.iso}>
+              {facts.firstSeen.short}, {facts.firstSeen.time}
+            </time>
+          </JourneyItem>
+          <JourneyItem label="Last seen">
+            <time dateTime={facts.lastSeen.iso}>
+              {facts.lastSeen.short}, {facts.lastSeen.time}
+            </time>
+          </JourneyItem>
+          <ConfidenceInline
+            id="visitor-confidence"
+            label="Confidence"
+            value={facts.peak}
+            meterLabel="Peak confidence this visitor is fraudulent"
+            detail={facts.crossed ? `crossed ${facts.threshold}% at visit ${facts.crossed.visit}` : undefined}
+          />
+          {facts.platforms.length > 0 && <ExclusionInline label="Exclusion" entries={facts.platforms} />}
+        </JourneyRow>
+      </DecisionHero>
 
       <p className="strip-caption">
         Every arrival, replayed in order — {visitor.visits.length} of them. Scroll the strip: the

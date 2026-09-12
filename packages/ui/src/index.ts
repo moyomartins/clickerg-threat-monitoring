@@ -27,5 +27,27 @@ export type { EmptyStateProps, SkeletonProps, ConfidenceMeterProps } from './Fee
 export { VisitEntry, Journey } from './VisitEntry';
 export type { VisitEntryProps, Channel } from './VisitEntry';
 
+export {
+  DecisionHero,
+  DecisiveCell,
+  FinancialCell,
+  JourneyRow,
+  JourneyItem,
+  ConfidenceInline,
+  ExclusionInline,
+} from './Decision';
+export type {
+  DecisionHeroProps,
+  DecisiveCellProps,
+  FinancialCellProps,
+  JourneyRowProps,
+  JourneyItemProps,
+  ConfidenceInlineProps,
+  ExclusionInlineProps,
+  ExclusionEntry,
+} from './Decision';
+
+export { SETTLED_STATUSES, isSettled } from './decisionSemantics';
+
 export { FilterBar, FilterGroup, Field, TextInput, Select, Toggle, RangeField } from './Fields';
 export type { FieldProps, FilterGroupProps, SelectProps, ToggleProps, RangeFieldProps } from './Fields';
