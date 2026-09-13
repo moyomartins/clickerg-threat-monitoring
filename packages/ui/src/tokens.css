@@ -24,6 +24,8 @@
   /* AA: preview used #78808e at 3.42:1 on the ground. Same hue, 4.76:1. */
   --cg-muted: #626975;
   --cg-on-ink: #ffffff;
+  /* Compact blocked-status fill. #16181d text reaches 16.42:1 against it. */
+  --cg-status-blocked-bg: #EEFF9C;
 
   /* --- The two signal colours ---
      Attention blue is a GRAPHIC (scroll band, mouse path) and clears the 3:1
@@ -97,6 +99,7 @@
   --cg-space-5: 32px;
   --cg-space-7: 48px;
   --cg-space-10: 70px;
+  --cg-control-height: 33px;
 
   /* --- Shape: flat. One radius, on the click dot only. --- */
   --cg-radius: 0;

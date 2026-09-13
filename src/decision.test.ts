@@ -14,7 +14,7 @@ import {
 
 const all = await fetchVisitors(0);
 const byIp = (ip: string) => {
-  const v = all.find((x) => x.ip === ip);
+  const v = all.find((x) => x.ip === ip || x.aliases?.includes(ip));
   if (!v) throw new Error(`fixture ${ip} missing`);
   return v;
 };
@@ -124,7 +124,7 @@ describe('decision brief — every visitor', () => {
       .filter((v) => v.decisiveIndex < 0)
       .forEach((v) => {
         expect(paidClickNumber(v)).toBe(0);
-        expect(decisiveMarkFor(v).label).toBe('Last assessed');
+        expect(decisiveMarkFor(v).label).toBe(v.manualHistory?.length ? 'Manual decision' : 'Last assessed');
       });
   });
 });

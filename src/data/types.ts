@@ -3,7 +3,7 @@ import type { Channel, VisitorStatus } from '@clickerg/ui';
 export type { Channel, VisitorStatus };
 
 export type VpnState = 'none' | 'consumer-vpn' | 'residential-proxy' | 'datacenter';
-export type FormFill = 'none' | 'valid' | 'risky' | 'invalid';
+export type FormFill = 'unknown' | 'none' | 'valid' | 'risky' | 'invalid';
 
 export interface Engagement {
   scrollPct: number;
@@ -21,12 +21,16 @@ export interface Visit {
   campaign?: string;
   keyword?: string;
   referrer?: string;
+  landingPage?: string;
+  formSubmitted?: boolean | null;
+  conversionCaptured?: boolean;
+  postDecisionReason?: string;
   /** Paid visits only — this is the money the advertiser actually spent. */
   costGbp?: number;
 
   /** `null` when the tag failed to report: missing, not clean. */
   engagement: Engagement | null;
-  botProbability: number;
+  botProbability: number | null;
   vpn: VpnState;
   formFill: FormFill;
   converted: boolean;
@@ -48,6 +52,12 @@ export interface Visit {
 
 export interface Visitor {
   ip: string;
+  aliases?: string[];
+  scenario?: string;
+  mockMetadata?: true;
+  automatedStatus?: VisitorStatus;
+  manualHistory?: { at: number; status: VisitorStatus; reason: string }[];
+  exclusionEvents?: { platform: 'Google Ads' | 'Meta Ads'; requestedAt: number; confirmedAt?: number; scope: string }[];
   city: string;
   region: string;
   country: string;

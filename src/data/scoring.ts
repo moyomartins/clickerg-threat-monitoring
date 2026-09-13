@@ -46,11 +46,11 @@ export function reasonsFor(visit: Visit): Reason[] {
     }
   }
 
-  if (visit.botProbability >= 0.8) {
+  if (visit.botProbability !== null && visit.botProbability >= 0.8) {
     add('Bot probability', 18, `scored ${pct(visit.botProbability)} on our automation model`);
-  } else if (visit.botProbability >= 0.6) {
+  } else if (visit.botProbability !== null && visit.botProbability >= 0.6) {
     add('Bot probability', 10, `scored ${pct(visit.botProbability)} on our automation model`);
-  } else if (visit.botProbability <= 0.2) {
+  } else if (visit.botProbability !== null && visit.botProbability <= 0.2) {
     add('Bot probability', -6, `looks human to our automation model (${pct(visit.botProbability)})`);
   }
 

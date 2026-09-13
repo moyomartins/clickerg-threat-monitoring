@@ -10,13 +10,14 @@ export function FilterBar({ children }: { children: ReactNode }) {
 
 export interface FilterGroupProps {
   label: string;
+  fill?: boolean;
   children: ReactNode;
 }
 
 /** Clusters controls of one interaction kind (metadata filters, a threshold, a toggle) within a FilterBar. */
-export function FilterGroup({ label, children }: FilterGroupProps) {
+export function FilterGroup({ label, fill = false, children }: FilterGroupProps) {
   return (
-    <div className="cg-filterbar__group" role="group" aria-label={label}>
+    <div className={`cg-filterbar__group${fill ? ' cg-filterbar__group--fill' : ''}`} role="group" aria-label={label}>
       {children}
     </div>
   );
@@ -95,6 +96,34 @@ export interface RangeFieldProps {
   step?: number;
   onChange: (next: number) => void;
   format?: (value: number) => string;
+}
+
+export interface SteppedRangeFieldProps {
+  id: string;
+  label: string;
+  value: number;
+  steps: readonly number[];
+  onChange: (next: number) => void;
+  disabled?: boolean;
+  valueLabel?: (value: number) => string;
+  accessibleValueLabel?: (value: number) => string;
+}
+
+export function SteppedRangeField({
+  id, label, value, steps, onChange, disabled = false,
+  valueLabel = (next) => next === 0 ? 'Any' : `${next}%`,
+  accessibleValueLabel = (next) => next === 0 ? 'Any bot probability' : next === 100 ? '100 percent' : `${next} percent or higher`,
+}: SteppedRangeFieldProps) {
+  const current = steps.includes(value) ? value : steps.reduce((closest, next) => Math.abs(next - value) < Math.abs(closest - value) ? next : closest, steps[0]);
+  return (
+    <div className="cg-stepped-range">
+      <div className="cg-stepped-range__head"><span>{label}</span><output htmlFor={id}>{valueLabel(current)}</output></div>
+      <input id={id} type="range" className="cg-range cg-focusable" min={0} max={steps.length - 1} step={1}
+        value={steps.indexOf(current)} disabled={disabled} aria-label={label} aria-valuetext={accessibleValueLabel(current)}
+        onChange={(event) => onChange(steps[Number(event.target.value)])} />
+      <div className="cg-stepped-range__ticks" aria-hidden="true">{steps.map((step) => <span key={step}>{step === 0 ? 'Any' : step}</span>)}</div>
+    </div>
+  );
 }
 
 export function RangeField({

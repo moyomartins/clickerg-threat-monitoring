@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from 'storybook/test';
-import { Field, FilterBar, FilterGroup, RangeField, Select, TextInput, Toggle } from './Fields';
+import { Field, FilterBar, FilterGroup, Select, SteppedRangeField, TextInput, Toggle } from './Fields';
 import { Button } from './Button';
+import { SortDirectionIcon } from './SortDirectionIcon';
 
 const meta = {
   title: 'Components/FilterBar',
@@ -25,6 +26,10 @@ type Story = StoryObj<typeof meta>;
 function Demo({ disabled = false }: { disabled?: boolean }) {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('all');
+  const [country, setCountry] = useState('all');
+  const [window, setWindow] = useState('all');
+  const [sort, setSort] = useState('lastSeen');
+  const [descending, setDescending] = useState(true);
   const [paidOnly, setPaidOnly] = useState(false);
   const [bot, setBot] = useState(0);
 
@@ -39,7 +44,7 @@ function Demo({ disabled = false }: { disabled?: boolean }) {
           onChange={(e) => setQuery(e.target.value)}
         />
       </Field>
-      <FilterGroup label="Filter by category">
+      <FilterGroup label="Filter by category" fill>
         <Field label="Status" htmlFor="status">
           <Select
             id="status"
@@ -54,9 +59,23 @@ function Demo({ disabled = false }: { disabled?: boolean }) {
             ]}
           />
         </Field>
+        <Field label="Country" htmlFor="country">
+          <Select id="country" value={country} disabled={disabled} onChange={(e) => setCountry(e.target.value)} options={[{ value: 'all', label: 'Everywhere' }, { value: 'gb', label: 'United Kingdom' }]} />
+        </Field>
+        <Field label="Last seen" htmlFor="window">
+          <Select id="window" value={window} disabled={disabled} onChange={(e) => setWindow(e.target.value)} options={[{ value: 'all', label: 'All time' }, { value: '7', label: 'Last 7 days' }]} />
+        </Field>
+        <Field label="Sort by" htmlFor="sort">
+          <div className="cg-sortfield">
+            <Select id="sort" value={sort} disabled={disabled} onChange={(e) => setSort(e.target.value)} options={[{ value: 'lastSeen', label: 'Last seen' }, { value: 'confidence', label: 'Confidence' }]} />
+            <Button variant="ghost" size="sm" iconOnly disabled={disabled} aria-label={`Sort ${descending ? 'descending' : 'ascending'}, change direction`} tooltip={`Sort ${descending ? 'descending' : 'ascending'}`} onClick={() => setDescending((value) => !value)}>
+              <SortDirectionIcon direction={descending ? 'desc' : 'asc'} />
+            </Button>
+          </div>
+        </Field>
       </FilterGroup>
-      <FilterGroup label="Bot probability threshold">
-        <RangeField id="bot" label="Bot probability" value={bot} onChange={setBot} />
+      <FilterGroup label="Minimum bot probability">
+        <SteppedRangeField id="bot" label="Minimum bot probability" value={bot} steps={[0, 25, 50, 75, 100]} disabled={disabled} onChange={setBot} />
       </FilterGroup>
       <FilterGroup label="Paid traffic only">
         <Toggle label="Paid clicks only" checked={paidOnly} onChange={setPaidOnly} disabled={disabled} />

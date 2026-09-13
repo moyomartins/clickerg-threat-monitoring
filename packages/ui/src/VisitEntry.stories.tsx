@@ -165,6 +165,18 @@ export const AmbiguousArrival: Story = {
 };
 
 /** The decisive visit: dark node, dark verdict panel, stated in advertiser language. */
+export const ArrivalTimestampHeader: Story = {
+  name: 'Arrival timestamp header',
+  args: {
+    ...meta.args,
+    index: 3,
+    confidence: 78,
+    timestamp: '14/08/2025, 19:22',
+    timestampIso: '2025-08-14T19:22:00.000Z',
+    timestampLabel: '14 August 2025 at 19:22',
+  },
+};
+
 export const BlockingDecision: Story = {
   args: {
     index: 9,
@@ -335,6 +347,7 @@ export const LongExplanation: Story = {
 const closed = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
   const popover = canvasElement.querySelector('.cg-arrival-pop') as HTMLElement;
   await expect(popover.matches(':popover-open')).toBe(false);
+  await expect(within(canvasElement).queryByRole('button', { name: /what this arrival showed/i })).not.toBeInTheDocument();
 };
 
 export const DisclosureClosedByDefault: Story = {
@@ -359,7 +372,7 @@ export const DisclosureOpenOnFocus: Story = {
   name: 'Disclosure: opens on keyboard focus',
   play: async ({ canvasElement }) => {
     await closed({ canvasElement });
-    const trigger = within(canvasElement).getByRole('button', { name: /what this arrival showed/i });
+    const trigger = within(canvasElement).getByRole('button', { name: /visit 1, 22% confidence/i });
     await userEvent.tab();
     await waitFor(() => expect(trigger).toHaveFocus());
     const popover = canvasElement.querySelector('.cg-arrival-pop') as HTMLElement;
@@ -367,6 +380,19 @@ export const DisclosureOpenOnFocus: Story = {
     await expect(trigger).toHaveAttribute('aria-expanded', 'true');
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(popover.matches(':popover-open')).toBe(false));
+    await userEvent.keyboard('{Enter}');
+    await waitFor(() => expect(popover.matches(':popover-open')).toBe(true));
+  },
+};
+
+export const DisclosureOpenOnTouch: Story = {
+  name: 'Disclosure: opens on touch activation',
+  play: async ({ canvasElement }) => {
+    await closed({ canvasElement });
+    const card = within(canvasElement).getByRole('button', { name: /visit 1, 22% confidence/i });
+    await userEvent.click(card);
+    const popover = canvasElement.querySelector('.cg-arrival-pop') as HTMLElement;
+    await waitFor(() => expect(popover.matches(':popover-open')).toBe(true));
   },
 };
 
@@ -382,7 +408,7 @@ export const FirstCardPositioning: Story = {
   play: async ({ canvasElement }) => {
     const firstCard = canvasElement.querySelectorAll('.cg-visit')[0] as HTMLElement;
     await userEvent.hover(firstCard);
-    const popover = firstCard.querySelector('.cg-arrival-pop') as HTMLElement;
+    const popover = firstCard.parentElement?.querySelector('.cg-arrival-pop') as HTMLElement;
     await waitFor(() => expect(popover.matches(':popover-open')).toBe(true));
     const rect = popover.getBoundingClientRect();
     await expect(rect.left).toBeGreaterThanOrEqual(0);
@@ -406,7 +432,7 @@ export const LastCardPositioning: Story = {
     const lastCard = cards[cards.length - 1] as HTMLElement;
     lastCard.scrollIntoView();
     await userEvent.hover(lastCard);
-    const popover = lastCard.querySelector('.cg-arrival-pop') as HTMLElement;
+    const popover = lastCard.parentElement?.querySelector('.cg-arrival-pop') as HTMLElement;
     await waitFor(() => expect(popover.matches(':popover-open')).toBe(true));
     const rect = popover.getBoundingClientRect();
     await expect(rect.right).toBeLessThanOrEqual(window.innerWidth);

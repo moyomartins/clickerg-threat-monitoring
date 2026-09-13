@@ -90,6 +90,5 @@ body { font-family: var(--cg-font-sans); color: var(--cg-ink); }
 .gap-note { border: 1px dotted var(--cg-muted); padding: var(--cg-space-1-25); font-size: var(--cg-text-sm);
   color: var(--cg-body); margin: 0 0 var(--cg-space-2); background: var(--cg-surface); }
 
-.strip-caption { font-size: var(--cg-text-body); color: var(--cg-body); margin: 0 0 var(--cg-space-1-5); max-width: 70ch; }
 
 .skeleton-stack > * + * { margin-top: var(--cg-space-1); }

@@ -34,3 +34,10 @@ storybook-static
 .claude/agents/
 .impeccable/hook.cache.json
 .impeccable/questions/
+
+# Local-only project files
+/.impeccable/
+/previews/
+/HANDOFF.md
+/PRODUCT.md
+/DESIGN.md

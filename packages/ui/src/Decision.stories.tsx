@@ -7,6 +7,7 @@ import {
   ExclusionInline,
   FinancialCell,
   JourneyItem,
+  PlatformStatus,
   JourneyRow,
 } from './Decision';
 import { PageReplay } from './PageReplay';
@@ -35,7 +36,7 @@ const REPLAY = { scrollPct: 0, dwellSec: 1, clicks: 1, mouseMoves: 0 };
 function Hero({
   status = 'blocked' as const,
   settled = true,
-  reason = '29 paid clicks repeated the same zero-engagement pattern. ClickerG blocked the IP at paid click 3, once confidence crossed 80%.',
+  reason = '29 paid clicks repeated the same zero-engagement pattern. ClickGuard blocked the IP at paid click 3, once confidence crossed 80%.',
   markLabel = 'Blocked at paid click 3',
   markTone = 'decisive' as const,
   click = 'paid click 3' as string | null,
@@ -45,9 +46,10 @@ function Hero({
   confidence = 99 as number | null,
   confidenceDetail = 'crossed 80% at visit 3',
   action,
+  visitSummary = <>29 <span>· 29 paid · 0 free</span></>,
   platforms = [
-    { platform: 'Google Ads', state: 'not simulated' },
-    { platform: 'Meta Ads', state: 'not simulated' },
+    { platform: 'Google Ads', state: '' },
+    { platform: 'Meta Ads', state: '' },
   ],
 }: {
   status?: 'blocked' | 'ambiguous' | 'review' | 'allowed' | 'incomplete';
@@ -62,6 +64,7 @@ function Hero({
   confidence?: number | null;
   confidenceDetail?: string;
   action?: React.ReactNode;
+  visitSummary?: React.ReactNode;
   platforms?: { platform: string; state: string }[];
 }) {
   return (
@@ -95,7 +98,7 @@ function Hero({
       />
       <JourneyRow label="Journey summary and exclusion">
         <JourneyItem label="Visits">
-          29 <span>· 29 paid · 0 free</span>
+          {visitSummary}
         </JourneyItem>
         <JourneyItem label="Active">2 days</JourneyItem>
         <JourneyItem label="First seen">
@@ -121,12 +124,19 @@ type Story = StoryObj;
 
 export const Blocked: Story = { render: () => <Hero /> };
 
+export const BlockedJourneySummary: Story = { name: 'Journey summary / Blocked', render: () => <Hero /> };
+
+export const JourneySummaryMixedPaidAndFree: Story = {
+  name: 'Journey summary / Mixed paid and free',
+  render: () => <Hero visitSummary={<>12 <span>· 7 paid · 5 free</span></>} />,
+};
+
 /**
- * The hero has a height budget: it must orient and conclude without pushing the
- * arrival strip past the fold. This asserts the budget rather than trusting the eye.
+ * The selected 3 × 2 journey grid still orients and concludes before the arrival
+ * strip. This asserts its production height budget rather than trusting the eye.
  */
 export const HeightBudget: Story = {
-  name: 'Height budget: 360–460px',
+  name: 'Height budget: 360–480px',
   parameters: { layout: 'fullscreen' },
   render: () => (
     <div style={{ width: 1240 }}>
@@ -136,7 +146,7 @@ export const HeightBudget: Story = {
   play: async ({ canvasElement }) => {
     const hero = canvasElement.querySelector('.cg-hero') as HTMLElement;
     const height = hero.getBoundingClientRect().height;
-    await expect(height).toBeLessThanOrEqual(460);
+    await expect(height).toBeLessThanOrEqual(480);
     await expect(height).toBeGreaterThanOrEqual(300);
   },
 };
@@ -147,7 +157,7 @@ export const JudgementCall: Story = {
     <Hero
       status="ambiguous"
       settled={false}
-      reason="5 paid clicks show machine-like timing, but the visitor converted £249.00 — so ClickerG held the call rather than blocking it."
+      reason="5 paid clicks show machine-like timing, but the visitor converted £249.00 — so ClickGuard held the call rather than blocking it."
       markLabel="Held at paid click 3"
       markTone="neutral"
       spend="£24.05"
@@ -164,6 +174,8 @@ export const JudgementCall: Story = {
     />
   ),
 };
+
+export const JourneySummaryAmbiguous: Story = { name: 'Journey summary / Ambiguous visitor', render: () => <Hero status="ambiguous" settled={false} confidence={63} confidenceDetail="peak across 6 visits" /> };
 
 /** Nothing is asserted that was never captured: revenue and confidence both say so. */
 export const IncompleteData: Story = {
@@ -184,10 +196,26 @@ export const IncompleteData: Story = {
           Add to exclusion list
         </Button>
       }
-      platforms={[{ platform: 'Google Ads', state: 'not simulated' }]}
+      platforms={[{ platform: 'Google Ads', state: '' }]}
     />
   ),
 };
+
+export const JourneySummaryIncompleteData: Story = { name: 'Journey summary / Incomplete data', render: () => <Hero status="incomplete" settled={false} confidence={null} confidenceDetail="" /> };
+
+export const JourneySummaryMeaningfulPlatformState: Story = {
+  name: 'Journey summary / Meaningful platform state',
+  render: () => (
+    <Hero
+      platforms={[
+        { platform: 'Google Ads', state: 'confirmed · 14 August 2025, 11:30 UTC' },
+        { platform: 'Meta Ads', state: 'pending platform acknowledgement · retrying' },
+      ]}
+    />
+  ),
+};
+
+export const JourneySummaryNarrow: Story = { name: 'Journey summary / Narrow viewport', parameters: { viewport: { defaultViewport: 'mobile1' } }, render: () => <Hero /> };
 
 export const NotBlocked: Story = {
   render: () => (
@@ -228,6 +256,39 @@ export const UnderReview: Story = {
 /* ------------------------------------------------------------ ExclusionInline --- */
 
 /** ExclusionInline renders a <dt>/<dd> pair, so — as in production — it needs a <dl> parent. */
+export const PlatformStatuses: Story = {
+  name: 'Platform status: every supported state',
+  render: () => (
+    <div className="cg-platform-status-story">
+      {['excluded', 'pending', 'not excluded', 'not synchronized', 'synchronization failed', 'unavailable', 'demonstration data'].flatMap((state) => [
+        <PlatformStatus key={`google-${state}`} platform="Google Ads" state={state} />,
+        <PlatformStatus key={`meta-${state}`} platform="Meta Ads" state={state} />,
+      ])}
+    </div>
+  ),
+};
+
+export const PlatformStatusLongAndUnavailable: Story = {
+  name: 'Platform status: long and unavailable',
+  render: () => (
+    <div className="cg-platform-status-story">
+      <PlatformStatus platform="Google Ads" state="synchronization failed — retrying after the platform rate limit clears" />
+      <PlatformStatus platform="Meta Ads" state="unavailable — demonstration data has not been synchronized" />
+    </div>
+  ),
+};
+
+export const PlatformStatusNarrow: Story = {
+  name: 'Platform status: narrow viewport',
+  parameters: { viewport: { defaultViewport: 'mobile1' } },
+  render: () => <PlatformStatus platform="Google Ads" state="pending platform acknowledgement · retrying" />,
+};
+
+export const PlatformStatusMissingAsset: Story = {
+  name: 'Platform status: missing asset fallback',
+  render: () => <PlatformStatus platform="Unavailable platform" state="unavailable" />,
+};
+
 export const ExclusionStates: Story = {
   name: 'ExclusionInline: mixed states',
   render: () => (

@@ -6,7 +6,7 @@ import { arrivalExplanationFor, noteFor } from './arrival';
 
 const all = await fetchVisitors(0);
 const byIp = (ip: string) => {
-  const v = all.find((x) => x.ip === ip);
+  const v = all.find((x) => x.ip === ip || x.aliases?.includes(ip));
   if (!v) throw new Error(`fixture ${ip} missing`);
   return v;
 };

@@ -85,7 +85,11 @@ export function heroFacts(visitor: Visitor): HeroFacts {
         ? null
         : { visit: crossedVisit, value: Math.round(visitor.confidence[crossedVisit - 1]) },
     threshold: BLOCK_THRESHOLD,
-    /* Real platforms from the journey; the sync state itself is not simulated. */
-    platforms: exclusionPlatforms(visitor).map((platform) => ({ platform, state: 'not simulated' })),
+    platforms:
+      visitor.status === 'blocked'
+        ? (visitor.exclusionEvents?.length
+            ? visitor.exclusionEvents.map((event) => ({ platform: event.platform, state: event.confirmedAt ? 'Confirmed' : 'Pending' }))
+            : exclusionPlatforms(visitor).map((platform) => ({ platform, state: 'Pending' })))
+        : [],
   };
 }

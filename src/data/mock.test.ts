@@ -8,8 +8,7 @@ const statuses = new Set<VisitorStatus>(VISITORS.map((v) => v.status));
 
 describe('mock traffic', () => {
   it('has enough visitors for filtering to be meaningful', () => {
-    expect(VISITORS.length).toBeGreaterThanOrEqual(40);
-    expect(VISITORS.length).toBeLessThanOrEqual(60);
+    expect(VISITORS.length).toBeGreaterThanOrEqual(60);
   });
 
   it('covers every status the UI can render', () => {
@@ -42,7 +41,7 @@ describe('blocking model', () => {
   });
 
   it('never blocks before the minimum number of paid clicks', () => {
-    for (const v of VISITORS.filter((x) => x.status === 'blocked')) {
+    for (const v of VISITORS.filter((x) => x.status === 'blocked' && !x.manualHistory?.length)) {
       const paidByDecision = v.visits
         .slice(0, v.decisiveIndex + 1)
         .filter((x) => x.channel === 'paid').length;

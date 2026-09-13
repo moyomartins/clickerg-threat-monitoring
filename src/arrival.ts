@@ -24,6 +24,7 @@ const VPN_COPY: Record<Visit['vpn'], string> = {
 };
 
 const FORM_COPY: Record<Visit['formFill'], string> = {
+  unknown: 'Not captured',
   none: 'No form submitted',
   valid: 'Deliverable email',
   risky: 'Disposable email',
@@ -55,8 +56,8 @@ export function signalsFor(visit: Visit): SignalChipProps[] {
 
   chips.push({
     label: 'Bot probability',
-    value: `${Math.round(visit.botProbability * 100)}%`,
-    severity: visit.botProbability >= 0.8 ? 'high' : visit.botProbability >= 0.6 ? 'medium' : 'low',
+    value: visit.botProbability === null ? 'Not captured' : `${Math.round(visit.botProbability * 100)}%`,
+    severity: visit.botProbability === null ? 'unknown' : visit.botProbability >= 0.8 ? 'high' : visit.botProbability >= 0.6 ? 'medium' : 'low',
     hint: 'How confident our model is that this visit was automated rather than a person.',
   });
 
@@ -71,7 +72,7 @@ export function signalsFor(visit: Visit): SignalChipProps[] {
     chips.push({
       label: 'Form fill',
       value: FORM_COPY[visit.formFill],
-      severity: visit.formFill === 'invalid' ? 'high' : visit.formFill === 'risky' ? 'medium' : 'low',
+      severity: visit.formFill === 'unknown' ? 'unknown' : visit.formFill === 'invalid' ? 'high' : visit.formFill === 'risky' ? 'medium' : 'low',
       hint: 'Deliverability of the email address submitted at the time of the form fill.',
     });
   }
@@ -192,7 +193,7 @@ export function arrivalExplanationFor(visitor: Visitor, index: number): ArrivalE
 
   return {
     title,
-    body: noteFor(visit),
+    body: noteFor(visit).replace(/Net effect: confidence (up|down)\.|Net effect: no change\./, delta > 0 ? 'Cumulative confidence increased.' : delta < 0 ? 'Cumulative confidence decreased.' : 'Cumulative confidence was unchanged.') + (visit.postDecisionReason ? ` ${visit.postDecisionReason}` : ''),
     decisive,
     crossedThreshold,
     missing,

@@ -44,3 +44,12 @@ export const AllStatuses: Story = {
     </div>
   ),
 };
+
+export const At200Percent: Story = {
+  render: () => <div style={{ zoom: 2 }}><StatusPill status="blocked" /></div>,
+};
+
+export const ForcedColors: Story = {
+  parameters: { backgrounds: { default: 'light' } },
+  render: () => <StatusPill status="blocked" />,
+};

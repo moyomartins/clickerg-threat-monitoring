@@ -7,6 +7,7 @@ import {
   ExclusionInline,
   FinancialCell,
   Journey,
+  JourneySection,
   JourneyItem,
   JourneyRow,
   PageReplay,
@@ -18,8 +19,9 @@ import { behaviourOf, representativeBehaviour } from './behaviour';
 import { arrivalExplanationFor, signalsFor, sourceFor } from './arrival';
 import type { Visitor } from './data/types';
 import { BLOCK_THRESHOLD } from './data/scoring';
-import { dateTime, money } from './format';
+import { arrivalTimestamp, money } from './format';
 import { heroFacts } from './heroFacts';
+import { journeySummaryFor } from './journeySummary';
 
 interface Props {
   visitor: Visitor | undefined;
@@ -46,6 +48,7 @@ export function VisitorDetail({ visitor, onBack, onStatusChange }: Props) {
   }
 
   const facts = heroFacts(visitor);
+  const journey = journeySummaryFor(visitor);
   /* An incomplete journey has no evidence to act on, so the control says so
      rather than offering a block it cannot justify. */
   const insufficient = visitor.status === 'incomplete';
@@ -79,6 +82,7 @@ export function VisitorDetail({ visitor, onBack, onStatusChange }: Props) {
       </div>
 
       {visitor.dataGap && <p className="gap-note">{visitor.dataGap}</p>}
+
 
       <DecisionHero
         status={visitor.status}
@@ -141,19 +145,18 @@ export function VisitorDetail({ visitor, onBack, onStatusChange }: Props) {
         </JourneyRow>
       </DecisionHero>
 
-      <p className="strip-caption">
-        Every arrival, replayed in order — {visitor.visits.length} of them. Scroll the strip: the
-        finding is how little changes from one to the next.
-      </p>
-
-      <Journey>
+      <JourneySection id="journey-replay-heading" count={journey.countLabel} insight={journey.insight}>
+      {journey.arrivalCount > 0 && <Journey labelledBy="journey-replay-heading">
         {visitor.visits.map((visit, i) => {
           const explanation = arrivalExplanationFor(visitor, i);
+          const arrivalTime = arrivalTimestamp(visit.at);
           return (
             <VisitEntry
               key={visit.id}
               index={i + 1}
-              timestamp={dateTime(visit.at)}
+              timestamp={arrivalTime.display}
+              timestampIso={arrivalTime.iso}
+              timestampLabel={arrivalTime.accessible}
               channel={visit.channel}
               source={sourceFor(visit)}
               cost={visit.costGbp !== undefined ? money(visit.costGbp) : undefined}
@@ -198,7 +201,8 @@ export function VisitorDetail({ visitor, onBack, onStatusChange }: Props) {
             />
           );
         })}
-      </Journey>
+      </Journey>}
+      </JourneySection>
     </>
   );
 }

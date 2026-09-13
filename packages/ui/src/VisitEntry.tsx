@@ -15,7 +15,11 @@ const CHANNEL_LABELS: Record<Channel, string> = {
 export interface VisitEntryProps {
   /** 1-based position in the journey. */
   index: number;
+  /** Compact visible timestamp. */
   timestamp: string;
+  /** Optional machine-readable timestamp and its full spoken label. */
+  timestampIso?: string;
+  timestampLabel?: string;
   channel: Channel;
   source?: string;
   cost?: string;
@@ -41,6 +45,8 @@ export interface VisitEntryProps {
 export function VisitEntry({
   index,
   timestamp,
+  timestampIso,
+  timestampLabel,
   channel,
   source,
   cost,
@@ -61,18 +67,21 @@ export function VisitEntry({
         {replay !== undefined && <PageReplay behaviour={replay} size="strip" />}
 
         <div className="cg-visit__head">
-          <span className="cg-visit__no">
-            visit {index} · {confidence}%
-          </span>
-          <span className="cg-visit__time">{timestamp}</span>
-          <span className="cg-visit__tag">{CHANNEL_LABELS[channel]}</span>
-          {cost && <span className="cg-visit__meta"> · {cost}</span>}
-          {source && (
-            <>
-              <br />
-              <span className="cg-visit__meta">{source}</span>
-            </>
-          )}
+          <div className="cg-visit__head-row">
+            <span className="cg-visit__no">
+              visit {index} · {confidence}%
+            </span>
+            {timestampIso ? (
+              <time className="cg-visit__time" dateTime={timestampIso} aria-label={timestampLabel}>{timestamp}</time>
+            ) : (
+              <span className="cg-visit__time">{timestamp}</span>
+            )}
+          </div>
+          <div className="cg-visit__head-row">
+            <span className="cg-visit__tag">{CHANNEL_LABELS[channel]}</span>
+            {cost && <span className="cg-visit__meta">{cost}</span>}
+          </div>
+          {source && <span className="cg-visit__meta cg-visit__source">{source}</span>}
         </div>
 
         {signals.length > 0 && (
@@ -93,12 +102,17 @@ export function VisitEntry({
   }
 
   return (
-    <ArrivalDisclosure className={cardClassName} label={explanation.title} content={explanation.content}>
+    <ArrivalDisclosure
+      className={`${cardClassName} cg-focusable`}
+      label={explanation.title}
+      content={explanation.content}
+      triggerLabel={`Visit ${index}, ${confidence}% confidence. Additional arrival details available.`}
+    >
       {card}
     </ArrivalDisclosure>
   );
 }
 
-export function Journey({ children }: { children: ReactNode }) {
-  return <ol className="cg-journey">{children}</ol>;
+export function Journey({ children, labelledBy }: { children: ReactNode; labelledBy?: string }) {
+  return <ol className="cg-journey" aria-labelledby={labelledBy}>{children}</ol>;
 }

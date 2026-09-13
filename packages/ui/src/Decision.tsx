@@ -138,8 +138,8 @@ export interface JourneyRowProps {
   children: ReactNode;
 }
 
-/** Runs the full width of the enclosure, so its items never wrap against a
-    narrow column the way they would inside the decisive or money cells. */
+/** The selected production treatment: a balanced six-fact grid beneath the
+    decisive and financial cells. */
 export function JourneyRow({ label, children }: JourneyRowProps) {
   return (
     <dl className="cg-hero__cell cg-hero__journey" aria-label={label}>
@@ -211,6 +211,28 @@ export interface ExclusionEntry {
   state: string;
 }
 
+export interface PlatformStatusProps extends ExclusionEntry {}
+
+const PLATFORM_ASSETS = {
+  'Google Ads': new URL('./assets/google-ads.svg', import.meta.url).href,
+  'Meta Ads': new URL('./assets/meta.svg', import.meta.url).href,
+} as const;
+
+/** A platform mark identifies where the blocked IP is excluded. */
+export function PlatformStatus({ platform }: PlatformStatusProps) {
+  const asset = PLATFORM_ASSETS[platform as keyof typeof PLATFORM_ASSETS];
+
+  return (
+    <span className="cg-platform-status" role="img" aria-label={`${platform} exclusion`}>
+      {asset ? (
+        <img className="cg-platform-status__mark" src={asset} alt="" aria-hidden="true" />
+      ) : (
+        <span className="cg-platform-status__fallback" aria-hidden="true">{platform}</span>
+      )}
+    </span>
+  );
+}
+
 export interface ExclusionInlineProps {
   label: string;
   entries: ExclusionEntry[];
@@ -222,11 +244,8 @@ export function ExclusionInline({ label, entries }: ExclusionInlineProps) {
     <div>
       <dt className="cg-label">{label}</dt>
       <dd className="cg-meta">
-        {entries.map((e) => (
-          <span className="cg-ex" key={e.platform}>
-            {e.platform}
-            <span className="cg-ex__state">{e.state}</span>
-          </span>
+        {entries.map((entry) => (
+          <PlatformStatus key={entry.platform} {...entry} />
         ))}
       </dd>
     </div>

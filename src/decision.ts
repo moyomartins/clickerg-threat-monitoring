@@ -54,6 +54,8 @@ export function revenueFor(visitor: Visitor): string | null {
 
 /** One short paragraph: the observable pattern, then the moment it was acted on. */
 export function reasonFor(visitor: Visitor): string {
+  if (visitor.manualHistory?.length) return visitor.verdict;
+  if (visitor.decisiveIndex >= 0) visitor = { ...visitor, visits: visitor.visits.slice(0, visitor.decisiveIndex + 1) };
   const paidCount = paidVisits(visitor).length;
   const silent = silentPaidCount(visitor);
   const cadence = fastestCadence(visitor);
@@ -61,27 +63,29 @@ export function reasonFor(visitor: Visitor): string {
 
   const pattern =
     silent === paidCount && paidCount > 0
-      ? 'the same zero-engagement pattern'
+      ? 'the same limited-engagement pattern'
       : cadence !== null && cadence < 1.5
         ? 'clicks arriving faster than the page renders'
         : 'the same repeating pattern';
 
   switch (visitor.status) {
     case 'blocked':
-      return `${paidCount} paid ${paidCount === 1 ? 'click' : 'clicks'} repeated ${pattern}. ClickerG blocked the IP at paid click ${clickNo}, once confidence crossed ${BLOCK_THRESHOLD}%.`;
+      return `${paidCount} paid ${paidCount === 1 ? 'click' : 'clicks'} repeated ${pattern}. ClickGuard blocked the IP at paid click ${clickNo}, once confidence crossed ${BLOCK_THRESHOLD}%.`;
     case 'ambiguous':
-      return `${paidCount} paid ${paidCount === 1 ? 'click' : 'clicks'} show machine-like timing, but the visitor converted ${money(visitor.revenueGbp)} — so ClickerG held the call rather than blocking it.`;
+      return `${paidCount} paid ${paidCount === 1 ? 'click' : 'clicks'} show machine-like timing, but the visitor converted ${money(visitor.revenueGbp)} — so ClickGuard held the call rather than blocking it.`;
     case 'review':
-      return `Some arrivals look automated. Confidence has reached ${Math.round(Math.max(...visitor.confidence))}% across ${paidCount} paid ${paidCount === 1 ? 'click' : 'clicks'} without crossing the ${BLOCK_THRESHOLD}% line to block.`;
+      return `Some arrivals look automated. Confidence has reached ${Math.round(Math.max(...visitor.confidence))}% across ${paidCount} paid ${paidCount === 1 ? 'click' : 'clicks'} against the ${BLOCK_THRESHOLD}% blocking line; at least three paid arrivals are also required.`;
     case 'incomplete':
       return visitor.dataGap ?? 'Part of this visitor’s journey never reported, so the assessment is incomplete.';
     default:
-      return `Nothing across ${visitor.visits.length} ${visitor.visits.length === 1 ? 'visit' : 'visits'} looked automated.`;
+      return `Across ${visitor.visits.length} ${visitor.visits.length === 1 ? 'visit' : 'visits'}, the evidence did not warrant automatic blocking.`;
   }
 }
 
 /** The moment ClickerG acted, taken from the decisive arrival. */
 export function decisiveMarkFor(visitor: Visitor) {
+  const manual = visitor.manualHistory?.at(-1);
+  if (manual) return { at: manual.at, label: 'Manual decision', tone: 'neutral' as const };
   const decisive = visitor.decisiveIndex >= 0 ? visitor.visits[visitor.decisiveIndex] : undefined;
   const clickNo = paidClickNumber(visitor);
 

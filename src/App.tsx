@@ -3,6 +3,8 @@ import { Button, EmptyState, Wordmark, type VisitorStatus } from '@clickerg/ui';
 import { VisitorList } from './VisitorList';
 import { VisitorDetail } from './VisitorDetail';
 import { fetchVisitors } from './data/mock';
+import { applyManualDecision } from './data/manual';
+import { NOW } from './data/clock';
 import type { Visitor } from './data/types';
 
 /* A hash route is enough for two screens, and it gives us real back/forward
@@ -25,7 +27,7 @@ export default function App() {
   const [phase, setPhase] = useState<Phase>('loading');
   const [data, setData] = useState<Visitor[]>([]);
   const [error, setError] = useState('');
-  const [overrides, setOverrides] = useState<Record<string, VisitorStatus>>({});
+  const [overrides, setOverrides] = useState<Record<string, Visitor>>({});
   const route = useRoute();
 
   const load = useCallback(() => {
@@ -51,27 +53,15 @@ export default function App() {
   /** Manual decisions sit on top of the model's own verdict — never silently replacing it. */
   const visitors = useMemo(
     () =>
-      data.map((v) => {
-        const override = overrides[v.ip];
-        if (!override || override === v.status) return v;
-        const peak = Math.max(...v.confidence);
-        return {
-          ...v,
-          status: override,
-          summary: override === 'blocked' ? 'Blocked by you' : 'Marked legitimate by you',
-          verdict:
-            override === 'blocked'
-              ? `You added this IP to the exclusion list yourself. Our own confidence peaked at ${peak}%, which was ${
-                  v.status === 'blocked' ? 'already over' : 'under'
-                } our blocking line — the journey below is what we had seen when you made the call.`
-              : `You marked this visitor as legitimate, so it stays off the exclusion list. Our own read is below, unchanged: ${v.verdict}`,
-        };
-      }),
+      data.map((v) => overrides[v.ip] ?? v),
     [data, overrides],
   );
 
   const setStatus = (ip: string, status: VisitorStatus) =>
-    setOverrides((prev) => ({ ...prev, [ip]: status }));
+    setOverrides((prev) => {
+      const visitor = prev[ip] ?? data.find((v) => v.ip === ip);
+      return visitor ? { ...prev, [ip]: applyManualDecision(visitor, status, NOW) } : prev;
+    });
 
   const navigate = (hash: string) => {
     window.location.hash = hash;
@@ -100,7 +90,7 @@ export default function App() {
           />
         ) : route.name === 'detail' ? (
           <VisitorDetail
-            visitor={visitors.find((v) => v.ip === route.ip)}
+            visitor={visitors.find((v) => v.ip === route.ip || v.aliases?.includes(route.ip))}
             onBack={() => navigate('#/')}
             onStatusChange={setStatus}
           />

@@ -29,6 +29,7 @@ export type { VisitEntryProps, Channel } from './VisitEntry';
 
 export { ArrivalDisclosure } from './ArrivalDisclosure';
 export type { ArrivalDisclosureProps } from './ArrivalDisclosure';
+export { JourneySection } from './JourneySection';
 
 export {
   DecisionHero,
@@ -38,6 +39,7 @@ export {
   JourneyItem,
   ConfidenceInline,
   ExclusionInline,
+  PlatformStatus,
 } from './Decision';
 export type {
   DecisionHeroProps,
@@ -48,9 +50,11 @@ export type {
   ConfidenceInlineProps,
   ExclusionInlineProps,
   ExclusionEntry,
+  PlatformStatusProps,
 } from './Decision';
 
 export { SETTLED_STATUSES, isSettled } from './decisionSemantics';
 
-export { FilterBar, FilterGroup, Field, TextInput, Select, Toggle, RangeField } from './Fields';
-export type { FieldProps, FilterGroupProps, SelectProps, ToggleProps, RangeFieldProps } from './Fields';
+export { FilterBar, FilterGroup, Field, TextInput, Select, Toggle, RangeField, SteppedRangeField } from './Fields';
+export type { FieldProps, FilterGroupProps, SelectProps, ToggleProps, RangeFieldProps, SteppedRangeFieldProps } from './Fields';
+export { SortDirectionIcon } from './SortDirectionIcon';

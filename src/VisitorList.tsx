@@ -6,9 +6,10 @@ import {
   FilterBar,
   FilterGroup,
   PageReplay,
-  RangeField,
+  SteppedRangeField,
   Select,
   Skeleton,
+  SortDirectionIcon,
   StatusPill,
   TextInput,
   Toggle,
@@ -17,7 +18,8 @@ import {
 } from '@clickerg/ui';
 import { representativeBehaviour } from './behaviour';
 import type { Visitor } from './data/types';
-import { NOW } from './data/mock';
+import { NOW } from './data/clock';
+import { matchesFilters } from './filters';
 import { money, relative } from './format';
 
 const STATUS_RANK: Record<VisitorStatus, number> = {
@@ -46,7 +48,7 @@ const WINDOWS = [
   { value: '30', label: 'Last 30 days' },
 ];
 
-const maxBot = (v: Visitor) => Math.max(...v.visits.map((x) => x.botProbability));
+
 
 interface Props {
   visitors: Visitor[];
@@ -69,28 +71,7 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
   );
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const cutoff = window === 'all' ? 0 : NOW - Number(window) * 86_400_000;
-
-    return visitors.filter((v) => {
-      if (status !== 'all' && v.status !== status) return false;
-      if (country !== 'all' && v.country !== country) return false;
-      if (v.lastSeen < cutoff) return false;
-      if (paidOnly && v.paidVisits === 0) return false;
-      if (maxBot(v) * 100 < minBot) return false;
-      if (!q) return true;
-      const haystack = [
-        v.ip,
-        v.city,
-        v.region,
-        v.country,
-        v.summary,
-        ...v.visits.map((x) => `${x.campaign ?? ''} ${x.keyword ?? ''} ${x.referrer ?? ''}`),
-      ]
-        .join(' ')
-        .toLowerCase();
-      return haystack.includes(q);
-    });
+    return visitors.filter((v) => matchesFilters(v, { query, status, country, window, paidOnly, minBot }, NOW));
   }, [visitors, query, status, country, window, paidOnly, minBot]);
 
   const rows = useMemo(() => {
@@ -140,7 +121,7 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
     <>
       <h1 className="page__title">Threat monitoring</h1>
       <p className="page__lede">
-        Every visitor that has landed on your site from an ad, and what we decided about them. Blocking is
+        Every visitor recorded on your site, across paid and free arrivals, and what we decided about them. Blocking is
         cumulative — open any visitor to see the whole journey and the point where we made the call.
       </p>
 
@@ -184,7 +165,7 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
             onChange={(e) => setQuery(e.target.value)}
           />
         </Field>
-        <FilterGroup label="Filter by category">
+        <FilterGroup label="Filter by category" fill>
           <Field label="Status" htmlFor="status">
             <Select
               id="status"
@@ -239,17 +220,19 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
               <Button
                 variant="ghost"
                 size="sm"
+                iconOnly
                 disabled={loading}
                 aria-label={`Sort ${sort.direction === 'desc' ? 'descending' : 'ascending'}, change direction`}
+                tooltip={`Sort ${sort.direction === 'desc' ? 'descending' : 'ascending'}`}
                 onClick={() => setSort((x) => ({ ...x, direction: x.direction === 'desc' ? 'asc' : 'desc' }))}
               >
-                {sort.direction === 'desc' ? '↓ Desc' : '↑ Asc'}
+                <SortDirectionIcon direction={sort.direction} />
               </Button>
             </div>
           </Field>
         </FilterGroup>
-        <FilterGroup label="Bot probability threshold">
-          <RangeField id="bot" label="Bot probability" value={minBot} onChange={setMinBot} />
+        <FilterGroup label="Minimum bot probability">
+          <SteppedRangeField id="bot" label="Minimum bot probability" value={minBot} steps={[0, 25, 50, 75, 100]} disabled={loading} onChange={setMinBot} />
         </FilterGroup>
         <FilterGroup label="Paid traffic only">
           <Toggle label="Paid clicks only" checked={paidOnly} onChange={setPaidOnly} disabled={loading} />

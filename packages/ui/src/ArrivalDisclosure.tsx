@@ -11,7 +11,7 @@
  *
  * Dismissal (outside click, Escape) is native to `popover="auto"`. The
  * popover content is intentionally non-interactive — no focusable element
- * inside it — so focus never leaves the trigger button, and closing it never
+ * inside it — so focus never leaves the trigger card, and closing it never
  * needs to restore focus anywhere: it never went anywhere.
  */
 
@@ -23,9 +23,8 @@ export interface ArrivalDisclosureProps {
   label: string;
   /** The popover's body: prose plus whatever structured facts apply. */
   content: ReactNode;
-  /** Visible and accessible name for the trigger. Stays constant across
-   *  cards so the affordance is predictable while `label` adapts. */
-  triggerLabel?: string;
+  /** Accessible name for the complete card trigger. */
+  triggerLabel: string;
   /** Passed to the `<li>` this component owns — status/reflection modifiers. */
   className?: string;
   /** The card's own visible content. */
@@ -38,7 +37,7 @@ const GAP = 8;
 export function ArrivalDisclosure({
   label,
   content,
-  triggerLabel = 'What this arrival showed',
+  triggerLabel,
   className = '',
   children,
 }: ArrivalDisclosureProps) {
@@ -46,8 +45,7 @@ export function ArrivalDisclosure({
   const popoverId = `arrival-pop-${reactId}`;
   const titleId = `${popoverId}-title`;
 
-  const liRef = useRef<HTMLLIElement>(null);
-  const btnRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -56,7 +54,7 @@ export function ArrivalDisclosure({
   const [style, setStyle] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
 
   const position = () => {
-    const btn = btnRef.current;
+    const btn = triggerRef.current;
     const pop = popoverRef.current;
     if (!btn || !pop) return;
 
@@ -118,7 +116,7 @@ export function ArrivalDisclosure({
      document) rather than assuming window-capture sees everything. */
   useEffect(() => {
     if (!open) return;
-    const btn = btnRef.current;
+    const btn = triggerRef.current;
     if (!btn) return;
 
     const onScrollOrResize = () => {
@@ -147,40 +145,42 @@ export function ArrivalDisclosure({
      but that native path only honours trusted events, so anything driving
      the keyboard programmatically (tests, some assistive tooling) needs this
      explicit handler to get the same guarantee. */
-  const onKeyDown = (e: KeyboardEvent) => {
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape' && popoverRef.current?.matches(':popover-open')) {
       popoverRef.current.hidePopover();
+    }
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      show();
     }
   };
 
   return (
-    <li
-      ref={liRef}
-      className={className}
-      onMouseEnter={show}
-      onMouseLeave={scheduleHide}
-      onFocus={show}
-      onBlur={scheduleHide}
-      onKeyDown={onKeyDown}
-    >
-      {children}
-
-      <button
-        ref={btnRef}
-        type="button"
-        className="cg-disclose cg-focusable"
-        popoverTarget={popoverId}
+    <li>
+      <div
+        ref={triggerRef}
+        className={className}
+        role="button"
+        tabIndex={0}
+        aria-label={triggerLabel}
+        aria-description="Press Enter or Space for additional arrival details."
         aria-expanded={open}
         aria-describedby={popoverId}
+        onClick={show}
+        onMouseEnter={show}
+        onMouseLeave={scheduleHide}
+        onFocus={show}
+        onBlur={scheduleHide}
+        onKeyDown={onKeyDown}
       >
-        {triggerLabel}
-      </button>
+        {children}
+      </div>
 
       <div
         id={popoverId}
         ref={popoverRef}
         popover="auto"
-        role="group"
+        role="region"
         aria-labelledby={titleId}
         className={`cg-arrival-pop cg-arrival-pop--${placement}`}
         style={{ top: style.top, left: style.left }}

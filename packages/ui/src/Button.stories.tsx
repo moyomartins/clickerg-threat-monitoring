@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from 'storybook/test';
 import { Button } from './Button';
+import { SortDirectionIcon } from './SortDirectionIcon';
 
 const meta = {
   title: 'Components/Button',
@@ -29,6 +30,7 @@ export const Ghost: Story = { args: { variant: 'ghost', children: 'Export CSV' }
 export const CreamSurface: Story = { args: { variant: 'cream', children: 'Reset filters' } };
 export const Pill: Story = { args: { variant: 'pill', children: '⌄ More signals' } };
 export const Small: Story = { args: { variant: 'ghost', size: 'sm', children: 'View journey' } };
+export const IconOnly: Story = { args: { variant: 'ghost', size: 'sm', iconOnly: true, 'aria-label': 'Sort descending, change direction', tooltip: 'Sort descending', children: <SortDirectionIcon direction="desc" /> } };
 export const Disabled: Story = { args: { disabled: true, children: 'Already blocked' } };
 
 export const AllVariants: Story = {
