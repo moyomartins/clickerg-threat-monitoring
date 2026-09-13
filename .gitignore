@@ -47,3 +47,8 @@ storybook-static
 /implement-direction-*.md
 /output/
 /tmp/
+
+# Local SVG reference library
+/arrow/
+
+/packages/ui/src/icons/chevron_big_down.svg

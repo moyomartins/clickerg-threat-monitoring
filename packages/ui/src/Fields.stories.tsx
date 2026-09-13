@@ -107,6 +107,21 @@ export const Controls: Story = {
   ),
 };
 
+function SelectExample({ disabled = false, invalid = false, value = 'all', narrow = false }: { disabled?: boolean; invalid?: boolean; value?: string; narrow?: boolean }) {
+  return <div style={{ width: narrow ? 180 : 360, maxWidth: '100%' }}><Field label="Status" htmlFor="select-example"><Select id="select-example" value={value} disabled={disabled} aria-invalid={invalid || undefined} onChange={() => {}} options={[{ value: 'all', label: 'All statuses' }, { value: 'review', label: 'Under review' }, { value: 'long', label: 'Blocked, awaiting advertising-platform exclusion confirmation' }]} /></Field></div>;
+}
+
+export const SelectDefault: Story = { name: 'Select: Default', render: () => <SelectExample /> };
+export const SelectWithSelectedValue: Story = { name: 'Select: With selected value', render: () => <SelectExample value="review" /> };
+export const SelectFocusVisible: Story = { name: 'Select: Focus visible', render: () => <SelectExample /> , play: async ({ canvasElement }) => { await userEvent.tab(); await expect(within(canvasElement).getByLabelText('Status')).toHaveFocus(); }};
+export const SelectDisabled: Story = { name: 'Select: Disabled', render: () => <SelectExample disabled /> };
+export const SelectInvalid: Story = { name: 'Select: Invalid', render: () => <SelectExample invalid /> };
+export const SelectLongValue: Story = { name: 'Select: Long value', render: () => <SelectExample value="long" /> };
+export const SelectNarrowWidth: Story = { name: 'Select: Narrow width', render: () => <SelectExample value="long" narrow /> };
+export const SelectMobile: Story = { name: 'Select: Mobile', parameters: { viewport: { defaultViewport: 'mobile' } }, render: () => <SelectExample /> };
+export const SelectGroup: Story = { name: 'Select: Group with labels', render: () => <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}><SelectExample /><SelectExample value="review" /></div> };
+export const SelectAlignmentGuides: Story = { name: 'Select: 16px alignment guides', render: () => <div style={{ position: 'relative', width: 360, maxWidth: '100%', background: 'repeating-linear-gradient(90deg, transparent 0 15px, #0b5fe9 15px 16px, transparent 16px calc(100% - 16px), #0b5fe9 calc(100% - 16px) calc(100% - 15px), transparent calc(100% - 15px))' }}><SelectExample /></div> };
+
 export const TypingFilters: Story = {
   name: 'Interaction: search accepts input',
   render: () => <Demo />,

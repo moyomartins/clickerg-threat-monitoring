@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, userEvent, within } from 'storybook/test';
 import { Button } from './Button';
-import { SortDirectionIcon } from './SortDirectionIcon';
+
+const arrowAssets = import.meta.glob('../../../arrow/*.svg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const arrows = Object.entries(arrowAssets)
+  .map(([path, source]) => ({ name: path.split('/').pop()!, source }))
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 const meta = {
   title: 'Components/Button',
@@ -30,7 +34,21 @@ export const Ghost: Story = { args: { variant: 'ghost', children: 'Export CSV' }
 export const CreamSurface: Story = { args: { variant: 'cream', children: 'Reset filters' } };
 export const Pill: Story = { args: { variant: 'pill', children: '⌄ More signals' } };
 export const Small: Story = { args: { variant: 'ghost', size: 'sm', children: 'View journey' } };
-export const IconOnly: Story = { args: { variant: 'ghost', size: 'sm', iconOnly: true, 'aria-label': 'Sort descending, change direction', tooltip: 'Sort descending', children: <SortDirectionIcon direction="desc" /> } };
+export const IconOnly: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 16 }}>
+      {arrows.map(({ name, source }) => (
+        <div key={name} style={{ display: 'grid', justifyItems: 'center', gap: 8, minWidth: 0 }}>
+          <Button variant="ghost" iconOnly aria-label={`Icon reference: ${name}`} tooltip={name}>
+            <img src={source} alt="" aria-hidden="true" style={{ width: 16, height: 16, objectFit: 'contain' }} />
+          </Button>
+          <code style={{ fontSize: 10, overflowWrap: 'anywhere', textAlign: 'center' }}>{name}</code>
+        </div>
+      ))}
+    </div>
+  ),
+};
 export const Disabled: Story = { args: { disabled: true, children: 'Already blocked' } };
 
 export const AllVariants: Story = {

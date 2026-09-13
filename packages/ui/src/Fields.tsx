@@ -51,13 +51,12 @@ export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 
 export function Select({ options, className = '', ...rest }: SelectProps) {
   return (
-    <select className={`cg-select cg-focusable ${className}`.trim()} {...rest}>
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>
-          {o.label}
-        </option>
-      ))}
-    </select>
+    <span className="cg-select-control">
+      <select className={`cg-select cg-focusable ${className}`.trim()} {...rest}>
+        {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+      <span className="cg-select-control__chevron" aria-hidden="true" />
+    </span>
   );
 }
 

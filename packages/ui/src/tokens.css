@@ -24,8 +24,13 @@
   /* AA: preview used #78808e at 3.42:1 on the ground. Same hue, 4.76:1. */
   --cg-muted: #626975;
   --cg-on-ink: #ffffff;
-  /* Compact blocked-status fill. #16181d text reaches 16.42:1 against it. */
-  --cg-status-blocked-bg: #EEFF9C;
+  /* ClickGuard brand accent. #15171C reaches 16.36:1 against the base fill. */
+  --cg-brand-acid: #EEFF9C;
+  --cg-brand-acid-hover: #E7FA83;
+  --cg-brand-acid-active: #DDEF69;
+  --cg-brand-acid-subtle: rgba(238, 255, 156, 0.24);
+  --cg-on-brand-acid: #15171C;
+  --cg-status-blocked-bg: var(--cg-brand-acid);
 
   /* --- The two signal colours ---
      Attention blue is a GRAPHIC (scroll band, mouse path) and clears the 3:1
@@ -100,6 +105,21 @@
   --cg-space-7: 48px;
   --cg-space-10: 70px;
   --cg-control-height: 33px;
+  --cg-field-height: 48px;
+  --cg-field-background: var(--cg-surface);
+  --cg-field-border-color: var(--cg-border);
+  --cg-field-border-hover: var(--cg-ink);
+  --cg-field-border-focus: var(--cg-attention-text);
+  --cg-field-text-color: var(--cg-ink);
+  --cg-field-placeholder-color: var(--cg-muted);
+  --cg-field-font-size: var(--cg-text-sm);
+  --cg-field-line-height: var(--cg-leading-tight);
+  --cg-field-inline-padding: var(--cg-space-2);
+  --cg-field-block-padding: var(--cg-space-1);
+  --cg-select-inline-padding: var(--cg-space-2);
+  --cg-select-icon-size: 16px;
+  --cg-select-icon-gap: var(--cg-space-1);
+  --cg-select-icon-color: var(--cg-ink);
 
   /* --- Shape: flat. One radius, on the click dot only. --- */
   --cg-radius: 0;

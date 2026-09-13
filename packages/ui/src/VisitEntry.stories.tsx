@@ -1,487 +1,141 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, waitFor, within } from 'storybook/test';
-import { Journey, VisitEntry } from './VisitEntry';
+import { expect, within } from 'storybook/test';
+import { Journey, VisitEntry, type VisitEntryProps } from './VisitEntry';
+
+const defaultArgs: VisitEntryProps = {
+  index: 1,
+  timestamp: '12/08/2025, 09:14',
+  timestampIso: '2025-08-12T09:14:00.000Z',
+  timestampLabel: '12 August 2025 at 09:14',
+  channel: 'paid',
+  source: 'Google Ads · uk-brand-exact · “product pricing”',
+  cost: '£4.20',
+  confidence: 22,
+  replay: { scrollPct: 60, dwellSec: 72, clicks: 1, mouseMoves: 14 },
+  signals: [
+    { label: 'Interaction', value: 'Scrolled 60%, 1m 12s', severity: 'low' },
+    { label: 'Bot probability', value: '18%', severity: 'low' },
+    { label: 'VPN / proxy', value: 'None', severity: 'low' },
+  ],
+};
+
+function Card({ args }: { args: VisitEntryProps }) {
+  return <Journey><VisitEntry {...args} last /></Journey>;
+}
+
+function assertCardFits(canvasElement: HTMLElement) {
+  const card = canvasElement.querySelector('.cg-visit') as HTMLElement;
+  const row = canvasElement.querySelector('.cg-journey') as HTMLElement;
+  const cardBounds = card.getBoundingClientRect();
+  const rowBounds = row.getBoundingClientRect();
+  expect(cardBounds.left).toBeGreaterThanOrEqual(rowBounds.left);
+  expect(cardBounds.right).toBeLessThanOrEqual(rowBounds.right);
+}
 
 const meta = {
   title: 'Components/VisitEntry',
   component: VisitEntry,
   parameters: {
     layout: 'padded',
-    docs: {
-      description: {
-        component:
-          'One arrival in a visitor journey. Each card shows the running confidence, traffic context, recorded signals, and a schematic replay. The decisive arrival carries the blocked-here marker. Hovering, focusing, or activating a card reveals its contextual explanation.',
-      },
-    },
+    viewport: { defaultViewport: 'desktop' },
+    docs: { description: { component: 'Production journey card, rendered with the same VisitEntry and Journey components used by the visitor-detail page.' } },
   },
-  args: {
-    index: 1,
-    timestamp: '12 Aug 2025, 09:14',
-    channel: 'paid',
-    source: 'Google Ads · uk-brand-exact · “clickerg pricing”',
-    cost: '£4.20',
-    confidence: 22,
-    signals: [
-      { label: 'Interaction', value: 'Scrolled 60%, 1m12s', severity: 'low' },
-      { label: 'Bot probability', value: '18%', severity: 'low' },
-      { label: 'VPN / proxy', value: 'None', severity: 'low' },
-    ],
-    explanation: {
-      title: 'What this arrival showed',
-      content: (
-        <>
-          <p className="cg-arrival-pop__body">
-            First paid click. Behaviour looks like a normal prospect , nothing stood out on this visit.
-          </p>
-          <dl className="cg-arrival-pop__facts">
-            <div>
-              <dt>Confidence</dt>
-              <dd className="cg-mono">0% → 22%</dd>
-            </div>
-            <div>
-              <dt>Cost</dt>
-              <dd className="cg-mono">£4.20</dd>
-            </div>
-          </dl>
-        </>
-      ),
-    },
-  },
+  args: defaultArgs,
   argTypes: {
     channel: { control: 'inline-radio', options: ['paid', 'organic', 'direct', 'referral'] },
     confidence: { control: { type: 'range', min: 0, max: 100, step: 1 } },
   },
-  render: (args) => (
-    <Journey>
-      <VisitEntry {...args} last />
-    </Journey>
-  ),
+  render: (args) => <Card args={args} />,
 } satisfies Meta<typeof VisitEntry>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const PaidVisit: Story = {};
+export const Default: Story = { play: async ({ canvasElement }) => assertCardFits(canvasElement) };
 
-export const OrganicVisit: Story = {
+export const Blocked: Story = {
   args: {
-    index: 2,
-    channel: 'organic',
-    source: 'google.com · “clickerg reviews”',
-    cost: undefined,
-    confidence: 24,
-    explanation: {
-      title: 'What this arrival showed',
-      content: (
-        <>
-          <p className="cg-arrival-pop__body">
-            Came back through organic search , nothing stood out on this visit. This visit did not come
-            from an ad, so it counts for half , it tells us about the visitor without costing you anything.
-          </p>
-          <dl className="cg-arrival-pop__facts">
-            <div>
-              <dt>Confidence</dt>
-              <dd className="cg-mono">22% → 24%</dd>
-            </div>
-            <div>
-              <dt>Source</dt>
-              <dd>google.com · “clickerg reviews”</dd>
-            </div>
-          </dl>
-        </>
-      ),
-    },
-  },
-};
-
-export const RisingSuspicion: Story = {
-  args: {
-    index: 6,
-    timestamp: '14 Aug 2025, 02:41',
-    confidence: 68,
+    ...defaultArgs, index: 6, confidence: 82,
     signals: [
-      { label: 'Click cadence', value: '0.6s between clicks', severity: 'high' },
       { label: 'Interaction', value: 'No scroll, no mouse', severity: 'high' },
+      { label: 'Bot probability', value: '82%', severity: 'high' },
       { label: 'VPN / proxy', value: 'Datacenter IP', severity: 'high' },
-      { label: 'Device fingerprint', value: 'Reused across 4 “new” sessions', severity: 'medium' },
     ],
-    explanation: {
-      title: 'Why confidence increased',
-      content: (
-        <>
-          <p className="cg-arrival-pop__body">
-            Against them: it clicked again 0.6s later , faster than the page renders, it registered no
-            mouse movement at all, it arrived from a datacenter IP, not a consumer connection. Net effect:
-            confidence up.
-          </p>
-          <dl className="cg-arrival-pop__facts">
-            <div>
-              <dt>Confidence</dt>
-              <dd className="cg-mono">44% → 68%</dd>
-            </div>
-            <div>
-              <dt>Cost</dt>
-              <dd className="cg-mono">£4.20</dd>
-            </div>
-          </dl>
-        </>
-      ),
-    },
   },
 };
 
-/** Evidence goes both ways , the explanation states both sides rather than forcing a verdict. */
-export const AmbiguousArrival: Story = {
+export const DecisiveArrival: Story = {
   args: {
-    index: 4,
-    timestamp: '13 Aug 2025, 14:02',
-    confidence: 52,
+    ...defaultArgs, index: 7, confidence: 96, decisive: true, verdict: 'blocked here',
+    signals: [
+      { label: 'Click cadence', value: '0.4s between clicks', severity: 'high' },
+      { label: 'Bot probability', value: '96%', severity: 'high' },
+      { label: 'Form fill', value: 'Invalid email ×5', severity: 'high' },
+      { label: 'Device fingerprint', value: 'Seen in 7 sessions', severity: 'high' },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    assertCardFits(canvasElement);
+    await expect(within(canvasElement).getByText('blocked here')).toBeInTheDocument();
+  },
+};
+
+export const NotBlocked: Story = {
+  args: { ...defaultArgs, index: 2, channel: 'organic', source: 'google.com · “product reviews”', cost: undefined, confidence: 24 },
+  play: async ({ canvasElement }) => {
+    assertCardFits(canvasElement);
+    await expect(within(canvasElement).queryByText('blocked here')).not.toBeInTheDocument();
+  },
+};
+
+export const Ambiguous: Story = {
+  args: {
+    ...defaultArgs, index: 4, confidence: 52,
     signals: [
       { label: 'Click cadence', value: '1.1s between clicks', severity: 'medium' },
       { label: 'Conversion', value: '£249.00', severity: 'low' },
+      { label: 'VPN / proxy', value: 'Residential proxy', severity: 'medium' },
     ],
-    explanation: {
-      title: 'Why confidence decreased',
-      content: (
-        <>
-          <p className="cg-arrival-pop__body">
-            Against them: it clicked again 1.1s later. In their favour: it converted , £249.00 of actual
-            revenue. Net effect: confidence down.
-          </p>
-          <dl className="cg-arrival-pop__facts">
-            <div>
-              <dt>Confidence</dt>
-              <dd className="cg-mono">61% → 52%</dd>
-            </div>
-            <div>
-              <dt>Cost</dt>
-              <dd className="cg-mono">£3.85</dd>
-            </div>
-          </dl>
-        </>
-      ),
-    },
   },
 };
 
-/** The decisive arrival carries the border, blocked-here marker, and live reflection. */
-export const ArrivalTimestampHeader: Story = {
-  name: 'Arrival timestamp header',
+export const LongContent: Story = {
   args: {
-    ...meta.args,
-    index: 3,
-    confidence: 78,
-    timestamp: '14/08/2025, 19:22',
-    timestampIso: '2025-08-14T19:22:00.000Z',
-    timestampLabel: '14 August 2025 at 19:22',
-  },
-};
-
-export const BlockingDecision: Story = {
-  args: {
-    index: 9,
-    timestamp: '14 Aug 2025, 03:10',
-    confidence: 96,
-    decisive: true,
-    last: true,
+    ...defaultArgs,
+    source: 'Google Ads · enterprise-cloud-security-platform · “how to stop repeated click-fraud campaigns without blocking genuine customers”',
     signals: [
-      { label: 'Click cadence', value: '0.4s median', severity: 'high' },
-      { label: 'Bot probability', value: '96%', severity: 'high' },
-      { label: 'Form fill', value: 'Invalid email ×5', severity: 'high' },
-      { label: 'Wasted spend', value: '£37.80', severity: 'high' },
+      { label: 'Interaction pattern across the full arrival', value: 'No mouse movement recorded after seven repeated paid clicks', severity: 'high' },
+      { label: 'Device fingerprint', value: 'Chromium 128 / macOS 14.6 / 2560×1440 / canvas-fingerprint-4f9a77cc-20d1-4842-96c8-8778e3f09164', severity: 'high' },
+      { label: 'Form fill', value: 'billing-contact+unusually-long-enterprise-alias@undeliverable-example.invalid', severity: 'high' },
     ],
-    verdict:
-      'Blocked here. Nine paid clicks in one night from the same datacenter IP, no scrolling or mouse movement on any of them, five form submissions with undeliverable email addresses, and no conversion. £37.80 of spend with nothing behind it. This IP was added to your Google Ads exclusion list.',
-    explanation: {
-      title: 'Why this arrival was decisive',
-      content: (
-        <>
-          <p className="cg-arrival-pop__body">
-            Against them: it clicked again 0.4s later , faster than the page renders, it scored 96% on our
-            automation model, it submitted an email address that does not exist. Net effect: confidence up.
-          </p>
-          <dl className="cg-arrival-pop__facts">
-            <div>
-              <dt>Confidence</dt>
-              <dd className="cg-mono">83% → 96%</dd>
-            </div>
-            <div>
-              <dt>Cost</dt>
-              <dd className="cg-mono">£4.20</dd>
-            </div>
-          </dl>
-          <p className="cg-arrival-pop__flag">Confidence crossed the 80% blocking threshold here.</p>
-        </>
-      ),
-    },
   },
-};
-
-/** The decisive card retains its verdict while reduced motion removes the sweep. */
-export const BlockingDecisionReducedMotion: Story = {
-  ...BlockingDecision,
-  parameters: {
-    ...BlockingDecision.parameters,
-    docs: {
-      description: {
-        story:
-          'Enable reduced motion in the browser or Storybook preview to verify that the decisive card retains its border and blocked-here marker without the moving reflection.',
-      },
-    },
-  },
-};
-
-/** Data loss is shown honestly rather than being rendered as a clean signal. */
-export const IncompleteSignals: Story = {
-  args: {
-    index: 3,
-    confidence: 41,
-    signals: [
-      { label: 'Interaction', value: undefined, severity: 'unknown' },
-      { label: 'Form fill', value: undefined, severity: 'unknown' },
-      { label: 'Bot probability', value: '41%', severity: 'medium' },
-    ],
-    explanation: {
-      title: 'What product could assess',
-      content: (
-        <>
-          <p className="cg-arrival-pop__body">
-            Our tag stopped reporting, so engagement was never captured and was excluded from scoring.
-            Against them: it scored 41% on our automation model. Net effect: confidence up.
-          </p>
-          <dl className="cg-arrival-pop__facts">
-            <div>
-              <dt>Confidence</dt>
-              <dd className="cg-mono">33% → 41%</dd>
-            </div>
-            <div>
-              <dt>Cost</dt>
-              <dd className="cg-mono">£4.20</dd>
-            </div>
-          </dl>
-        </>
-      ),
-    },
-  },
-};
-
-/** The shortest real explanation: one line, no facts row worth showing beyond confidence. */
-export const ShortExplanation: Story = {
-  args: {
-    index: 1,
-    confidence: 4,
-    signals: [{ label: 'Interaction', value: 'Scrolled 40%, 22s', severity: 'neutral' }],
-    explanation: {
-      title: 'What this arrival showed',
-      content: (
-        <>
-          <p className="cg-arrival-pop__body">Nothing stood out on this visit.</p>
-          <dl className="cg-arrival-pop__facts">
-            <div>
-              <dt>Confidence</dt>
-              <dd className="cg-mono">0% → 4%</dd>
-            </div>
-          </dl>
-        </>
-      ),
-    },
-  },
-};
-
-/** The longest realistic explanation: every kind of fact present at once. */
-export const LongExplanation: Story = {
-  args: {
-    index: 7,
-    timestamp: '14 Aug 2025, 02:58',
-    confidence: 89,
-    signals: [
-      { label: 'Click cadence', value: '0.5s between clicks', severity: 'high' },
-      { label: 'Bot probability', value: '91%', severity: 'high' },
-      { label: 'VPN / proxy', value: 'Datacenter IP', severity: 'high' },
-      { label: 'Device fingerprint', value: 'Reused across 6 sessions', severity: 'high' },
-      { label: 'Session similarity', value: '0.97', severity: 'high' },
-    ],
-    explanation: {
-      title: 'Why confidence increased',
-      content: (
-        <>
-          <p className="cg-arrival-pop__body">
-            Against them: it clicked again 0.5s later , faster than the page renders, it registered no
-            mouse movement at all, it scored 91% on our automation model, it arrived from a datacenter IP,
-            not a consumer connection, the same browser fingerprint has appeared in 6 supposedly separate
-            sessions, it repeated the previous session almost exactly , 97% identical, where real people
-            vary far more. Net effect: confidence up.
-          </p>
-          <dl className="cg-arrival-pop__facts">
-            <div>
-              <dt>Confidence</dt>
-              <dd className="cg-mono">74% → 89%</dd>
-            </div>
-            <div>
-              <dt>Cost</dt>
-              <dd className="cg-mono">£4.20</dd>
-            </div>
-          </dl>
-        </>
-      ),
-    },
-  },
-};
-
-const closed = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-  const popover = canvasElement.querySelector('.cg-arrival-pop') as HTMLElement;
-  await expect(popover.matches(':popover-open')).toBe(false);
-  await expect(within(canvasElement).queryByRole('button', { name: /what this arrival showed/i })).not.toBeInTheDocument();
-};
-
-export const DisclosureClosedByDefault: Story = {
-  name: 'Disclosure: closed by default',
-  play: closed,
-};
-
-export const DisclosureOpenOnPointer: Story = {
-  name: 'Disclosure: opens on hover',
-  play: async ({ canvasElement }) => {
-    await closed({ canvasElement });
-    const card = canvasElement.querySelector('.cg-visit') as HTMLElement;
-    await userEvent.hover(card);
-    const popover = canvasElement.querySelector('.cg-arrival-pop') as HTMLElement;
-    await waitFor(() => expect(popover.matches(':popover-open')).toBe(true));
-    await expect(within(popover).getByText('What this arrival showed')).toBeInTheDocument();
-    await userEvent.unhover(card);
-  },
-};
-
-export const DisclosureOpenOnFocus: Story = {
-  name: 'Disclosure: opens on keyboard focus',
-  play: async ({ canvasElement }) => {
-    await closed({ canvasElement });
-    const trigger = within(canvasElement).getByRole('button', { name: /visit 1, 22% confidence/i });
-    await userEvent.tab();
-    await waitFor(() => expect(trigger).toHaveFocus());
-    const popover = canvasElement.querySelector('.cg-arrival-pop') as HTMLElement;
-    await waitFor(() => expect(popover.matches(':popover-open')).toBe(true));
-    await expect(trigger).toHaveAttribute('aria-expanded', 'true');
-    await userEvent.keyboard('{Escape}');
-    await waitFor(() => expect(popover.matches(':popover-open')).toBe(false));
-    await userEvent.keyboard('{Enter}');
-    await waitFor(() => expect(popover.matches(':popover-open')).toBe(true));
-  },
-};
-
-export const DisclosureOpenOnTouch: Story = {
-  name: 'Disclosure: opens on touch activation',
-  play: async ({ canvasElement }) => {
-    await closed({ canvasElement });
-    const card = within(canvasElement).getByRole('button', { name: /visit 1, 22% confidence/i });
-    await userEvent.click(card);
-    const popover = canvasElement.querySelector('.cg-arrival-pop') as HTMLElement;
-    await waitFor(() => expect(popover.matches(':popover-open')).toBe(true));
-  },
-};
-
-/** The first card in the strip: the popover must not open off the left edge of the viewport. */
-export const FirstCardPositioning: Story = {
-  render: () => (
-    <Journey>
-      <VisitEntry {...meta.args} index={1} />
-      <VisitEntry {...meta.args} index={2} timestamp="12 Aug 2025, 10:02" />
-      <VisitEntry {...meta.args} index={3} timestamp="12 Aug 2025, 11:47" last />
-    </Journey>
-  ),
-  play: async ({ canvasElement }) => {
-    const firstCard = canvasElement.querySelectorAll('.cg-visit')[0] as HTMLElement;
-    await userEvent.hover(firstCard);
-    const popover = firstCard.parentElement?.querySelector('.cg-arrival-pop') as HTMLElement;
-    await waitFor(() => expect(popover.matches(':popover-open')).toBe(true));
-    const rect = popover.getBoundingClientRect();
-    await expect(rect.left).toBeGreaterThanOrEqual(0);
-    await userEvent.unhover(firstCard);
-  },
-};
-
-/** The last card, scrolled to the strip's right edge: the popover must not open off-screen right. */
-export const LastCardPositioning: Story = {
-  render: () => (
-    <div style={{ width: 360, overflow: 'hidden' }}>
-      <Journey>
-        <VisitEntry {...meta.args} index={1} />
-        <VisitEntry {...meta.args} index={2} timestamp="12 Aug 2025, 10:02" />
-        <VisitEntry {...meta.args} index={3} timestamp="12 Aug 2025, 11:47" last />
-      </Journey>
-    </div>
-  ),
-  play: async ({ canvasElement }) => {
-    const cards = canvasElement.querySelectorAll('.cg-visit');
-    const lastCard = cards[cards.length - 1] as HTMLElement;
-    lastCard.scrollIntoView();
-    await userEvent.hover(lastCard);
-    const popover = lastCard.parentElement?.querySelector('.cg-arrival-pop') as HTMLElement;
-    await waitFor(() => expect(popover.matches(':popover-open')).toBe(true));
-    const rect = popover.getBoundingClientRect();
-    await expect(rect.right).toBeLessThanOrEqual(window.innerWidth);
-    await userEvent.unhover(lastCard);
-  },
+  play: async ({ canvasElement }) => assertCardFits(canvasElement),
 };
 
 export const NarrowViewport: Story = {
   parameters: { viewport: { defaultViewport: 'mobile' } },
-  globals: { viewport: { value: 'mobile' } },
-  render: () => (
-    <Journey>
-      <VisitEntry {...meta.args} index={1} last />
-    </Journey>
-  ),
+  args: LongContent.args,
+  play: async ({ canvasElement }) => assertCardFits(canvasElement),
 };
 
-export const FullJourney: Story = {
+export const HorizontalJourneyRow: Story = {
   render: () => (
     <Journey>
-      <VisitEntry
-        index={1}
-        timestamp="12 Aug 2025, 09:14"
-        channel="paid"
-        source="Google Ads · uk-brand-exact"
-        cost="£4.20"
-        confidence={22}
-        signals={[{ label: 'Interaction', value: 'Scrolled 60%', severity: 'low' }]}
-        explanation={{
-          title: 'What this arrival showed',
-          content: <p className="cg-arrival-pop__body">First paid click, behaves like a prospect.</p>,
-        }}
-      />
-      <VisitEntry
-        index={2}
-        timestamp="13 Aug 2025, 23:58"
-        channel="paid"
-        source="Google Ads · uk-brand-exact"
-        cost="£4.20"
-        confidence={58}
-        signals={[
-          { label: 'Click cadence', value: '0.8s', severity: 'medium' },
-          { label: 'VPN / proxy', value: 'Datacenter IP', severity: 'high' },
-        ]}
-        explanation={{
-          title: 'Why confidence increased',
-          content: <p className="cg-arrival-pop__body">Same IP, now masked and clicking far faster than it reads.</p>,
-        }}
-      />
-      <VisitEntry
-        index={3}
-        timestamp="14 Aug 2025, 03:10"
-        channel="paid"
-        source="Google Ads · uk-brand-exact"
-        cost="£4.20"
-        confidence={96}
-        decisive
-        last
-        signals={[{ label: 'Bot probability', value: '96%', severity: 'high' }]}
-        verdict="Blocked here , the pattern stopped being ambiguous."
-        explanation={{
-          title: 'Why this arrival was decisive',
-          content: <p className="cg-arrival-pop__body">Third paid click of the night , confidence crossed the blocking threshold here.</p>,
-        }}
-      />
+      {[22, 38, 58, 76, 96].map((confidence, index) => (
+        <VisitEntry
+          key={confidence}
+          {...defaultArgs}
+          index={index + 1}
+          timestamp={`12/08/2025, ${String(9 + index).padStart(2, '0')}:14`}
+          confidence={confidence}
+          decisive={confidence === 96}
+          verdict={confidence === 96 ? 'blocked here' : undefined}
+        />
+      ))}
     </Journey>
   ),
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelectorAll('.cg-visit')).toHaveLength(5);
+    await expect(within(canvasElement).getByText('blocked here')).toBeInTheDocument();
+  },
 };

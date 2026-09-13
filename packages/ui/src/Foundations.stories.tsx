@@ -35,6 +35,14 @@ const COLORS: [string, string][] = [
   ['--cg-wf-bar', 'Wireframe: body bar'],
 ];
 
+const BRAND: [string, string, string][] = [
+  ['--cg-brand-acid', '#EEFF9C', 'Primary ClickGuard accent and blocked-state emphasis'],
+  ['--cg-brand-acid-hover', '#E7FA83', 'Hover state'],
+  ['--cg-brand-acid-active', '#DDEF69', 'Pressed or active state'],
+  ['--cg-brand-acid-subtle', 'rgba(238, 255, 156, 0.24)', 'Subtle backgrounds and highlights'],
+  ['--cg-on-brand-acid', '#15171C', 'Text and icons on acid green'],
+];
+
 const TYPE: [string, string, number][] = [
   ['Page title', '--cg-text-title', 800],
   ['Section', '--cg-text-sub', 700],
@@ -48,7 +56,14 @@ const TYPE: [string, string, number][] = [
 
 export const Color: Story = {
   render: () => (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 12 }}>
+    <div style={{ display: 'grid', gap: 20 }}>
+      <section>
+        <h2 style={{ margin: '0 0 12px' }}>Brand</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 12 }}>
+          {BRAND.map(([token, value, role]) => <div key={token} className="cg-card cg-card--compact"><div style={{ height: 44, background: `var(${token})`, border: '1px solid var(--cg-border)', marginBottom: 8, color: 'var(--cg-on-brand-acid)', display: 'grid', placeItems: 'center', fontSize: 11 }}>BLOCKED</div><div className="cg-mono" style={{ fontSize: 11 }}>{token}</div><div style={{ fontSize: 11, color: 'var(--cg-muted)' }}>{value} · {role}</div></div>)}
+        </div>
+      </section>
+      <section><h2 style={{ margin: '0 0 12px' }}>Neutral and semantic</h2><div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 12 }}>
       {COLORS.map(([token, role]) => (
         <div key={token} className="cg-card cg-card--compact">
           <div
@@ -63,6 +78,7 @@ export const Color: Story = {
           <div style={{ fontSize: 11, color: 'var(--cg-muted)' }}>{role}</div>
         </div>
       ))}
+      </div></section>
     </div>
   ),
 };
