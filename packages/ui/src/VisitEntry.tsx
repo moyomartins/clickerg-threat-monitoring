@@ -25,7 +25,7 @@ export interface VisitEntryProps {
   cost?: string;
   signals: SignalChipProps[];
   /**
-   * Names the contextual disclosure and supplies its body — hover, focus, or
+   * Names the contextual disclosure and supplies its body , hover, focus, or
    * tap on the card reveals it. Omit for a card with nothing to disclose
    * (e.g. a Storybook example that isn't demonstrating the interaction).
    */

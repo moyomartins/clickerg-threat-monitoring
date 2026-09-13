@@ -84,23 +84,23 @@ The live application reports 77 visitors and 360 paid arrivals. The approved lay
 
 ## Files changed by this task
 
-- src/data/types.ts — observation, manual-history and platform-event types.
-- src/data/mock.ts — retained/normalized journeys and authored variations.
-- src/data/clock.ts — shared fixed demo clock.
-- src/data/scoring.ts — skip unknown probability; numeric thresholds unchanged.
-- src/data/manual.ts — preserve automated evidence and append manual decisions.
-- src/data/mock.test.ts — updated dataset size and automatic/manual expectations.
-- src/data/realism.test.ts — deterministic data/decision/filter regression coverage.
-- src/filters.ts — canonical visitor filter predicate, unknown handling.
-- src/VisitorList.tsx — shared predicate and truthful paid/free introduction.
-- src/App.tsx — legacy alias routing and manual history.
-- src/arrival.ts — unknown presentation, actual cumulative movement, pending-arrival explanation.
-- src/arrival.test.ts — legacy fixture alias lookup.
-- src/decision.ts — decision-prefix hero copy and manual timestamp.
-- src/decision.test.ts — alias lookup and manual decision distinction.
-- src/heroFacts.ts — platform event state.
-- src/journeySummary.ts — truthful conversion/manual copy.
-- src/journeySummary.test.ts — legacy fixture alias lookup.
-- src/format.ts — import shared clock.
-- packages/ui/src/TrafficJourneys.stories.tsx — eight actual app reference journeys.
-- TRAFFIC-REALISM.md — this report.
+- src/data/types.ts , observation, manual-history and platform-event types.
+- src/data/mock.ts , retained/normalized journeys and authored variations.
+- src/data/clock.ts , shared fixed demo clock.
+- src/data/scoring.ts , skip unknown probability; numeric thresholds unchanged.
+- src/data/manual.ts , preserve automated evidence and append manual decisions.
+- src/data/mock.test.ts , updated dataset size and automatic/manual expectations.
+- src/data/realism.test.ts , deterministic data/decision/filter regression coverage.
+- src/filters.ts , canonical visitor filter predicate, unknown handling.
+- src/VisitorList.tsx , shared predicate and truthful paid/free introduction.
+- src/App.tsx , legacy alias routing and manual history.
+- src/arrival.ts , unknown presentation, actual cumulative movement, pending-arrival explanation.
+- src/arrival.test.ts , legacy fixture alias lookup.
+- src/decision.ts , decision-prefix hero copy and manual timestamp.
+- src/decision.test.ts , alias lookup and manual decision distinction.
+- src/heroFacts.ts , platform event state.
+- src/journeySummary.ts , truthful conversion/manual copy.
+- src/journeySummary.test.ts , legacy fixture alias lookup.
+- src/format.ts , import shared clock.
+- packages/ui/src/TrafficJourneys.stories.tsx , eight actual app reference journeys.
+- TRAFFIC-REALISM.md , this report.

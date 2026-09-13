@@ -22,7 +22,7 @@ export interface DataTableProps<T> {
   sort?: SortState;
   onSortChange?: (key: string) => void;
   onRowClick?: (row: T) => void;
-  /** Draws a charcoal rail on the row — used for blocked visitors. */
+  /** Draws a charcoal rail on the row , used for blocked visitors. */
   isRowFlagged?: (row: T) => boolean;
   loading?: boolean;
   skeletonRows?: number;

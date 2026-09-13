@@ -37,7 +37,7 @@ const STATUS_RANK: Record<VisitorStatus, number> = {
 const SETTLED = new Set<VisitorStatus>(['blocked', 'allowed']);
 
 const whyTone = (v: Visitor) => {
-  if (v.summary.trim() === '—') return ' replay-card__why--none';
+  if (v.summary.trim() === ',') return ' replay-card__why--none';
   return SETTLED.has(v.status) ? '' : ' replay-card__why--open';
 };
 
@@ -122,7 +122,7 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
       <h1 className="page__title">Threat monitoring</h1>
       <p className="page__lede">
         Every visitor recorded on your site, across paid and free arrivals, and what we decided about them. Blocking is
-        cumulative — open any visitor to see the whole journey and the point where we made the call.
+        cumulative , open any visitor to see the whole journey and the point where we made the call.
       </p>
 
       <div className="stats">

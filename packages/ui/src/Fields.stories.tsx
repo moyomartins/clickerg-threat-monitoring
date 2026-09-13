@@ -13,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The list view filter row. Every control is labelled — the label is part of the component, not an optional decoration, because an unlabelled filter is invisible to a screen reader and ambiguous to everyone else.',
+          'The list view filter row. Every control is labelled , the label is part of the component, not an optional decoration, because an unlabelled filter is invisible to a screen reader and ambiguous to everyone else.',
       },
     },
   },

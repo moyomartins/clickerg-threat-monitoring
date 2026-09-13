@@ -9,7 +9,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Status is the first thing an advertiser reads in the visitor list. Blocked is the only filled pill — it is the only state with a consequence. Severity tones are deliberately desaturated so the warm-neutral palette survives.',
+          'Status is the first thing an advertiser reads in the visitor list. Blocked is the only filled pill , it is the only state with a consequence. Severity tones are deliberately desaturated so the warm-neutral palette survives.',
       },
     },
   },
@@ -29,7 +29,7 @@ export const Blocked: Story = { args: { status: 'blocked' } };
 export const NotBlocked: Story = { args: { status: 'allowed' } };
 export const UnderReview: Story = { args: { status: 'review' } };
 export const JudgementCall: Story = { args: { status: 'ambiguous' } };
-/** A visitor whose signals failed to record — never silently shown as "clean". */
+/** A visitor whose signals failed to record , never silently shown as "clean". */
 export const IncompleteData: Story = { args: { status: 'incomplete' } };
 export const WithCustomLabel: Story = { args: { status: 'blocked', label: 'Blocked 12 Aug' } };
 

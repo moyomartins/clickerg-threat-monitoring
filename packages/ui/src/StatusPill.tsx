@@ -10,7 +10,7 @@ const LABELS: Record<VisitorStatus, string> = {
 
 export interface StatusPillProps {
   status: VisitorStatus;
-  /** Override the default copy — e.g. "Blocked 3 Nov". */
+  /** Override the default copy , e.g. "Blocked 3 Nov". */
   label?: string;
   className?: string;
 }

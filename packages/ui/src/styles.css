@@ -216,7 +216,7 @@
 /* ------------------------------------------------- arrival disclosure --- */
 
 /* The popover: a background step and a border, same as every other flat
-   surface in this system — never a shadow. Position is computed in JS
+   surface in this system , never a shadow. Position is computed in JS
    (viewport-fixed), so only the box itself is styled here. */
 .cg-arrival-pop { position: fixed; margin: 0; width: min(300px, calc(100vw - 16px));
   background: var(--cg-surface); border: var(--cg-border-w) solid var(--cg-border);
@@ -236,7 +236,7 @@
 .cg-arrival-pop__flag { margin: var(--cg-space-1-25) 0 0; font-size: var(--cg-text-mono-sm);
   font-family: var(--cg-font-mono); color: var(--cg-absence); }
 
-/* A brief rise-and-fade in, no exit animation — dismissal (Escape, outside
+/* A brief rise-and-fade in, no exit animation , dismissal (Escape, outside
    click, pointer leaving both card and popover) should never feel delayed. */
 .cg-arrival-pop:popover-open { opacity: 1; transform: translateY(0);
   transition: opacity 100ms ease-out, transform 100ms ease-out; }
@@ -259,7 +259,7 @@
 /* --------------------------------------------------------- decision hero --- */
 /* The detail hero as an enclosure. DESIGN.md already carries status as border
    weight and style rather than a colour fill; this hero promotes that rule to
-   the whole composition — the border states the verdict, the replay sits
+   the whole composition , the border states the verdict, the replay sits
    inside the same enclosure rather than beside it, and hairlines divide the
    argument within it. One reason, stated once; the arrival strip below carries
    the per-visit evidence, so nothing here restates it. */
@@ -269,7 +269,7 @@
 
 .cg-hero { display: grid; grid-template-columns: 340px minmax(0, 1.3fr) minmax(0, 1fr);
   border: var(--cg-border-w) solid var(--cg-border); background: var(--cg-surface); }
-/* Blocked is a 2px ink border, not a fill — the same rule the list card and
+/* Blocked is a 2px ink border, not a fill , the same rule the list card and
    the arrival strip's decisive marker already follow. */
 .cg-hero--blocked { border-width: var(--cg-border-w-strong); border-color: var(--cg-ink); }
 .cg-hero--ambiguous { border-style: dashed; border-color: var(--cg-sev-medium); }
@@ -360,9 +360,9 @@
 .cg-filterbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--cg-space-2);
   padding: var(--cg-space-1-5); border: var(--cg-border-w) solid var(--cg-border);
   background: var(--cg-surface); border-radius: var(--cg-radius); }
-/* Search is the one free-text lookup, not a peer of the dropdowns — it leads its own row. */
+/* Search is the one free-text lookup, not a peer of the dropdowns , it leads its own row. */
 .cg-filterbar > .cg-field--grow { flex: 1 1 100%; }
-/* Clusters controls of one interaction kind — metadata selects, a threshold slider, a toggle —
+/* Clusters controls of one interaction kind , metadata selects, a threshold slider, a toggle ,
    so the bar reads as three kinds of control rather than one undifferentiated row. */
 .cg-filterbar__group { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--cg-space-1-25);
   padding-left: var(--cg-space-2); border-left: var(--cg-border-w) solid var(--cg-border); }
@@ -404,7 +404,7 @@
 .cg-stepped-range .cg-range:focus-visible::-moz-range-thumb { box-shadow: var(--cg-focus); }
 .cg-stepped-range__ticks { display: flex; justify-content: space-between; margin-top: -1px; font-family: var(--cg-font-mono); font-size: var(--cg-text-marker); color: var(--cg-muted); }
 
-/* A binary switch, not a button — position and fill carry on/off, no new colour. */
+/* A binary switch, not a button , position and fill carry on/off, no new colour. */
 .cg-switch { display: inline-flex; align-items: center; gap: var(--cg-space-1); font-size: var(--cg-text-xs);
   color: var(--cg-body); cursor: pointer; user-select: none; }
 .cg-switch__track { position: relative; width: 30px; height: 17px; flex-shrink: 0;

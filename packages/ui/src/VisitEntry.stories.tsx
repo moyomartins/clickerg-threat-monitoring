@@ -10,7 +10,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'One visit in a visitor journey. Blocking is cumulative, so each entry carries the running confidence — the advertiser can see where the line was crossed rather than being handed a final verdict. Hovering, focusing, or tapping a card reveals its contextual explanation — what happened, what it did to confidence, and whether it was the arrival that decided the case.',
+          'One visit in a visitor journey. Blocking is cumulative, so each entry carries the running confidence , the advertiser can see where the line was crossed rather than being handed a final verdict. Hovering, focusing, or tapping a card reveals its contextual explanation , what happened, what it did to confidence, and whether it was the arrival that decided the case.',
       },
     },
   },
@@ -31,7 +31,7 @@ const meta = {
       content: (
         <>
           <p className="cg-arrival-pop__body">
-            First paid click. Behaviour looks like a normal prospect — nothing stood out on this visit.
+            First paid click. Behaviour looks like a normal prospect , nothing stood out on this visit.
           </p>
           <dl className="cg-arrival-pop__facts">
             <div>
@@ -75,8 +75,8 @@ export const OrganicVisit: Story = {
       content: (
         <>
           <p className="cg-arrival-pop__body">
-            Came back through organic search — nothing stood out on this visit. This visit did not come
-            from an ad, so it counts for half — it tells us about the visitor without costing you anything.
+            Came back through organic search , nothing stood out on this visit. This visit did not come
+            from an ad, so it counts for half , it tells us about the visitor without costing you anything.
           </p>
           <dl className="cg-arrival-pop__facts">
             <div>
@@ -110,7 +110,7 @@ export const RisingSuspicion: Story = {
       content: (
         <>
           <p className="cg-arrival-pop__body">
-            Against them: it clicked again 0.6s later — faster than the page renders, it registered no
+            Against them: it clicked again 0.6s later , faster than the page renders, it registered no
             mouse movement at all, it arrived from a datacenter IP, not a consumer connection. Net effect:
             confidence up.
           </p>
@@ -130,7 +130,7 @@ export const RisingSuspicion: Story = {
   },
 };
 
-/** Evidence goes both ways — the explanation states both sides rather than forcing a verdict. */
+/** Evidence goes both ways , the explanation states both sides rather than forcing a verdict. */
 export const AmbiguousArrival: Story = {
   args: {
     index: 4,
@@ -145,7 +145,7 @@ export const AmbiguousArrival: Story = {
       content: (
         <>
           <p className="cg-arrival-pop__body">
-            Against them: it clicked again 1.1s later. In their favour: it converted — £249.00 of actual
+            Against them: it clicked again 1.1s later. In their favour: it converted , £249.00 of actual
             revenue. Net effect: confidence down.
           </p>
           <dl className="cg-arrival-pop__facts">
@@ -197,7 +197,7 @@ export const BlockingDecision: Story = {
       content: (
         <>
           <p className="cg-arrival-pop__body">
-            Against them: it clicked again 0.4s later — faster than the page renders, it scored 96% on our
+            Against them: it clicked again 0.4s later , faster than the page renders, it scored 96% on our
             automation model, it submitted an email address that does not exist. Net effect: confidence up.
           </p>
           <dl className="cg-arrival-pop__facts">
@@ -322,10 +322,10 @@ export const LongExplanation: Story = {
       content: (
         <>
           <p className="cg-arrival-pop__body">
-            Against them: it clicked again 0.5s later — faster than the page renders, it registered no
+            Against them: it clicked again 0.5s later , faster than the page renders, it registered no
             mouse movement at all, it scored 91% on our automation model, it arrived from a datacenter IP,
             not a consumer connection, the same browser fingerprint has appeared in 6 supposedly separate
-            sessions, it repeated the previous session almost exactly — 97% identical, where real people
+            sessions, it repeated the previous session almost exactly , 97% identical, where real people
             vary far more. Net effect: confidence up.
           </p>
           <dl className="cg-arrival-pop__facts">
@@ -492,10 +492,10 @@ export const FullJourney: Story = {
         decisive
         last
         signals={[{ label: 'Bot probability', value: '96%', severity: 'high' }]}
-        verdict="Blocked here — the pattern stopped being ambiguous."
+        verdict="Blocked here , the pattern stopped being ambiguous."
         explanation={{
           title: 'Why this arrival was decisive',
-          content: <p className="cg-arrival-pop__body">Third paid click of the night — confidence crossed the blocking threshold here.</p>,
+          content: <p className="cg-arrival-pop__body">Third paid click of the night , confidence crossed the blocking threshold here.</p>,
         }}
       />
     </Journey>

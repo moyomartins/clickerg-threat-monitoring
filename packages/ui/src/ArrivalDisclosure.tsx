@@ -1,17 +1,17 @@
 /**
- * A card that reveals more about itself on hover, focus, or tap — without
+ * A card that reveals more about itself on hover, focus, or tap , without
  * growing, without reflowing its neighbours, and without being clipped by an
  * ancestor that scrolls (the horizontally-scrolling journey strip).
  *
  * The mechanics use the native Popover API: the disclosure is promoted to the
  * top layer when shown, which is what lets it escape the strip's
- * `overflow-x: auto` for free — no manual portal, no manual overflow
+ * `overflow-x: auto` for free , no manual portal, no manual overflow
  * workaround. Positioning still has to be computed by hand, because a plain
  * popover has no opinion about where it sits relative to its trigger.
  *
  * Dismissal (outside click, Escape) is native to `popover="auto"`. The
- * popover content is intentionally non-interactive — no focusable element
- * inside it — so focus never leaves the trigger card, and closing it never
+ * popover content is intentionally non-interactive , no focusable element
+ * inside it , so focus never leaves the trigger card, and closing it never
  * needs to restore focus anywhere: it never went anywhere.
  */
 
@@ -19,13 +19,13 @@ import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode 
 
 export interface ArrivalDisclosureProps {
   /** Names the popover region and doubles as its visible heading. Responds
-   *  to the arrival's own state — e.g. "Why confidence increased". */
+   *  to the arrival's own state , e.g. "Why confidence increased". */
   label: string;
   /** The popover's body: prose plus whatever structured facts apply. */
   content: ReactNode;
   /** Accessible name for the complete card trigger. */
   triggerLabel: string;
-  /** Passed to the `<li>` this component owns — status/reflection modifiers. */
+  /** Passed to the `<li>` this component owns , status/reflection modifiers. */
   className?: string;
   /** The card's own visible content. */
   children: ReactNode;
@@ -93,7 +93,7 @@ export function ArrivalDisclosure({
   const cancelHide = () => clearTimeout(closeTimer.current);
 
   /* Native light-dismiss (Escape, outside click) bypasses `show`/`scheduleHide`,
-     so `open` — and the trigger's `aria-expanded` — is synced from the
+     so `open` , and the trigger's `aria-expanded` , is synced from the
      popover's own toggle event rather than from our call sites. */
   useEffect(() => {
     const pop = popoverRef.current;
@@ -109,7 +109,7 @@ export function ArrivalDisclosure({
 
   /* Reposition while scrolling, and close if the trigger has scrolled out of
      view entirely rather than leave the popover floating over content it no
-     longer names. The journey strip scrolls internally — its `scroll` event
+     longer names. The journey strip scrolls internally , its `scroll` event
      does not bubble and, empirically, is not observed by a `window`-level
      capture listener either, so the listener has to go on the strip itself
      (and on every other scrollable ancestor between the trigger and the
@@ -141,7 +141,7 @@ export function ArrivalDisclosure({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  /* `popover="auto"` already closes on Escape for a real, trusted keypress —
+  /* `popover="auto"` already closes on Escape for a real, trusted keypress ,
      but that native path only honours trusted events, so anything driving
      the keyboard programmatically (tests, some assistive tooling) needs this
      explicit handler to get the same guarantee. */

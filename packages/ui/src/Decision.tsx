@@ -2,11 +2,11 @@
  * The visitor decision hero: an enclosure.
  *
  * DESIGN.md carries status as border weight and style rather than colour fill
- * — 2px ink for blocked, dashed for a judgement call, dotted for incomplete.
+ * , 2px ink for blocked, dashed for a judgement call, dotted for incomplete.
  * This hero takes that rule literally and promotes it to the whole hero: the
  * border states the verdict, the replay sits inside the same enclosure rather
  * than beside it, and hairlines divide the argument within it. One reason,
- * once — the arrival strip below carries the per-visit evidence, so nothing
+ * once , the arrival strip below carries the per-visit evidence, so nothing
  * here restates it.
  *
  * Every component here is presentational. Formatting money, dates and relative
@@ -74,14 +74,14 @@ export function DecisionHero({
 }
 
 export interface DecisiveCellProps {
-  /** e.g. "Blocked at paid click 3" — the moment, named. */
+  /** e.g. "Blocked at paid click 3" , the moment, named. */
   label: string;
   iso: string;
   stamp: string;
   /** `decisive` ties the label to the red decisive arrival in the strip below. */
   tone?: 'decisive' | 'neutral';
   clickLabel: string;
-  /** `null` when nothing was decisive — renders "none" in muted. */
+  /** `null` when nothing was decisive , renders "none" in muted. */
   click: string | null;
 }
 
@@ -107,7 +107,7 @@ export interface FinancialCellProps {
   spendLabel: string;
   spend: string;
   revenueLabel: string;
-  /** `null` when conversion telemetry never arrived — never render it as zero. */
+  /** `null` when conversion telemetry never arrived , never render it as zero. */
   revenue: string | null;
   /** Only `favourable` on a verified conversion. */
   revenueTone?: 'favourable' | 'muted';
@@ -134,7 +134,7 @@ export function FinancialCell({ label, spendLabel, spend, revenueLabel, revenue,
 
 export interface JourneyRowProps {
   label: string;
-  /** JourneyItem elements — visits, active period, dates, confidence, exclusion. */
+  /** JourneyItem elements , visits, active period, dates, confidence, exclusion. */
   children: ReactNode;
 }
 
@@ -168,7 +168,7 @@ export interface ConfidenceInlineProps {
   value: number | null;
   /** Accessible name for the meter. */
   meterLabel: string;
-  /** e.g. "crossed 80% at visit 3" — where the line was passed. */
+  /** e.g. "crossed 80% at visit 3" , where the line was passed. */
   detail?: string;
   id: string;
 }
@@ -184,7 +184,7 @@ export function ConfidenceInline({ label, value, meterLabel, detail, id }: Confi
       </dt>
       <dd className="cg-meta">
         {clamped === null ? (
-          <span className="cg-conf__absent">Unavailable — telemetry not captured</span>
+          <span className="cg-conf__absent">Unavailable , telemetry not captured</span>
         ) : (
           <span className="cg-conf">
             <span className="cg-conf__value">{clamped}%</span>

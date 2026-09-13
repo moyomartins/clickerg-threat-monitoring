@@ -1,9 +1,9 @@
 /**
- * @clickerg/ui — design tokens. World: Replay (direction 22).
+ * @clickerg/ui , design tokens. World: Replay (direction 22).
  *
  * The premise: stop describing behaviour in numbers and show it happening.
  * Every visitor is rendered as the page they landed on, with their behaviour
- * drawn onto it — scroll depth shaded, mouse path traced, clicks marked, and
+ * drawn onto it , scroll depth shaded, mouse path traced, clicks marked, and
  * absence drawn explicitly rather than left blank.
  *
  * Values carried from the approved preview. Three were corrected for WCAG 2.2
@@ -30,7 +30,7 @@
   /* --- The two signal colours ---
      Attention blue is a GRAPHIC (scroll band, mouse path) and clears the 3:1
      bar at 3.16:1, so it keeps its preview value. Where the same blue carries
-     text it uses the darkened variant instead — collapsing the two would dull
+     text it uses the darkened variant instead , collapsing the two would dull
      the direction for no accessibility gain. */
   --cg-attention: #3b82f6;
   --cg-attention-wash: rgba(59, 130, 246, 0.16);
@@ -72,7 +72,7 @@
   --cg-text-xs: 11px;
   --cg-text-mono: 12.5px;
   --cg-text-mono-sm: 10.5px;
-  --cg-text-marker: 10px;  /* raised from the preview's 8.5px — see README */
+  --cg-text-marker: 10px;  /* raised from the preview's 8.5px , see README */
 
   --cg-tracking-title: -0.025em;
   --cg-tracking-label: 0.1em;

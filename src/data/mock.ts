@@ -4,13 +4,13 @@ import type { Channel, FormFill, Visit, Visitor, VisitorStatus, VpnState } from 
 /**
  * Deterministic mock traffic.
  *
- * Seeded so the same journeys appear on every reload — a fraud screen that
+ * Seeded so the same journeys appear on every reload , a fraud screen that
  * reshuffles itself between refreshes is impossible to review or to demo.
  *
  * The interesting cases are pinned and easy to find:
- *   41.203.88.7   — the obvious one: a click farm, blocked
- *   82.14.90.221  — the honest judgement call: real conversion, robotic cadence
- *   178.62.40.9   — incomplete data: our tag stopped reporting mid-journey
+ *   41.203.88.7   , the obvious one: a click farm, blocked
+ *   82.14.90.221  , the honest judgement call: real conversion, robotic cadence
+ *   178.62.40.9   , incomplete data: our tag stopped reporting mid-journey
  */
 
 export { NOW } from './clock';
@@ -153,7 +153,7 @@ export function assemble(
 
   const converted = revenueGbp > 0;
   const peak = Math.max(...confidence);
-  /** Money on one side, automation signals on the other — an honest tie. */
+  /** Money on one side, automation signals on the other , an honest tie. */
   const conflicted = converted && peak >= REVIEW_THRESHOLD;
 
   let status: VisitorStatus;
@@ -197,7 +197,7 @@ export function assemble(
       `This one is a judgement call and we have not blocked it. ` +
       `The case against: it ${uniqueReasons.slice(0, 2).map((x) => x.text).join(', and it ')}. ` +
       `The case for: it converted, ${`£${revenueGbp.toFixed(2)}`} of real revenue against ${money} of clicks, and it engaged with the pages it landed on. ` +
-      `A determined competitor can buy something to look legitimate, and a genuine customer can sit behind a corporate VPN — we cannot tell those apart from the signals alone. ` +
+      `A determined competitor can buy something to look legitimate, and a genuine customer can sit behind a corporate VPN , we cannot tell those apart from the signals alone. ` +
       `We would rather show you the conflict than block a paying customer on our own judgement.`;
   } else if (status === 'incomplete') {
     summary = dataGap ?? 'Partial data for this visitor';
@@ -212,7 +212,7 @@ export function assemble(
       `What we noticed: it ${uniqueReasons.slice(0, 2).map((x) => x.text).join(', and it ')}. ` +
       `Blocking requires at least ${MIN_PAID_CLICKS_TO_BLOCK} paid arrivals and ${BLOCK_THRESHOLD}% confidence; we are still observing this journey.`;
   } else {
-    summary = converted ? `Converted £${revenueGbp.toFixed(2)}` : '—';
+    summary = converted ? `Converted £${revenueGbp.toFixed(2)}` : ',';
     verdict =
       `Nothing to act on. Confidence peaked at ${peak}%, well under our blocking line. ` +
       `${paidVisits === 0 ? 'None of these visits came from a paid click, so none of them cost you anything.' : `${paidVisits} of ${visits.length} visits came from paid clicks (${money}).`}` +
@@ -254,7 +254,7 @@ function journeyFor(r: () => number, archetype: Archetype, ip: string): Visit[] 
   switch (archetype) {
     case 'clean-organic': {
       const n = intBetween(r, 1, 5);
-      /* One decision, not two independent rolls — `converted` and its value
+      /* One decision, not two independent rolls , `converted` and its value
          must always agree, or a visit can convert for an unrecorded amount. */
       const willConvert = r() < 0.25;
       return Array.from({ length: n }, (_, i) => {

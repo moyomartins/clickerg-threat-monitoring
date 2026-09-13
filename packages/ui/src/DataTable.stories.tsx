@@ -19,9 +19,9 @@ interface Row {
 const ROWS: Row[] = [
   { ip: '41.203.88.7', status: 'blocked', location: 'Lagos, NG', visits: 31, paid: 29, lastSeen: '14 Aug, 03:10', why: '29 paid clicks in 2 days, no engagement on any' },
   { ip: '82.14.90.221', status: 'ambiguous', location: 'Leeds, GB', visits: 9, paid: 6, lastSeen: '13 Aug, 19:02', why: 'Converted once, but clicks arrive on a fixed cadence' },
-  { ip: '104.28.11.4', status: 'review', location: 'Frankfurt, DE', visits: 12, paid: 12, lastSeen: '13 Aug, 08:44', why: 'Datacenter IP, engagement improving' },
-  { ip: '90.201.6.18', status: 'allowed', location: 'Bristol, GB', visits: 4, paid: 1, lastSeen: '11 Aug, 12:20', why: '—' },
-  { ip: '178.62.40.9', status: 'incomplete', location: 'Unknown', visits: 2, paid: 2, lastSeen: '10 Aug, 22:05', why: 'Tag stopped reporting mid-session' },
+ { ip: '104.28.11.4', status: 'review', location: 'Frankfurt, DE', visits: 12, paid: 12, lastSeen: '13 Aug, 08:44', why: 'Datacenter IP, engagement improving' },
+  { ip: '90.201.6.18', status: 'allowed', location: 'Bristol, GB', visits: 4, paid: 1, lastSeen: '11 Aug, 12:20', why: ',' },
+ { ip: '178.62.40.9', status: 'incomplete', location: 'Unknown', visits: 2, paid: 2, lastSeen: '10 Aug, 22:05', why: 'Tag stopped reporting mid-session' },
 ];
 
 const columns: Column<Row>[] = [

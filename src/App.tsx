@@ -8,7 +8,7 @@ import { NOW } from './data/clock';
 import type { Visitor } from './data/types';
 
 /* A hash route is enough for two screens, and it gives us real back/forward
-   behaviour for free — no router dependency for one level of navigation. */
+   behaviour for free , no router dependency for one level of navigation. */
 const subscribe = (cb: () => void) => {
   window.addEventListener('hashchange', cb);
   return () => window.removeEventListener('hashchange', cb);
@@ -50,7 +50,7 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [routeKey]);
 
-  /** Manual decisions sit on top of the model's own verdict — never silently replacing it. */
+  /** Manual decisions sit on top of the model's own verdict , never silently replacing it. */
   const visitors = useMemo(
     () =>
       data.map((v) => overrides[v.ip] ?? v),
@@ -85,7 +85,7 @@ export default function App() {
         {phase === 'error' ? (
           <EmptyState
             title="We could not load your visitors"
-            body={`${error} Your protection is still running — this is a problem with the dashboard, not with blocking.`}
+            body={`${error} Your protection is still running , this is a problem with the dashboard, not with blocking.`}
             action={<Button onClick={load}>Try again</Button>}
           />
         ) : route.name === 'detail' ? (

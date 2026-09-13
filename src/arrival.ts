@@ -3,12 +3,12 @@
  * contextual explanation shown when a journey card is hovered or focused.
  *
  * Moved out of VisitorDetail.tsx so the card's `note` prop and the new
- * contextual disclosure are guaranteed to read the same sentence — there is
+ * contextual disclosure are guaranteed to read the same sentence , there is
  * one explanation generator, not two. `noteFor` is unchanged in shape from
  * the version that used to render in the standalone "What each arrival
  * showed" section below the strip; the only behavioural fix is that a visit
  * whose tag never reported no longer reads as "nothing stood out" (a clean
- * result) when nothing else fired either — it now says so explicitly.
+ * result) when nothing else fired either , it now says so explicitly.
  */
 
 import { BLOCK_THRESHOLD, deltaFor, reasonsFor } from './data/scoring';
@@ -132,11 +132,11 @@ export function noteFor(visit: Visit): string {
   const weight =
     visit.channel === 'paid'
       ? ''
-      : ' This visit did not come from an ad, so it counts for half — it tells us about the visitor without costing you anything.';
+      : ' This visit did not come from an ad, so it counts for half , it tells us about the visitor without costing you anything.';
 
   const parts: string[] = [];
 
-  /* A tag that stopped reporting is not a clean result and is not zero — say
+  /* A tag that stopped reporting is not a clean result and is not zero , say
      so before anything else, so it can never read as "nothing stood out." */
   if (missing) {
     parts.push('Our tag stopped reporting, so engagement was never captured and was excluded from scoring.');
@@ -159,7 +159,7 @@ export const sourceFor = (visit: Visit) =>
     : visit.referrer;
 
 export interface ArrivalExplanation {
-  /** Responds to the visit's own state — never the same generic heading everywhere. */
+  /** Responds to the visit's own state , never the same generic heading everywhere. */
   title: string;
   /** The plain-language explanation, reused verbatim from `noteFor`. */
   body: string;
@@ -169,7 +169,7 @@ export interface ArrivalExplanation {
   confidenceBefore: number;
   confidenceAfter: number;
   cost: string | null;
-  /** `null` on a paid visit — cost is the relevant fact there, not source. */
+  /** `null` on a paid visit , cost is the relevant fact there, not source. */
   source: string | null;
 }
 

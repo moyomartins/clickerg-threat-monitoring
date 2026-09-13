@@ -11,7 +11,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Dark primary actions carry the signature inset shadow. Ghost is the secondary action, cream is tertiary/toolbar, and the pill variant is reserved for icon and toggle actions — never rectangular CTAs.',
+          'Dark primary actions carry the signature inset shadow. Ghost is the secondary action, cream is tertiary/toolbar, and the pill variant is reserved for icon and toggle actions , never rectangular CTAs.',
       },
     },
   },

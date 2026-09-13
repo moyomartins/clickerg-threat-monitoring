@@ -2,7 +2,7 @@
  * The component the Replay world exists for.
  *
  * It renders the page a visitor landed on and draws what they actually did on
- * it. Every mark is backed by recorded engagement — and, just as importantly,
+ * it. Every mark is backed by recorded engagement , and, just as importantly,
  * nothing is drawn that the tag did not record.
  *
  * The tag records depths and counts, not coordinates: `scrollPct`, `dwellSec`,
@@ -19,7 +19,7 @@ export interface ReplayBehaviour {
   /** 0–100. Positional: drawn on the page. */
   scrollPct: number | null;
   dwellSec: number | null;
-  /** Counts only — no coordinates are recorded, so none are drawn. */
+  /** Counts only , no coordinates are recorded, so none are drawn. */
   clicks: number;
   mouseMoves: number;
 }
@@ -56,7 +56,7 @@ export function PageReplay({ behaviour, size = 'card', caption = true, loading =
   return (
     <div className={`cg-replay cg-replay--${size}`}>
       <div className="cg-replay__page">
-        {/* The page itself — structure is known before behaviour is. */}
+        {/* The page itself , structure is known before behaviour is. */}
         <span className="cg-wf cg-wf--nav" />
         <span className="cg-wf cg-wf--hero" />
         <span className="cg-wf cg-wf--cta" />

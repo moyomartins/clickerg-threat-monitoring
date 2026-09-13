@@ -2,7 +2,7 @@
  * The hero's copy, derived from the same visits the model scores.
  *
  * The hero states the conclusion once. It does not restate it as a verdict, a
- * reason, a heading, an event sentence and three bullet points — the arrival
+ * reason, a heading, an event sentence and three bullet points , the arrival
  * cards below carry the per-visit evidence, so repeating it here only pushes
  * the journey off the screen.
  *
@@ -15,7 +15,7 @@ import { money } from './format';
 
 const paidVisits = (v: Visitor) => v.visits.filter((x) => x.channel === 'paid');
 
-/** Which paid click the decision landed on — "blocked at paid click 3". */
+/** Which paid click the decision landed on , "blocked at paid click 3". */
 export function paidClickNumber(visitor: Visitor) {
   if (visitor.decisiveIndex < 0) return 0;
   return visitor.visits.slice(0, visitor.decisiveIndex + 1).filter((x) => x.channel === 'paid').length;
@@ -72,7 +72,7 @@ export function reasonFor(visitor: Visitor): string {
     case 'blocked':
       return `${paidCount} paid ${paidCount === 1 ? 'click' : 'clicks'} repeated ${pattern}. ClickGuard blocked the IP at paid click ${clickNo}, once confidence crossed ${BLOCK_THRESHOLD}%.`;
     case 'ambiguous':
-      return `${paidCount} paid ${paidCount === 1 ? 'click' : 'clicks'} show machine-like timing, but the visitor converted ${money(visitor.revenueGbp)} — so ClickGuard held the call rather than blocking it.`;
+      return `${paidCount} paid ${paidCount === 1 ? 'click' : 'clicks'} show machine-like timing, but the visitor converted ${money(visitor.revenueGbp)} , so ClickGuard held the call rather than blocking it.`;
     case 'review':
       return `Some arrivals look automated. Confidence has reached ${Math.round(Math.max(...visitor.confidence))}% across ${paidCount} paid ${paidCount === 1 ? 'click' : 'clicks'} against the ${BLOCK_THRESHOLD}% blocking line; at least three paid arrivals are also required.`;
     case 'incomplete':

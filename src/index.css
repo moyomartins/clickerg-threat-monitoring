@@ -54,24 +54,24 @@ body { font-family: var(--cg-font-sans); color: var(--cg-ink); }
 /* The card reads in the order an advertiser needs it:
    verdict → reason → supporting facts → the drawn evidence behind them. */
 
-/* 1 — the verdict. Who it was and what we decided, in one line.
+/* 1 , the verdict. Who it was and what we decided, in one line.
    The pill sits hard right so status is scannable straight down the grid. */
 .replay-card__verdict { display: flex; align-items: center; justify-content: space-between;
   gap: var(--cg-space-1); flex-wrap: wrap; margin: 0 0 var(--cg-space-1); }
 .replay-card__ip { font-family: var(--cg-font-mono); font-size: var(--cg-text-lg); color: var(--cg-ink); }
 .replay-card .cg-status { font-size: var(--cg-text-xs); }
 
-/* 2 — the reason, in the advertiser's own language. A settled call states itself;
+/* 2 , the reason, in the advertiser's own language. A settled call states itself;
    an open one stays visibly open rather than borrowing a blocked card's certainty. */
 .replay-card__why { font-size: var(--cg-text-body); line-height: var(--cg-leading-card);
   font-weight: var(--cg-weight-mid); color: var(--cg-ink); margin: 0 0 5px; }
 .replay-card__why--open { font-weight: var(--cg-weight-body); font-style: italic; color: var(--cg-body); }
 .replay-card__why--none { font-weight: var(--cg-weight-body); color: var(--cg-muted); }
 
-/* 3 — the facts the reason rests on. */
+/* 3 , the facts the reason rests on. */
 .replay-card__facts { font-size: var(--cg-text-xs); color: var(--cg-muted); margin: 0; }
 
-/* 4 — the evidence, kept whole and still drawn, but no longer leading the card. */
+/* 4 , the evidence, kept whole and still drawn, but no longer leading the card. */
 .replay-card__evidence { margin-top: var(--cg-space-1-5); padding-top: var(--cg-space-1-5);
   border-top: 1px solid var(--cg-rule); }
 .replay-card__evidence .cg-replay__page { aspect-ratio: 4 / 3; }

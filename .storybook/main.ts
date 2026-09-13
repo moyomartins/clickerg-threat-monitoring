@@ -1,6 +1,6 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 
-// Storybook consumes the same source files the app imports — there is no
+// Storybook consumes the same source files the app imports, there is no
 // second, Storybook-only copy of any component.
 const config: StorybookConfig = {
   stories: ['../packages/ui/src/**/*.mdx', '../packages/ui/src/**/*.stories.@(ts|tsx)'],

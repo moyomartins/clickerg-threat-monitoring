@@ -24,7 +24,7 @@ const farm = byIp('41.203.88.7'); //      unambiguous click farm
 const tie = byIp('82.14.90.221'); //      real conversion, robotic cadence
 const gap = byIp('178.62.40.9'); //       our own tag stopped reporting
 
-describe('decision brief — blocked visitor', () => {
+describe('decision brief , blocked visitor', () => {
   it('is the case it claims to be', () => {
     expect(farm.status).toBe('blocked');
     expect(farm.decisiveIndex).toBeGreaterThanOrEqual(0);
@@ -34,7 +34,7 @@ describe('decision brief — blocked visitor', () => {
     const clickNo = paidClickNumber(farm);
     expect(clickNo).toBeGreaterThan(0);
     /* The block happens at the decisive arrival, so the number can never be the
-       whole journey — that was the bug the first version of this copy shipped. */
+       whole journey , that was the bug the first version of this copy shipped. */
     expect(clickNo).toBeLessThanOrEqual(farm.paidVisits);
     expect(reasonFor(farm)).toContain(`paid click ${clickNo}`);
   });
@@ -69,7 +69,7 @@ describe('decision brief — blocked visitor', () => {
   });
 });
 
-describe('decision brief — judgement call', () => {
+describe('decision brief , judgement call', () => {
   it('is the honest tie: real revenue and a suspicious pattern', () => {
     expect(tie.status).toBe('ambiguous');
     expect(tie.revenueGbp).toBeGreaterThan(0);
@@ -90,7 +90,7 @@ describe('decision brief — judgement call', () => {
   });
 });
 
-describe('decision brief — incomplete data', () => {
+describe('decision brief , incomplete data', () => {
   it('is the case whose telemetry never arrived', () => {
     expect(gap.status).toBe('incomplete');
     expect(gap.visits.every((v) => v.engagement === null)).toBe(true);
@@ -110,7 +110,7 @@ describe('decision brief — incomplete data', () => {
   });
 });
 
-describe('decision brief — every visitor', () => {
+describe('decision brief , every visitor', () => {
   it('produces a reason for all of them, with no placeholder text', () => {
     all.forEach((v: Visitor) => {
       const reason = reasonFor(v);

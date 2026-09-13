@@ -9,7 +9,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'One evaluated signal and its reading. Severity is carried by a dot plus a tint — never by color alone — so the chip still parses in greyscale or with a colour-vision deficiency.',
+          'One evaluated signal and its reading. Severity is carried by a dot plus a tint , never by color alone , so the chip still parses in greyscale or with a colour-vision deficiency.',
       },
     },
   },
@@ -26,7 +26,7 @@ export const High: Story = {};
 export const Medium: Story = { args: { label: 'Session similarity', value: '0.71', severity: 'medium' } };
 export const Low: Story = { args: { label: 'Conversion', value: 'Purchased £240', severity: 'low' } };
 export const Neutral: Story = { args: { label: 'Location', value: 'Manchester, GB', severity: 'neutral' } };
-/** Missing data is its own state — a blank chip would read as "fine". */
+/** Missing data is its own state , a blank chip would read as "fine". */
 export const Unknown: Story = { args: { label: 'Form fill', value: undefined, severity: 'unknown' } };
 export const WithHint: Story = {
   args: {

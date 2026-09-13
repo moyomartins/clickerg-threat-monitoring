@@ -23,7 +23,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The visitor detail hero: an enclosure. DESIGN.md already carries status as border weight and style rather than a colour fill — 2px ink for blocked, dashed for a judgement call, dotted for incomplete. This hero promotes that rule to the whole composition: the border states the verdict, the replay sits inside the same enclosure rather than beside it, and hairlines divide the argument within it. One reason, stated once; the arrival strip below carries the per-visit evidence.',
+          'The visitor detail hero: an enclosure. DESIGN.md already carries status as border weight and style rather than a colour fill , 2px ink for blocked, dashed for a judgement call, dotted for incomplete. This hero promotes that rule to the whole composition: the border states the verdict, the replay sits inside the same enclosure rather than beside it, and hairlines divide the argument within it. One reason, stated once; the arrival strip below carries the per-visit evidence.',
       },
     },
   },
@@ -157,7 +157,7 @@ export const JudgementCall: Story = {
     <Hero
       status="ambiguous"
       settled={false}
-      reason="5 paid clicks show machine-like timing, but the visitor converted £249.00 — so ClickGuard held the call rather than blocking it."
+      reason="5 paid clicks show machine-like timing, but the visitor converted £249.00 , so ClickGuard held the call rather than blocking it."
       markLabel="Held at paid click 3"
       markTone="neutral"
       spend="£24.05"
@@ -255,7 +255,7 @@ export const UnderReview: Story = {
 
 /* ------------------------------------------------------------ ExclusionInline --- */
 
-/** ExclusionInline renders a <dt>/<dd> pair, so — as in production — it needs a <dl> parent. */
+/** ExclusionInline renders a <dt>/<dd> pair, so , as in production , it needs a <dl> parent. */
 export const PlatformStatuses: Story = {
   name: 'Platform status: every supported state',
   render: () => (
@@ -272,8 +272,8 @@ export const PlatformStatusLongAndUnavailable: Story = {
   name: 'Platform status: long and unavailable',
   render: () => (
     <div className="cg-platform-status-story">
-      <PlatformStatus platform="Google Ads" state="synchronization failed — retrying after the platform rate limit clears" />
-      <PlatformStatus platform="Meta Ads" state="unavailable — demonstration data has not been synchronized" />
+      <PlatformStatus platform="Google Ads" state="synchronization failed , retrying after the platform rate limit clears" />
+      <PlatformStatus platform="Meta Ads" state="unavailable , demonstration data has not been synchronized" />
     </div>
   ),
 };

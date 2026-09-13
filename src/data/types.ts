@@ -25,7 +25,7 @@ export interface Visit {
   formSubmitted?: boolean | null;
   conversionCaptured?: boolean;
   postDecisionReason?: string;
-  /** Paid visits only — this is the money the advertiser actually spent. */
+  /** Paid visits only , this is the money the advertiser actually spent. */
   costGbp?: number;
 
   /** `null` when the tag failed to report: missing, not clean. */
@@ -36,7 +36,7 @@ export interface Visit {
   converted: boolean;
   conversionValueGbp?: number;
 
-  /* Invented signals — chosen because each one is explainable to a
+  /* Invented signals , chosen because each one is explainable to a
      non-technical advertiser in a single sentence. */
   /** Median seconds between repeat clicks in this session; null if single click. */
   clickCadenceSec: number | null;

@@ -11,7 +11,7 @@ const byIp = (ip: string) => {
   return v;
 };
 
-const farm = byIp('41.203.88.7'); //  unambiguous click farm — has a decisive visit
+const farm = byIp('41.203.88.7'); //  unambiguous click farm , has a decisive visit
 const tie = byIp('82.14.90.221'); //  real conversion, robotic cadence
 const gap = byIp('178.62.40.9'); //   our own tag stopped reporting
 
@@ -31,7 +31,7 @@ const baseVisit: Visit = {
   utmConsistent: true,
 };
 
-describe('noteFor — the missing-data fix', () => {
+describe('noteFor , the missing-data fix', () => {
   it('never reads as a clean result when the tag never reported and nothing else fired', () => {
     const note = noteFor({ ...baseVisit, engagement: null });
     expect(note).toContain('tag stopped reporting');
@@ -55,7 +55,7 @@ describe('noteFor — the missing-data fix', () => {
   });
 });
 
-describe('arrivalExplanationFor — blocked visitor', () => {
+describe('arrivalExplanationFor , blocked visitor', () => {
   it('titles the decisive arrival distinctly from every other arrival', () => {
     const decisive = arrivalExplanationFor(farm, farm.decisiveIndex);
     expect(decisive.title).toBe('Why this arrival was decisive');
@@ -71,11 +71,11 @@ describe('arrivalExplanationFor — blocked visitor', () => {
     });
   });
 
-  it('the first visit\'s "before" confidence is 0 — nothing has happened yet', () => {
+  it('the first visit\'s "before" confidence is 0 , nothing has happened yet', () => {
     expect(arrivalExplanationFor(farm, 0).confidenceBefore).toBe(0);
   });
 
-  it('every later visit\'s "before" is the previous visit\'s "after" — no gaps, no invention', () => {
+  it('every later visit\'s "before" is the previous visit\'s "after" , no gaps, no invention', () => {
     for (let i = 1; i < farm.visits.length; i++) {
       expect(arrivalExplanationFor(farm, i).confidenceBefore).toBe(farm.confidence[i - 1]);
     }
@@ -94,8 +94,8 @@ describe('arrivalExplanationFor — blocked visitor', () => {
   });
 });
 
-describe('arrivalExplanationFor — judgement call', () => {
-  it('is never marked decisive — the visitor was never blocked', () => {
+describe('arrivalExplanationFor , judgement call', () => {
+  it('is never marked decisive , the visitor was never blocked', () => {
     expect(tie.decisiveIndex).toBe(-1);
     tie.visits.forEach((_, i) => {
       const e = arrivalExplanationFor(tie, i);
@@ -112,7 +112,7 @@ describe('arrivalExplanationFor — judgement call', () => {
   });
 });
 
-describe('arrivalExplanationFor — incomplete data', () => {
+describe('arrivalExplanationFor , incomplete data', () => {
   it('every visit is flagged missing, and its body says so', () => {
     gap.visits.forEach((v, i) => {
       expect(v.engagement).toBeNull();
@@ -129,7 +129,7 @@ describe('arrivalExplanationFor — incomplete data', () => {
   });
 });
 
-describe('arrivalExplanationFor — every visitor', () => {
+describe('arrivalExplanationFor , every visitor', () => {
   it('produces a real body for every single arrival, with no placeholder or undefined text', () => {
     all.forEach((visitor) => {
       visitor.visits.forEach((_, i) => {

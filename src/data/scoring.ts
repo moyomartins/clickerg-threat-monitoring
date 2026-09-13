@@ -4,13 +4,13 @@ import type { Visit } from './types';
  * The scoring model.
  *
  * Every number an advertiser sees in the UI comes out of this file, and so
- * does every sentence explaining it — the explanation is generated from the
+ * does every sentence explaining it , the explanation is generated from the
  * same rules that move the score, so the two can never drift apart.
  *
  * Blocking is cumulative: a visit contributes a delta, the deltas accumulate
  * across the whole journey, and the block happens when the running total
  * crosses BLOCK_THRESHOLD. Non-paid visits still inform the picture but are
- * weighted down — they cost the advertiser nothing.
+ * weighted down , they cost the advertiser nothing.
  */
 
 export const BLOCK_THRESHOLD = 80;
@@ -63,12 +63,12 @@ export function reasonsFor(visit: Visit): Reason[] {
   else if (visit.formFill === 'valid') add('Form fill', -8, 'submitted a deliverable email address');
 
   if (visit.converted) {
-    add('Conversion', -35, `converted — £${visit.conversionValueGbp?.toFixed(2)} of actual revenue`);
+    add('Conversion', -35, `converted , £${visit.conversionValueGbp?.toFixed(2)} of actual revenue`);
   }
 
   if (visit.clickCadenceSec !== null) {
     if (visit.clickCadenceSec < 1.5) {
-      add('Click cadence', 15, `clicked again ${visit.clickCadenceSec.toFixed(1)}s later — faster than the page renders`);
+      add('Click cadence', 15, `clicked again ${visit.clickCadenceSec.toFixed(1)}s later , faster than the page renders`);
     } else if (visit.clickCadenceSec < 4) {
       add('Click cadence', 7, `clicked again ${visit.clickCadenceSec.toFixed(1)}s later`);
     }
@@ -79,7 +79,7 @@ export function reasonsFor(visit: Visit): Reason[] {
   }
 
   if (visit.sessionSimilarity > 0.85) {
-    add('Session similarity', 12, `repeated the previous session almost exactly — ${pct(visit.sessionSimilarity)} identical, where real people vary far more`);
+    add('Session similarity', 12, `repeated the previous session almost exactly , ${pct(visit.sessionSimilarity)} identical, where real people vary far more`);
   }
 
   if (visit.hourCluster) add('Time-of-day cluster', 5, 'landed inside the same narrow overnight window as the other visits');
@@ -96,7 +96,7 @@ export function deltaFor(visit: Visit): number {
 /**
  * A single visit's risk, 0–100. The raw delta is squashed through a logistic
  * curve so one spectacular visit cannot pin the score at 100 and a long run of
- * mildly odd visits cannot creep there either — the curve is centred on the
+ * mildly odd visits cannot creep there either , the curve is centred on the
  * point where a visit stops looking like a distracted human.
  */
 export function visitRisk(visit: Visit): number {

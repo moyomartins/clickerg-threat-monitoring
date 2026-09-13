@@ -7,7 +7,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Every colour, type step, space and border in ClickerG comes from `packages/ui/src/tokens.css`. These swatches read the live CSS variables — change a token and this page changes with it, and so does every screen.',
+          'Every colour, type step, space and border in ClickerG comes from `packages/ui/src/tokens.css`. These swatches read the live CSS variables , change a token and this page changes with it, and so does every screen.',
       },
     },
   },
@@ -24,8 +24,8 @@ const COLORS: [string, string][] = [
   ['--cg-ink', 'Primary text'],
   ['--cg-body', 'Body text'],
   ['--cg-muted', 'Muted text (AA-corrected)'],
-  ['--cg-attention', 'Attention blue — graphics only'],
-  ['--cg-attention-text', 'Attention blue — as text'],
+  ['--cg-attention', 'Attention blue , graphics only'],
+  ['--cg-attention-text', 'Attention blue , as text'],
   ['--cg-absence', 'Absence red'],
   ['--cg-sev-medium', 'Severity: medium (AA-corrected)'],
   ['--cg-sev-low', 'Severity: favourable'],
@@ -100,7 +100,7 @@ export const SpacingAndShape: Story = {
       </div>
       <div>
         <p className="cg-mono" style={{ fontSize: 11, color: 'var(--cg-muted)' }}>
-          Shape — this world is flat. Radius 0 everywhere; the click dot is the only round thing, and the
+          Shape , this world is flat. Radius 0 everywhere; the click dot is the only round thing, and the
           only shadow in the system is its halo.
         </p>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
