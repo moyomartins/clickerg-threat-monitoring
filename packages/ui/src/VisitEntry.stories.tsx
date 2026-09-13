@@ -10,7 +10,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'One visit in a visitor journey. Blocking is cumulative, so each entry carries the running confidence , the advertiser can see where the line was crossed rather than being handed a final verdict. Hovering, focusing, or tapping a card reveals its contextual explanation , what happened, what it did to confidence, and whether it was the arrival that decided the case.',
+          'One arrival in a visitor journey. Each card shows the running confidence, traffic context, recorded signals, and a schematic replay. The decisive arrival carries the blocked-here marker. Hovering, focusing, or activating a card reveals its contextual explanation.',
       },
     },
   },
@@ -164,7 +164,7 @@ export const AmbiguousArrival: Story = {
   },
 };
 
-/** The decisive visit: dark node, dark verdict panel, stated in advertiser language. */
+/** The decisive arrival carries the border, blocked-here marker, and live reflection. */
 export const ArrivalTimestampHeader: Story = {
   name: 'Arrival timestamp header',
   args: {
@@ -217,7 +217,7 @@ export const BlockingDecision: Story = {
   },
 };
 
-/** The sweep is decorative: it is disabled by the browser's reduced-motion setting. */
+/** The decisive card retains its verdict while reduced motion removes the sweep. */
 export const BlockingDecisionReducedMotion: Story = {
   ...BlockingDecision,
   parameters: {
@@ -225,26 +225,10 @@ export const BlockingDecisionReducedMotion: Story = {
     docs: {
       description: {
         story:
-          'Enable reduced motion in the browser or Storybook preview to verify that the decisive card retains its border and verdict without the moving reflection, and that the explanation appears/disappears instantly rather than fading.',
+          'Enable reduced motion in the browser or Storybook preview to verify that the decisive card retains its border and blocked-here marker without the moving reflection.',
       },
     },
   },
-};
-
-export const BlockingDecisionEnteringReflection: Story = {
-  args: { ...BlockingDecision.args, reflectionPhase: 'entering' },
-};
-
-export const BlockingDecisionCentredReflection: Story = {
-  args: { ...BlockingDecision.args, reflectionPhase: 'centred' },
-};
-
-export const BlockingDecisionLeavingReflection: Story = {
-  args: { ...BlockingDecision.args, reflectionPhase: 'leaving' },
-};
-
-export const BlockingDecisionAfterReflection: Story = {
-  args: { ...BlockingDecision.args, reflectionPhase: 'exited' },
 };
 
 /** Data loss is shown honestly rather than being rendered as a clean signal. */
@@ -258,7 +242,7 @@ export const IncompleteSignals: Story = {
       { label: 'Bot probability', value: '41%', severity: 'medium' },
     ],
     explanation: {
-      title: 'What ClickerG could assess',
+      title: 'What product could assess',
       content: (
         <>
           <p className="cg-arrival-pop__body">

@@ -238,7 +238,7 @@ export interface ExclusionInlineProps {
   entries: ExclusionEntry[];
 }
 
-/** The platform's state, kept conceptually separate from ClickerG's decision. */
+/** The platform's state, kept conceptually separate from product's decision. */
 export function ExclusionInline({ label, entries }: ExclusionInlineProps) {
   return (
     <div>

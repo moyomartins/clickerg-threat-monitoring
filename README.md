@@ -1,4 +1,4 @@
-# ClickerG , Threat Monitoring
+# product , Threat Monitoring
 
 Click-fraud protection for PPC advertisers. Blocking is invisible by nature: the advertiser
 just sees traffic disappear. This screen is the part that earns the trust , open any blocked

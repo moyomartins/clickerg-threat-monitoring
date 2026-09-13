@@ -35,8 +35,6 @@ export interface VisitEntryProps {
   /** Recorded engagement for this arrival; `null` when the tag never reported. */
   replay?: ReplayBehaviour | null;
   decisive?: boolean;
-  /** Story-only frozen phase for reviewing the decorative decisive reflection. */
-  reflectionPhase?: 'inactive' | 'entering' | 'centred' | 'leaving' | 'exited';
   verdict?: ReactNode;
   last?: boolean;
   stage?: string;
@@ -55,10 +53,9 @@ export function VisitEntry({
   confidence,
   replay,
   decisive = false,
-  reflectionPhase,
   verdict,
 }: VisitEntryProps) {
-  const cardClassName = `cg-visit${decisive ? ' cg-visit--decisive' : ''}${reflectionPhase ? ` cg-visit--reflection-${reflectionPhase}` : ''}`;
+  const cardClassName = `cg-visit${decisive ? ' cg-visit--decisive' : ''}`;
 
   const card = (
     <>

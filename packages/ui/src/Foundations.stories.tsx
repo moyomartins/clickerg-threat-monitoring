@@ -7,7 +7,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Every colour, type step, space and border in ClickerG comes from `packages/ui/src/tokens.css`. These swatches read the live CSS variables , change a token and this page changes with it, and so does every screen.',
+          'Every colour, type step, space and border in product comes from `packages/ui/src/tokens.css`. These swatches read the live CSS variables , change a token and this page changes with it, and so does every screen.',
       },
     },
   },

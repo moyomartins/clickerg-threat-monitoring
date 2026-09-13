@@ -82,7 +82,7 @@ export function reasonFor(visitor: Visitor): string {
   }
 }
 
-/** The moment ClickerG acted, taken from the decisive arrival. */
+/** The moment product acted, taken from the decisive arrival. */
 export function decisiveMarkFor(visitor: Visitor) {
   const manual = visitor.manualHistory?.at(-1);
   if (manual) return { at: manual.at, label: 'Manual decision', tone: 'neutral' as const };

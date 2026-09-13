@@ -122,9 +122,9 @@ describe('arrivalExplanationFor , incomplete data', () => {
     });
   });
 
-  it('titles a missing-data arrival "What ClickerG could assess", not a confidence-direction title', () => {
+  it('titles a missing-data arrival "What product could assess", not a confidence-direction title', () => {
     gap.visits.forEach((_, i) => {
-      expect(arrivalExplanationFor(gap, i).title).toBe('What ClickerG could assess');
+      expect(arrivalExplanationFor(gap, i).title).toBe('What product could assess');
     });
   });
 });

@@ -186,7 +186,7 @@ export function arrivalExplanationFor(visitor: Visitor, index: number): ArrivalE
 
   let title: string;
   if (decisive) title = 'Why this arrival was decisive';
-  else if (missing) title = 'What ClickerG could assess';
+  else if (missing) title = 'What product could assess';
   else if (delta > 0) title = 'Why confidence increased';
   else if (delta < 0) title = 'Why confidence decreased';
   else title = 'What this arrival showed';
