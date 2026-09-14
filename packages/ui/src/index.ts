@@ -58,3 +58,7 @@ export { SETTLED_STATUSES, isSettled } from './decisionSemantics';
 export { FilterBar, FilterGroup, Field, TextInput, Select, Toggle, RangeField, SteppedRangeField } from './Fields';
 export type { FieldProps, FilterGroupProps, SelectProps, ToggleProps, RangeFieldProps, SteppedRangeFieldProps } from './Fields';
 export { SortDirectionIcon } from './SortDirectionIcon';
+export { ViewModeSwitch } from './ViewModeSwitch';
+export type { ViewModeSwitchProps, ViewMode } from './ViewModeSwitch';
+export { VisitorScanRow } from './VisitorScanRow';
+export type { VisitorScanRowProps, TelemetryEvidence } from './VisitorScanRow';

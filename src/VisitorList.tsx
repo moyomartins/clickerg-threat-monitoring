@@ -13,14 +13,18 @@ import {
   StatusPill,
   TextInput,
   Toggle,
+  ViewModeSwitch,
+  VisitorScanRow,
   type SortState,
   type VisitorStatus,
+  type ViewMode,
 } from '@clickerg/ui';
 import { representativeBehaviour } from './behaviour';
 import type { Visitor } from './data/types';
 import { NOW } from './data/clock';
 import { matchesFilters } from './filters';
 import { money, relative } from './format';
+import { supplementalEvidence } from './supplementalEvidence';
 
 const STATUS_RANK: Record<VisitorStatus, number> = {
   blocked: 0,
@@ -64,6 +68,8 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
   const [paidOnly, setPaidOnly] = useState(false);
   const [minBot, setMinBot] = useState(0);
   const [sort, setSort] = useState<SortState>({ key: 'lastSeen', direction: 'desc' });
+  const [view, setView] = useState<ViewMode>(() => (sessionStorage.getItem('cg-visitor-view') as ViewMode) || 'grid');
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   const countries = useMemo(
     () => [...new Set(visitors.map((v) => v.country))].sort(),
@@ -112,6 +118,12 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
     setWindow('all');
     setPaidOnly(false);
     setMinBot(0);
+  };
+
+  const setViewMode = (next: ViewMode) => {
+    setView(next);
+    setExpanded(null);
+    sessionStorage.setItem('cg-visitor-view', next);
   };
 
   const blocked = visitors.filter((v) => v.status === 'blocked');
@@ -248,6 +260,7 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
         <span className="toolbar__count" aria-live="polite">
           {loading ? 'Loading visitors…' : `${rows.length} of ${visitors.length} visitors`}
         </span>
+        <ViewModeSwitch value={view} onChange={setViewMode} />
       </div>
 
       {loading ? (
@@ -290,6 +303,35 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
             />
           )}
         </div>
+      ) : view === 'list' ? (
+        <div className="visitor-list-view">
+          {rows.map((v) => {
+            const latest = v.visits.at(-1);
+            const isExpanded = expanded === v.ip;
+            return (
+              <VisitorScanRow
+                key={v.ip}
+                status={v.status}
+                ip={v.ip}
+                location={`${v.city}, ${v.country}`}
+                summary={v.summary}
+                confidence={`${Math.max(...v.confidence)}%`}
+                paid={String(v.paidVisits)}
+                spend={money(v.spendGbp)}
+                lastSeen={relative(v.lastSeen)}
+                source={latest?.campaign ?? latest?.referrer}
+                replay={representativeBehaviour(v)}
+                evidence={supplementalEvidence(v, visitors)}
+                evidenceLayout={7}
+                expanded={isExpanded}
+                onToggle={() => setExpanded(isExpanded ? null : v.ip)}
+                onOpen={() => onOpen(v.ip)}
+              >
+                {latest && <p>{latest.platform ?? latest.channel} · {latest.landingPage ?? 'Landing page not recorded'} · {latest.costGbp == null ? 'No paid click cost' : money(latest.costGbp)}</p>}
+              </VisitorScanRow>
+            );
+          })}
+        </div>
       ) : (
         <div className="replays">
           {rows.map((v) => (
@@ -326,4 +368,3 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
     </>
   );
 }
-

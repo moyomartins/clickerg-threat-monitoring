@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { Button, EmptyState, Wordmark, type VisitorStatus } from '@clickerg/ui';
 import { VisitorList } from './VisitorList';
 import { VisitorDetail } from './VisitorDetail';
@@ -6,6 +6,10 @@ import { fetchVisitors } from './data/mock';
 import { applyManualDecision } from './data/manual';
 import { NOW } from './data/clock';
 import type { Visitor } from './data/types';
+
+/* The comparison lab is a development-only chunk; it never ships with the monitoring product. */
+const LayoutOptions = import.meta.env.DEV ? lazy(() => import('./LayoutOptions').then((module) => ({ default: module.LayoutOptions }))) : null;
+const EvidenceLayoutOptions = import.meta.env.DEV ? lazy(() => import('./EvidenceLayoutOptions').then((module) => ({ default: module.EvidenceLayoutOptions }))) : null;
 
 /* A hash route is enough for two screens, and it gives us real back/forward
    behaviour for free , no router dependency for one level of navigation. */
@@ -18,6 +22,8 @@ const getHash = () => window.location.hash;
 function useRoute() {
   const hash = useSyncExternalStore(subscribe, getHash, getHash);
   const match = /^#\/visitor\/(.+)$/.exec(hash);
+  if (import.meta.env.DEV && hash === '#/layout-options') return { name: 'layout-options' as const };
+  if (import.meta.env.DEV && hash === '#/evidence-layout-options') return { name: 'evidence-layout-options' as const };
   return match ? { name: 'detail' as const, ip: decodeURIComponent(match[1]) } : { name: 'list' as const };
 }
 
@@ -44,7 +50,7 @@ export default function App() {
       });
   }, []);
 
-  const routeKey = route.name === 'detail' ? route.ip : 'list';
+  const routeKey = route.name === 'detail' ? route.ip : route.name;
   useEffect(load, [load]);
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -74,7 +80,7 @@ export default function App() {
           <Wordmark />
           <span>· click-fraud protection</span>
         </div>
-        {phase === 'ready' && route.name === 'list' && (
+        {phase === 'ready' && (route.name === 'list' || route.name === 'layout-options' || route.name === 'evidence-layout-options') && (
           <Button variant="cream" size="sm" onClick={load}>
             Refresh
           </Button>
@@ -94,6 +100,10 @@ export default function App() {
             onBack={() => navigate('#/')}
             onStatusChange={setStatus}
           />
+        ) : route.name === 'layout-options' && LayoutOptions ? (
+          <Suspense fallback={<span>Loading layout options…</span>}><LayoutOptions visitors={visitors} loading={phase === 'loading'} onOpen={(ip) => navigate(`#/visitor/${encodeURIComponent(ip)}`)} /></Suspense>
+        ) : route.name === 'evidence-layout-options' && EvidenceLayoutOptions ? (
+          <Suspense fallback={<span>Loading evidence layouts…</span>}><EvidenceLayoutOptions visitors={visitors} onOpen={(ip) => navigate(`#/visitor/${encodeURIComponent(ip)}`)} /></Suspense>
         ) : (
           <VisitorList
             visitors={visitors}
@@ -105,4 +115,3 @@ export default function App() {
     </div>
   );
 }
-
