@@ -51,10 +51,11 @@ export interface Visit {
 }
 
 export interface Visitor {
+  /** Stable identifier used across monitoring, evidence, and journey views. */
+  id: string;
   ip: string;
   aliases?: string[];
-  scenario?: string;
-  mockMetadata?: true;
+  trafficProfile?: string;
   automatedStatus?: VisitorStatus;
   manualHistory?: { at: number; status: VisitorStatus; reason: string }[];
   exclusionEvents?: { platform: 'Google Ads' | 'Meta Ads'; requestedAt: number; confirmedAt?: number; scope: string }[];

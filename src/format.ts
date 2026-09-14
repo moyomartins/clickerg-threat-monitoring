@@ -67,7 +67,7 @@ export function span(fromMs: number, toMs: number) {
   return days === 1 ? '1 day' : `${days} days`;
 }
 
-/** Relative to the fixed mock "now", so the copy stays stable between runs. */
+/** Relative to the fixed account snapshot, so the copy stays stable between runs. */
 export function relative(ms: number) {
   const diff = NOW - ms;
   const mins = Math.round(diff / 60_000);

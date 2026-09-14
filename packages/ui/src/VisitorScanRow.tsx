@@ -32,6 +32,7 @@ export function VisitorScanRow({
   status, ip, location, summary, confidence, paid, spend, lastSeen, source, replay,
   expanded = false, onToggle, onOpen, children, evidence = [], evidenceLayout = 1,
 }: VisitorScanRowProps) {
+  const evidenceId = `visitor-evidence-${ip.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
   return (
     <article className={`cg-visitor-row cg-visitor-row--${status}`}>
       <button type="button" className="cg-visitor-row__main cg-focusable" onClick={onOpen} aria-label={`Open ${ip}`}>
@@ -43,8 +44,8 @@ export function VisitorScanRow({
         <span className="cg-visitor-row__fact"><b>{spend}</b><small>Spend</small></span>
         <span className="cg-visitor-row__fact"><b>{lastSeen}</b><small>Last seen</small></span>
       </button>
-      {onToggle && <button type="button" className="cg-visitor-row__expand cg-focusable" aria-expanded={expanded} onClick={onToggle}>{expanded ? 'Hide evidence' : 'Show evidence'}</button>}
-      {expanded && <div className={`cg-visitor-row__detail cg-visitor-row__detail--layout-${evidenceLayout}`}>
+      {onToggle && <button type="button" className="cg-visitor-row__expand cg-focusable" aria-expanded={expanded} aria-controls={evidenceId} onClick={onToggle}>{expanded ? 'Hide evidence' : 'Show evidence'}</button>}
+      {expanded && <div id={evidenceId} className={`cg-visitor-row__detail cg-visitor-row__detail--layout-${evidenceLayout}`}>
         {replay && <PageReplay behaviour={replay} size="hero" />}
         <div className="cg-visitor-row__detail-copy">
           <div className="cg-visitor-row__detail-header">

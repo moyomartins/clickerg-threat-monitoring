@@ -260,7 +260,7 @@ export const PlatformStatuses: Story = {
   name: 'Platform status: every supported state',
   render: () => (
     <div className="cg-platform-status-story">
-      {['excluded', 'pending', 'not excluded', 'not synchronized', 'synchronization failed', 'unavailable', 'demonstration data'].flatMap((state) => [
+      {['excluded', 'pending', 'not excluded', 'not synchronized', 'synchronization failed', 'unavailable', 'awaiting platform response'].flatMap((state) => [
         <PlatformStatus key={`google-${state}`} platform="Google Ads" state={state} />,
         <PlatformStatus key={`meta-${state}`} platform="Meta Ads" state={state} />,
       ])}
@@ -273,7 +273,7 @@ export const PlatformStatusLongAndUnavailable: Story = {
   render: () => (
     <div className="cg-platform-status-story">
       <PlatformStatus platform="Google Ads" state="synchronization failed , retrying after the platform rate limit clears" />
-      <PlatformStatus platform="Meta Ads" state="unavailable , demonstration data has not been synchronized" />
+      <PlatformStatus platform="Meta Ads" state="unavailable , platform status has not been synchronized" />
     </div>
   ),
 };

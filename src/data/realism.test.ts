@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildVisitors, VISITORS, NOTABLE, assemble } from './mock';
+import { buildTrafficRecords as buildVisitors, TRAFFIC_CASES as NOTABLE, TRAFFIC_RECORDS as VISITORS, assemble } from './trafficRepository';
 import { NOW } from './clock';
 import { scoreJourney, reasonsFor } from './scoring';
 import { applyManualDecision } from './manual';

@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { fetchVisitors } from './data/mock';
+import { fetchTrafficRecords } from './data/trafficRepository';
 import { BLOCK_THRESHOLD } from './data/scoring';
 import type { Visit } from './data/types';
 import { arrivalExplanationFor, noteFor } from './arrival';
 
-const all = await fetchVisitors(0);
+const all = await fetchTrafficRecords(0);
 const byIp = (ip: string) => {
   const v = all.find((x) => x.ip === ip || x.aliases?.includes(ip));
   if (!v) throw new Error(`fixture ${ip} missing`);

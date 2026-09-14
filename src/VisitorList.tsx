@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   EmptyState,
@@ -52,6 +52,30 @@ const WINDOWS = [
   { value: '30', label: 'Last 30 days' },
 ];
 
+const CONTEXT_KEY = 'cg-monitoring-context';
+interface MonitoringContext {
+  query: string;
+  status: string;
+  country: string;
+  window: string;
+  paidOnly: boolean;
+  minBot: number;
+  sort: SortState;
+  view: ViewMode;
+  expanded: string | null;
+}
+const DEFAULT_CONTEXT: MonitoringContext = {
+  query: '', status: 'all', country: 'all', window: 'all', paidOnly: false, minBot: 0,
+  sort: { key: 'lastSeen', direction: 'desc' }, view: 'grid', expanded: null,
+};
+function readMonitoringContext(): MonitoringContext {
+  try {
+    const stored = sessionStorage.getItem(CONTEXT_KEY);
+    return stored ? { ...DEFAULT_CONTEXT, ...JSON.parse(stored) } : DEFAULT_CONTEXT;
+  } catch {
+    return DEFAULT_CONTEXT;
+  }
+}
 
 
 interface Props {
@@ -61,15 +85,20 @@ interface Props {
 }
 
 export function VisitorList({ visitors, loading, onOpen }: Props) {
-  const [query, setQuery] = useState('');
-  const [status, setStatus] = useState('all');
-  const [country, setCountry] = useState('all');
-  const [window, setWindow] = useState('all');
-  const [paidOnly, setPaidOnly] = useState(false);
-  const [minBot, setMinBot] = useState(0);
-  const [sort, setSort] = useState<SortState>({ key: 'lastSeen', direction: 'desc' });
-  const [view, setView] = useState<ViewMode>(() => (sessionStorage.getItem('cg-visitor-view') as ViewMode) || 'grid');
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [initialContext] = useState(readMonitoringContext);
+  const [query, setQuery] = useState(initialContext.query);
+  const [status, setStatus] = useState(initialContext.status);
+  const [country, setCountry] = useState(initialContext.country);
+  const [window, setWindow] = useState(initialContext.window);
+  const [paidOnly, setPaidOnly] = useState(initialContext.paidOnly);
+  const [minBot, setMinBot] = useState(initialContext.minBot);
+  const [sort, setSort] = useState<SortState>(initialContext.sort);
+  const [view, setView] = useState<ViewMode>(initialContext.view);
+  const [expanded, setExpanded] = useState<string | null>(initialContext.expanded);
+
+  useEffect(() => {
+    sessionStorage.setItem(CONTEXT_KEY, JSON.stringify({ query, status, country, window, paidOnly, minBot, sort, view, expanded }));
+  }, [query, status, country, window, paidOnly, minBot, sort, view, expanded]);
 
   const countries = useMemo(
     () => [...new Set(visitors.map((v) => v.country))].sort(),
@@ -123,9 +152,9 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
   const setViewMode = (next: ViewMode) => {
     setView(next);
     setExpanded(null);
-    sessionStorage.setItem('cg-visitor-view', next);
   };
 
+  /* Monitoring summary metrics describe the current account snapshot, not the filtered subset. */
   const blocked = visitors.filter((v) => v.status === 'blocked');
   const wasted = blocked.reduce((s, v) => s + v.spendGbp, 0);
 

@@ -2,10 +2,9 @@ import { BLOCK_THRESHOLD, MIN_PAID_CLICKS_TO_BLOCK, REVIEW_THRESHOLD, reasonsFor
 import type { Channel, FormFill, Visit, Visitor, VisitorStatus, VpnState } from './types';
 
 /**
- * Deterministic mock traffic.
+ * Deterministic traffic records.
  *
- * Seeded so the same journeys appear on every reload , a fraud screen that
- * reshuffles itself between refreshes is impossible to review or to demo.
+ * Stable so the same journeys appear on every reload.
  *
  * The interesting cases are pinned and easy to find:
  *   41.203.88.7   , the obvious one: a click farm, blocked
@@ -15,7 +14,7 @@ import type { Channel, FormFill, Visit, Visitor, VisitorStatus, VpnState } from 
 
 export { NOW } from './clock';
 import { NOW } from './clock';
-export const MOCK_SEED = 4242;
+export const TRAFFIC_VARIATION_KEY = 4242;
 const DAY = 86_400_000;
 const HOUR = 3_600_000;
 
@@ -35,7 +34,7 @@ const pick = <T,>(r: () => number, xs: readonly T[]): T => xs[Math.floor(r() * x
 const between = (r: () => number, lo: number, hi: number) => lo + r() * (hi - lo);
 const intBetween = (r: () => number, lo: number, hi: number) => Math.floor(between(r, lo, hi + 1));
 
-/* -------------------------------------------------------------- fixtures --- */
+/* ------------------------------------------------------------- locations --- */
 
 const LOCATIONS = [
   ['Bristol', 'England', 'United Kingdom', 'GB'],
@@ -72,7 +71,7 @@ const REFERRERS = ['reddit.com/r/PPC', 'producthunt.com', 'g2.com', 'linkedin.co
 
 /* --------------------------------------------------------------- builder --- */
 
-interface VisitSeed {
+interface VisitInput {
   at: number;
   channel: Channel;
   engagement?: Visit['engagement'];
@@ -88,7 +87,7 @@ interface VisitSeed {
   utmConsistent?: boolean;
 }
 
-function makeVisit(r: () => number, id: string, seed: VisitSeed): Visit {
+function makeVisit(r: () => number, id: string, seed: VisitInput): Visit {
   const paid = seed.channel === 'paid';
   const platform = paid ? (r() < 0.75 ? 'Google Ads' : 'Meta Ads') : undefined;
   const campaign = paid ? pick(r, platform === 'Meta Ads' ? META_CAMPAIGNS : GOOGLE_CAMPAIGNS) : undefined;
@@ -222,9 +221,9 @@ export function assemble(
   if (decisiveIndex >= 0) visits = visits.map((v, i) => i > decisiveIndex && v.channel === 'paid' ? { ...v, postDecisionReason: 'Paid arrival while platform exclusion confirmation was pending.' } : v);
   return {
     ip,
-    mockMetadata: true,
+    id: ip,
     automatedStatus: status,
-    exclusionEvents: decisiveIndex < 0 ? [] : [...new Set(visits.filter((v) => v.platform).map((v) => v.platform!))].map((platform) => ({ platform, requestedAt: visits[decisiveIndex].at, scope: 'Mock advertising account' })),
+    exclusionEvents: decisiveIndex < 0 ? [] : [...new Set(visits.filter((v) => v.platform).map((v) => v.platform!))].map((platform) => ({ platform, requestedAt: visits[decisiveIndex].at, scope: 'Current advertising account' })),
     city: location[0],
     region: location[1],
     country: location[2],
@@ -249,7 +248,7 @@ export function assemble(
 type Archetype = 'clean-organic' | 'normal-prospect' | 'competitor-probe' | 'proxy-burst' | 'click-farm';
 
 function journeyFor(r: () => number, archetype: Archetype, ip: string): Visit[] {
-  const v = (i: number, seed: VisitSeed) => makeVisit(r, `${ip}-${i}`, seed);
+  const v = (i: number, seed: VisitInput) => makeVisit(r, `${ip}-${i}`, seed);
 
   switch (archetype) {
     case 'clean-organic': {
@@ -474,7 +473,7 @@ function incompleteData(): Visitor {
 /* ------------------------------------------------------------- generation --- */
 
 function generated(): Visitor[] {
-  const r = rng(MOCK_SEED);
+  const r = rng(TRAFFIC_VARIATION_KEY);
   const plan: Archetype[] = [
     ...Array<Archetype>(13).fill('clean-organic'),
     ...Array<Archetype>(14).fill('normal-prospect'),
@@ -491,30 +490,30 @@ function generated(): Visitor[] {
   });
 }
 
-/** Authored scenario templates, with seeded engagement/cost variation. */
+/** Authored traffic profiles, with stable engagement and cost variation. */
 function references(): Visitor[] {
   return Array.from({ length: 24 }, (_, index) => {
     const r = rng(8000 + index);
-    const scenario = ['repeat-shopper', 'shared-network', 'insufficient-evidence', 'high-engagement-free', 'tracking-stopped', 'conversion-conflict'][index % 6];
+    const trafficProfile = ['repeat-shopper', 'shared-network', 'insufficient-evidence', 'high-engagement-free', 'tracking-stopped', 'conversion-conflict'][index % 6];
     const ip = `203.0.113.${index + 1}`;
-    const n = scenario === 'insufficient-evidence' ? 2 : [7, 3, 2, 16, 4, 8, 31, 12][index % 8];
+    const n = trafficProfile === 'insufficient-evidence' ? 2 : [7, 3, 2, 16, 4, 8, 31, 12][index % 8];
     const age = ([0.03, 2, 12, 38][Math.floor(index / 6)] + between(r, 0, 0.3)) * DAY;
     const span = [0.04, 3, 14, 35][index % 4] * DAY;
     const offsets = Array.from({ length: n }, () => r()).sort((a, b) => a - b);
     const visits = offsets.map((offset, i) => {
       const final = i === n - 1;
-      const concerning = scenario === 'insufficient-evidence' || scenario === 'conversion-conflict' && i > 1;
-      const missing = scenario === 'tracking-stopped' && i > 0;
-      const channel: Channel = scenario === 'high-engagement-free' ? (['organic', 'referral', 'direct'] as const)[i % 3]
-        : scenario === 'insufficient-evidence' || scenario === 'conversion-conflict' ? 'paid'
+      const concerning = trafficProfile === 'insufficient-evidence' || trafficProfile === 'conversion-conflict' && i > 1;
+      const missing = trafficProfile === 'tracking-stopped' && i > 0;
+      const channel: Channel = trafficProfile === 'high-engagement-free' ? (['organic', 'referral', 'direct'] as const)[i % 3]
+        : trafficProfile === 'insufficient-evidence' || trafficProfile === 'conversion-conflict' ? 'paid'
         : i === 0 ? 'paid' : final ? 'direct' : (['referral', 'paid', 'organic'] as const)[i % 3];
-      const converted = scenario === 'conversion-conflict' ? i === 1 : final && ['repeat-shopper', 'shared-network'].includes(scenario);
+      const converted = trafficProfile === 'conversion-conflict' ? i === 1 : final && ['repeat-shopper', 'shared-network'].includes(trafficProfile);
       return makeVisit(r, `${ip}-${i}`, {
         at: NOW - age - span * (1 - (final ? 1 : offset)), channel,
         engagement: missing ? null : concerning ? { scrollPct: intBetween(r, 1, 9), dwellSec: 4, clicks: 3, mouseMoves: 0 }
           : { scrollPct: intBetween(r, 55, 96), dwellSec: intBetween(r, 65, 320), clicks: intBetween(r, 3, 9), mouseMoves: intBetween(r, 50, 640) },
         botProbability: missing || index === 4 ? null : concerning ? 0.9 : [0.12, 0.25, 0.5, 0.75][index % 4],
-        vpn: concerning ? 'residential-proxy' : scenario === 'shared-network' ? 'consumer-vpn' : 'none',
+        vpn: concerning ? 'residential-proxy' : trafficProfile === 'shared-network' ? 'consumer-vpn' : 'none',
         converted, conversionValueGbp: converted ? intBetween(r, 9900, 49900) / 100 : undefined,
         formFill: converted ? 'valid' : 'none',
         clickCadenceSec: concerning ? 0.8 : null,
@@ -523,11 +522,11 @@ function references(): Visitor[] {
         utmConsistent: !concerning,
       });
     });
-    return { ...assemble(ip, LOCATIONS[index % LOCATIONS.length], visits, scenario === 'tracking-stopped' ? 'Tracking reported the first arrival, then stopped; later engagement, form and conversion evidence is not captured.' : undefined), scenario };
+    return { ...assemble(ip, LOCATIONS[index % LOCATIONS.length], visits, trafficProfile === 'tracking-stopped' ? 'Tracking reported the first arrival, then stopped; later engagement, form and conversion evidence is not captured.' : undefined), trafficProfile };
   });
 }
 
-/** Normalize historical fixtures without discarding their journeys or deep links. */
+/** Normalize legacy records without discarding their journeys or deep links. */
 function historical(visitor: Visitor, index: number): Visitor {
   const ip = `192.0.2.${index + 1}`;
   const visits = visitor.visits.map((visit, i) => ({ ...visit, id: `${ip}-${i}`,
@@ -546,30 +545,63 @@ function historical(visitor: Visitor, index: number): Visitor {
   const result = assemble(ip, location, visits, visitor.dataGap);
   result.aliases = [visitor.ip];
   if (visitor.ip === '41.203.88.7') {
-    result.scenario = 'paid-abuse-then-direct';
+    result.trafficProfile = 'paid-abuse-then-direct';
     const lastPaid = visits.filter((v) => v.channel === 'paid').at(-1)!;
     result.exclusionEvents = result.exclusionEvents?.map((event) => ({ ...event, confirmedAt: lastPaid.at + 60_000 }));
     result.verdict = result.verdict.replace('The exclusion list request is pending; platform confirmation has not been recorded.', 'Both platform exclusion list requests were confirmed after the final paid arrival. Subsequent direct visits remain possible: ad exclusion does not block website access.');
   }
-  if (visitor.ip === '82.14.90.221') result.scenario = 'judgement-call';
-  if (visitor.ip === '178.62.40.9') result.scenario = 'missing-tracking';
+  if (visitor.ip === '82.14.90.221') result.trafficProfile = 'judgement-call';
+  if (visitor.ip === '178.62.40.9') result.trafficProfile = 'missing-tracking';
   return result;
 }
 
-export function buildVisitors(): Visitor[] {
+export function buildTrafficRecords(): Visitor[] {
   const records = [judgementCall(), clickFarm(), incompleteData(), ...generated()].map(historical);
   const authored = references();
-  const manual = authored.find((v) => v.scenario === 'shared-network')!;
+  const manual = authored.find((v) => v.trafficProfile === 'shared-network')!;
   manual.manualHistory = [{ at: NOW, status: 'blocked', reason: 'Account owner requested exclusion after an offline abuse report; automated recommendation remains available.' }];
   manual.status = 'blocked';
   manual.summary = 'Manually excluded after an offline abuse report';
   manual.verdict = `The account owner requested exclusion. Automated recommendation: ${manual.automatedStatus}. Platform confirmation is pending.`;
-  manual.exclusionEvents = [...new Set(manual.visits.flatMap((v) => v.platform ? [v.platform] : []))].map((platform) => ({ platform, requestedAt: NOW, scope: 'Mock advertising account' }));
-  return [...records, ...authored].sort((a, b) => b.lastSeen - a.lastSeen);
+  manual.exclusionEvents = [...new Set(manual.visits.flatMap((v) => v.platform ? [v.platform] : []))].map((platform) => ({ platform, requestedAt: NOW, scope: 'Current advertising account' }));
+  return validateTrafficRecords([...records, ...authored].sort((a, b) => b.lastSeen - a.lastSeen));
 }
 
-export const VISITORS = buildVisitors();
-export const NOTABLE = {
+/** Reject contradictory records before they reach any monitoring surface. */
+export function validateTrafficRecords(records: Visitor[]): Visitor[] {
+  const visitorIds = new Set<string>();
+  const arrivalIds = new Set<string>();
+  const validStatuses: VisitorStatus[] = ['blocked', 'allowed', 'review', 'ambiguous', 'incomplete'];
+
+  for (const visitor of records) {
+    if (!visitor.id || visitorIds.has(visitor.id) || !visitor.ip) throw new Error(`Invalid visitor identity: ${visitor.ip}`);
+    visitorIds.add(visitor.id);
+    if (!validStatuses.includes(visitor.status)) throw new Error(`Invalid visitor status: ${visitor.status}`);
+    if (!visitor.visits.length || visitor.confidence.length !== visitor.visits.length) throw new Error(`Incomplete journey: ${visitor.id}`);
+    if (visitor.firstSeen !== visitor.visits[0].at || visitor.lastSeen !== visitor.visits.at(-1)!.at) throw new Error(`Derived dates do not match journey: ${visitor.id}`);
+    if (visitor.firstSeen > visitor.lastSeen) throw new Error(`Invalid journey dates: ${visitor.id}`);
+    if (visitor.paidVisits !== visitor.visits.filter((visit) => visit.channel === 'paid').length) throw new Error(`Paid count mismatch: ${visitor.id}`);
+    const spend = visitor.visits.reduce((total, visit) => total + Math.round((visit.costGbp ?? 0) * 100), 0);
+    const revenue = visitor.visits.reduce((total, visit) => total + Math.round((visit.conversionValueGbp ?? 0) * 100), 0);
+    if (spend !== Math.round(visitor.spendGbp * 100) || revenue !== Math.round(visitor.revenueGbp * 100)) throw new Error(`Financial total mismatch: ${visitor.id}`);
+    if (visitor.decisiveIndex >= visitor.visits.length || visitor.decisiveIndex < -1) throw new Error(`Invalid decisive arrival: ${visitor.id}`);
+    if (visitor.status === 'blocked' && visitor.decisiveIndex < 0 && !visitor.manualHistory?.length) throw new Error(`Blocked visitor missing decisive arrival: ${visitor.id}`);
+
+    visitor.visits.forEach((visit, index) => {
+      if (arrivalIds.has(visit.id)) throw new Error(`Duplicate arrival identity: ${visit.id}`);
+      arrivalIds.add(visit.id);
+      if (!Number.isFinite(visit.at) || (index > 0 && visit.at <= visitor.visits[index - 1].at)) throw new Error(`Invalid arrival chronology: ${visit.id}`);
+      if (visitor.confidence[index] < 0 || visitor.confidence[index] > 100) throw new Error(`Invalid confidence: ${visit.id}`);
+      if (visit.channel === 'paid' && (visit.costGbp === undefined || !visit.platform || !visit.campaign)) throw new Error(`Incomplete paid arrival: ${visit.id}`);
+      if (visit.channel !== 'paid' && (visit.costGbp !== undefined || visit.platform || visit.campaign || visit.keyword)) throw new Error(`Non-paid arrival carries paid fields: ${visit.id}`);
+      if (visit.converted !== (visit.conversionValueGbp !== undefined)) throw new Error(`Conversion mismatch: ${visit.id}`);
+    });
+  }
+  return records;
+}
+
+export const TRAFFIC_RECORDS = buildTrafficRecords();
+export const TRAFFIC_CASES = {
   obviouslyMalicious: '192.0.2.2', judgementCall: '192.0.2.1', incompleteData: '192.0.2.3',
   repeatShopper: '203.0.113.1', sharedNetwork: '203.0.113.8', insufficientEvidence: '203.0.113.3',
   highEngagementFree: '203.0.113.4', trackingStopped: '203.0.113.5', conversionConflict: '203.0.113.6',
@@ -581,8 +613,8 @@ export const NOTABLE = {
  * decorative. `fail` is wired to `?fail=1` in the app so the error state is
  * reachable on demand instead of being a branch nobody ever sees.
  */
-export function fetchVisitors(delayMs = 700, fail = false): Promise<Visitor[]> {
+export function fetchTrafficRecords(delayMs = 700, fail = false): Promise<Visitor[]> {
   return new Promise((resolve, reject) =>
-    setTimeout(() => (fail ? reject(new Error('Could not reach the detection service.')) : resolve(VISITORS)), delayMs),
+    setTimeout(() => (fail ? reject(new Error('Could not reach the detection service.')) : resolve(TRAFFIC_RECORDS)), delayMs),
   );
 }

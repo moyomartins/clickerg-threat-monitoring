@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { VISITORS } from './data/mock';
+import { TRAFFIC_RECORDS } from './data/trafficRepository';
 import { journeySummaryFor } from './journeySummary';
 
 const byIp = (ip: string) => {
-  const visitor = VISITORS.find((item) => item.ip === ip || item.aliases?.includes(ip));
+  const visitor = TRAFFIC_RECORDS.find((item) => item.ip === ip || item.aliases?.includes(ip));
   if (!visitor) throw new Error(`fixture ${ip} missing`);
   return visitor;
 };

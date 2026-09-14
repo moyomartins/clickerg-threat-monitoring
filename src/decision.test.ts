@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BLOCK_THRESHOLD } from './data/scoring';
-import { fetchVisitors } from './data/mock';
+import { fetchTrafficRecords } from './data/trafficRepository';
 import type { Visitor } from './data/types';
 import {
   confidenceFor,
@@ -12,7 +12,7 @@ import {
   revenueFor,
 } from './decision';
 
-const all = await fetchVisitors(0);
+const all = await fetchTrafficRecords(0);
 const byIp = (ip: string) => {
   const v = all.find((x) => x.ip === ip || x.aliases?.includes(ip));
   if (!v) throw new Error(`fixture ${ip} missing`);

@@ -54,3 +54,7 @@ storybook-static
 /packages/ui/src/icons/chevron_big_down.svg
 
 /TRAFFIC-REALISM.md
+
+# Local audit documents
+/FILTER-SEARCH-AUDIT.md
+/FUNCTIONALITY-AUDIT.md

@@ -2,7 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useState, useSyncExter
 import { Button, EmptyState, Wordmark, type VisitorStatus } from '@clickerg/ui';
 import { VisitorList } from './VisitorList';
 import { VisitorDetail } from './VisitorDetail';
-import { fetchVisitors } from './data/mock';
+import { fetchTrafficRecords } from './data/trafficRepository';
 import { applyManualDecision } from './data/manual';
 import { NOW } from './data/clock';
 import type { Visitor } from './data/types';
@@ -39,7 +39,7 @@ export default function App() {
   const load = useCallback(() => {
     setPhase('loading');
     const shouldFail = new URLSearchParams(window.location.search).has('fail');
-    fetchVisitors(700, shouldFail)
+    fetchTrafficRecords(700, shouldFail)
       .then((visitors) => {
         setData(visitors);
         setPhase('ready');

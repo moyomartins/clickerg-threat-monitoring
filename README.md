@@ -22,7 +22,7 @@ npm run lint             # oxlint
 npm test                 # unit tests + every story, with a11y checks
 ```
 
-`npm test` runs two Vitest projects: `unit` (the scoring model and the mock-data invariants,
+`npm test` runs two Vitest projects: `unit` (the scoring model and the traffic-record invariants,
 in Node) and `storybook` (every story rendered in headless Chromium, with interaction plays
 and axe accessibility checks). Accessibility violations **fail the build** , `a11y: { test: 'error' }`
 in `.storybook/preview.tsx`.
@@ -39,7 +39,7 @@ packages/ui/            @clickerg/ui , the design system, an npm workspace
   src/*.stories.tsx     stories, living next to the component they document
 src/                    the Threat Monitoring app
   data/scoring.ts       the blocking model , and the source of its own explanations
-  data/mock.ts          deterministic mock traffic
+  data/trafficRepository.ts canonical traffic records
   VisitorList.tsx       list view: filters, sort, search, empty + loading states
   VisitorDetail.tsx     drill-down: the full journey and the verdict
 .storybook/             points at packages/ui , there is no second copy of anything
@@ -51,15 +51,14 @@ The app and Storybook import the **same files**. `src/VisitorList.tsx` starts wi
 the product and its documentation change together. Nothing in `src/` hardcodes a hex value
 or a magic pixel: every value resolves to a token in `packages/ui/src/tokens.css`.
 
-## The mock data
+## Current traffic records
 
-53 visitors, generated from a fixed seed so the same journeys appear on every reload ,
-a fraud screen that reshuffles between refreshes cannot be reviewed or demoed. Journeys
+77 visitors, kept stable so the same journeys appear on every reload. Journeys
 run from a single visit to 29, and mix paid, organic, direct and referral traffic inside
 the same visitor where it makes sense. Roughly 13 blocked, 10 under review, 28 not blocked,
 plus the two pinned cases below.
 
-The three cases worth opening first (also exported as `NOTABLE` in `src/data/mock.ts`):
+The three cases worth opening first (also exported as `TRAFFIC_CASES` in `src/data/trafficRepository.ts`):
 
 | IP | What it is |
 |---|---|

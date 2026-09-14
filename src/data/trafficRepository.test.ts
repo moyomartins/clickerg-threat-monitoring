@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { NOTABLE, VISITORS } from './mock';
+import { TRAFFIC_CASES as NOTABLE, TRAFFIC_RECORDS as VISITORS } from './trafficRepository';
 import { BLOCK_THRESHOLD, MIN_PAID_CLICKS_TO_BLOCK } from './scoring';
 import type { VisitorStatus } from './types';
 
 const byIp = (ip: string) => VISITORS.find((v) => v.ip === ip)!;
 const statuses = new Set<VisitorStatus>(VISITORS.map((v) => v.status));
 
-describe('mock traffic', () => {
+describe('traffic records', () => {
   it('has enough visitors for filtering to be meaningful', () => {
     expect(VISITORS.length).toBeGreaterThanOrEqual(60);
   });

@@ -8,6 +8,6 @@ export function matchesFilters(v: Visitor, f: TrafficFilters, now: number): bool
   const known = v.visits.flatMap((x) => x.botProbability === null ? [] : [x.botProbability]);
   if (f.minBot > 0 && (!known.length || Math.max(...known) * 100 < f.minBot)) return false;
   const haystack = [v.ip, ...(v.aliases ?? []), v.city, v.region, v.country, v.summary,
-    ...v.visits.map((x) => `${x.campaign ?? ''} ${x.keyword ?? ''} ${x.referrer ?? ''}`)].join(' ').toLowerCase();
+    ...v.visits.map((x) => `${x.platform ?? ''} ${x.campaign ?? ''} ${x.keyword ?? ''} ${x.referrer ?? ''}`)].join(' ').toLowerCase();
   return haystack.includes(f.query.trim().toLowerCase());
 }
