@@ -15,7 +15,7 @@
  * needs to restore focus anywhere: it never went anywhere.
  */
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode , type CSSProperties } from 'react';
 
 export interface ArrivalDisclosureProps {
   /** Names the popover region and doubles as its visible heading. Responds
@@ -27,6 +27,9 @@ export interface ArrivalDisclosureProps {
   triggerLabel: string;
   /** Passed to the `<li>` this component owns , status/reflection modifiers. */
   className?: string;
+  /** Applied to the same element as `className` , e.g. the decisive card's
+   *  own reflection delay, so two cards never sweep in lockstep. */
+  style?: CSSProperties;
   /** The card's own visible content. */
   children: ReactNode;
 }
@@ -39,6 +42,7 @@ export function ArrivalDisclosure({
   content,
   triggerLabel,
   className = '',
+  style: cardStyle,
   children,
 }: ArrivalDisclosureProps) {
   const reactId = useId();
@@ -160,6 +164,7 @@ export function ArrivalDisclosure({
       <div
         ref={triggerRef}
         className={className}
+        style={cardStyle}
         role="button"
         tabIndex={0}
         aria-label={triggerLabel}

@@ -234,40 +234,103 @@
 .cg-visit--decisive {
   position: relative; isolation: isolate; overflow: hidden;
   border: var(--cg-border-w-strong) solid var(--cg-absence);
-  animation: cg-decisive-reflection-position var(--cg-reflection-duration) var(--cg-reflection-easing) infinite;
+  animation: cg-decisive-reflection-position var(--cg-reflection-duration) var(--cg-reflection-easing)
+    var(--cg-reflection-delay, 2.6s) infinite both;
 }
-@property --cg-reflection-x { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
-@property --cg-reflection-y { syntax: '<percentage>'; inherits: true; initial-value: 100%; }
+@property --cg-reflection-x { syntax: '<percentage>'; inherits: true; initial-value: 125%; }
+@property --cg-reflection-y { syntax: '<percentage>'; inherits: true; initial-value: 125%; }
 @property --cg-reflection-presence { syntax: '<number>'; inherits: true; initial-value: 0; }
-/* A stationary mark under a moving mask: it never appears as a watermark. */
+/* A stationary mark under a moving mask. The reflection is the revealing
+   instrument: the mark's opacity is driven by the same `presence` variable
+   that fades the light band in, so at rest it is absolutely zero , never a
+   watermark , and the mask shapes *which part* is revealed while it travels.
+
+   The mark is frosted white glass, not brand colour. It reads because it sits
+   above the decisive red tint and lets it through, so the visible material is
+   white-on-red rather than white-on-white. Its opacity range (.42 body, .58
+   edge, .7 specular) lives in the SVG. */
 .cg-visit__reflection-logo {
-  position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  opacity: var(--cg-reflection-logo-opacity); filter: grayscale(1) contrast(1.6);
-  background: url('./clickguard-mark.svg') center / var(--cg-reflection-logo-size) auto no-repeat;
-  -webkit-mask-image: linear-gradient(135deg, transparent 0 39%, rgba(0,0,0,.18) 45%, #000 49% 53%, rgba(0,0,0,.18) 59%, transparent 65% 100%);
-  -webkit-mask-size: 230% 230%; -webkit-mask-position: var(--cg-reflection-x) var(--cg-reflection-y);
-  mask-image: linear-gradient(135deg, transparent 0 39%, rgba(0,0,0,.18) 45%, #000 49% 53%, rgba(0,0,0,.18) 59%, transparent 65% 100%);
-  mask-size: 230% 230%; mask-position: var(--cg-reflection-x) var(--cg-reflection-y);
+  position: absolute; inset: 0; z-index: 2; pointer-events: none; user-select: none;
+  opacity: calc(var(--cg-reflection-presence) * var(--cg-reflection-logo-opacity));
+  /* White glass on a near-white card has almost no fill contrast, so the mark
+     reads by its edge and its shadow rather than by its body. Without this it
+     is present but invisible. Applied to the wrapper, so it scales both shapes
+     by the same factor and leaves their 80% relationship intact. */
+  filter: blur(0.2px) drop-shadow(0 4px 8px rgba(70, 74, 82, 0.1));
+  -webkit-mask-image: linear-gradient(var(--cg-reflection-angle), transparent 0 44%, rgba(0,0,0,.2) 46.5%, rgba(0,0,0,.85) 48.5%, #000 49.5% 50.5%, rgba(0,0,0,.85) 51.5%, rgba(0,0,0,.2) 53.5%, transparent 56% 100%);
+  -webkit-mask-size: 230% 230%; -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: var(--cg-reflection-x) var(--cg-reflection-y);
+  mask-image: linear-gradient(var(--cg-reflection-angle), transparent 0 44%, rgba(0,0,0,.2) 46.5%, rgba(0,0,0,.85) 48.5%, #000 49.5% 50.5%, rgba(0,0,0,.85) 51.5%, rgba(0,0,0,.2) 53.5%, transparent 56% 100%);
+  mask-size: 230% 230%; mask-repeat: no-repeat;
+  mask-position: var(--cg-reflection-x) var(--cg-reflection-y);
 }
-/* The light and mask share the same timed diagonal route. */
+/* Low in the card, clear of the opaque PageReplay panel above it and the
+   `blocked here` marker below , the mark sits behind the card body, so
+   anywhere those two paint it would simply be occluded. The offsets reproduce
+   `background-position: center 68%` exactly: a percentage background position
+   places the image within (container , image), which is what the matching
+   translate percentages do here. */
+.cg-glass-mark {
+  position: absolute; left: 50%; top: 68%; transform: translate(-50%, -68%);
+  width: var(--cg-reflection-logo-size); height: auto;
+}
+/* The two shapes of the mark. The mask above decides *where* the mark is
+   visible; these decide the relative density of its material. Every layer
+   between here and the screen , wrapper presence, wrapper filter, the mask ,
+   scales both equally, so the body stays 30% denser than the facet at every
+   phase of the sweep and neither ever flashes to solid white. */
+/* No opacity of its own: an extra factor here would scale both shapes and add
+   a layer for the ratio to get lost in. Density belongs on the paths. */
+.cg-glass-mark { opacity: 1; }
+.cg-glass-mark__outer { fill: rgb(255 255 255); opacity: var(--cg-glass-outer-opacity); }
+.cg-glass-mark__inner { fill: rgb(255 255 255); opacity: var(--cg-glass-inner-opacity); }
+
+/* The light and the mask share one angle and one timed route, so the mark can
+   never appear anywhere the reflection is not. The band is deliberately wider
+   than the mask's core, so the light arrives before the mark and leaves after it. */
 .cg-visit--decisive::after {
-  content: ''; position: absolute; z-index: 1; pointer-events: none;
+  content: ''; position: absolute; z-index: 1; pointer-events: none; user-select: none;
   inset: 0; opacity: var(--cg-reflection-presence);
-  background: linear-gradient(135deg, transparent 0 20%, rgba(192,57,43,.08) 28%, rgba(192,57,43,.144) 36%, rgba(192,57,43,.24) 44%, rgba(192,57,43,.32) 49%, rgba(192,57,43,.256) 54%, rgba(192,57,43,.16) 62%, rgba(192,57,43,.08) 70%, transparent 80% 100%);
-  background-size: 230% 230%; background-position: var(--cg-reflection-x) var(--cg-reflection-y);
+  background: linear-gradient(var(--cg-reflection-angle), transparent 0 40%, rgba(192,57,43,.05) 44%, rgba(192,57,43,.12) 47%, rgba(192,57,43,.2) 50%, rgba(192,57,43,.12) 53%, rgba(192,57,43,.05) 56%, transparent 60% 100%);
+  background-size: 230% 230%; background-repeat: no-repeat;
+  background-position: var(--cg-reflection-x) var(--cg-reflection-y);
 }
+/* A brief sweep, then a long rest , occasional, not a shimmer.
+
+   Both axes count *down* together. With a mask larger than its box, a rising
+   position percentage slides the image up and left, so counting down is what
+   carries the band from beyond the top-left corner to beyond the bottom-right.
+   125% and -25% are the over-travel that puts the band fully clear of the card
+   at each end rather than clipping it at the corners. */
 @keyframes cg-decisive-reflection-position {
-  0%, 8% { --cg-reflection-x: 0%; --cg-reflection-y: 100%; --cg-reflection-presence: 0; }
-  12% { --cg-reflection-presence: var(--cg-reflection-opacity); }
-  46% { --cg-reflection-x: 100%; --cg-reflection-y: 0%; --cg-reflection-presence: var(--cg-reflection-opacity); }
-  52%, 100% { --cg-reflection-x: 100%; --cg-reflection-y: 0%; --cg-reflection-presence: 0; }
+  0%    { --cg-reflection-x: 125%; --cg-reflection-y: 125%; --cg-reflection-presence: 0; }
+  1%    { --cg-reflection-presence: var(--cg-reflection-opacity); }
+  23%   { --cg-reflection-presence: var(--cg-reflection-opacity); }
+  24%   { --cg-reflection-x: -25%; --cg-reflection-y: -25%; --cg-reflection-presence: 0; }
+  100%  { --cg-reflection-x: -25%; --cg-reflection-y: -25%; --cg-reflection-presence: 0; }
 }
+/* Offscreen, or a backgrounded tab: stop scheduling decorative motion. */
+.cg-visit--reflection-paused { animation-play-state: paused; }
+/* Storybook-only deterministic phases. Same production effect, frozen. */
+.cg-visit--reflection-phase-idle,
+.cg-visit--reflection-phase-entering,
+.cg-visit--reflection-phase-active,
+.cg-visit--reflection-phase-exiting,
+.cg-visit--reflection-phase-completed { animation-play-state: paused; }
+/* Negative delays seek the one cycle to a known moment and hold it there. The
+   fractions are of the whole cycle, whose traversal occupies the first 24%. */
+.cg-visit--reflection-phase-idle     { animation-delay: calc(var(--cg-reflection-duration) * -0.6); }
+.cg-visit--reflection-phase-entering { animation-delay: calc(var(--cg-reflection-duration) * -0.045); }
+.cg-visit--reflection-phase-active   { animation-delay: calc(var(--cg-reflection-duration) * -0.12); }
+.cg-visit--reflection-phase-exiting   { animation-delay: calc(var(--cg-reflection-duration) * -0.21); }
+.cg-visit--reflection-phase-completed { animation-delay: calc(var(--cg-reflection-duration) * -0.245); }
 @media (prefers-reduced-motion: reduce) {
   .cg-visit--decisive { animation: none; }
   .cg-visit--decisive::after, .cg-visit__reflection-logo { opacity: 0; }
 }
 .cg-visit__rail { display: none; }
-.cg-visit__body { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+/* Above the reflection layers: the sweep passes behind the evidence, never over it. */
+.cg-visit__body { position: relative; z-index: 3; display: flex; flex: 1; flex-direction: column; min-width: 0; }
 .cg-visit__head { display: grid; gap: 0; margin: var(--cg-space-1) 0 var(--cg-space-1); font-size: var(--cg-text-xs); line-height: var(--cg-leading-tight); }
 .cg-visit__head-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--cg-space-1); min-width: 0; padding-bottom: 2px; }
 .cg-visit__no { font-family: var(--cg-font-mono); font-size: var(--cg-text-mono-sm); color: var(--cg-ink); display: block; }

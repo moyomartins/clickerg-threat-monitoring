@@ -133,17 +133,36 @@
   --cg-focus: 0 0 0 2px var(--cg-surface), 0 0 0 4px var(--cg-attention-text);
 
   /* --- Decisive arrival reflection ---
-     A brief visual cue for the one arrival where blocking began. It stays
-     absent for most of its cycle, and never changes the card's base state. */
-  --cg-reflection-angle: -42deg;
-  --cg-reflection-duration: 11s;
-  --cg-reflection-easing: cubic-bezier(0.22, 1, 0.36, 1);
+     A brief, recurring sweep on the one arrival where blocking began. The
+     light band and the mark's mask share this angle and this timing, so the
+     mark can only ever be seen inside the reflection. */
+  --cg-reflection-angle: 135deg;     /* travels top-left to bottom-right */
+  /* One cycle = traversal + rest. The traversal is the first 24% of it, and it
+     is the *visible* traversal: the band's travel runs 125% , -25%, endpoints
+     chosen so it is fully clear of the card at each end, so the window measures
+     leading edge entering to trailing edge leaving. This default gives a 2.81s
+     traversal and 8.89s at rest. VisitEntry varies the whole cycle per card
+     (11.3s , 12.4s), keeping the traversal inside 2.71 , 2.98s and the rest
+     inside 8.59 , 9.42s. */
+  --cg-reflection-duration: 11.7s;
+  --cg-reflection-delay: 3s;         /* settle before the first pass */
+  /* Eased at both ends and symmetric, chosen against the measured split of the
+     traversal: 25% entering the card, 50% crossing the mark and the central
+     card area, 25% exiting. Symmetry is what keeps the exit from outlasting
+     the entry, and it puts the mark's midpoint at the traversal's midpoint.
+     A one-sided ease-out spends its time in the corners instead , the previous
+     curve measured 30/33/37, two thirds of it outside the crossing zone. */
+  --cg-reflection-easing: cubic-bezier(0.25, 0.22, 0.75, 0.78);
   --cg-reflection-opacity: 1;
-  --cg-reflection-width: 190%;
-  --cg-reflection-logo-opacity: 0.4;
-  --cg-reflection-logo-size: 32%;
-  --cg-reflection-edge-opacity: 0.52;
-  --cg-reflection-specular-opacity: 0.7;
+  --cg-reflection-logo-opacity: 1;
+  --cg-reflection-logo-size: 26%;
+
+  /* --- The mark's two shapes ---
+     Both are the same white; only density separates them. The facet is the
+     base value and the body is derived from it (30% more opaque), so the two
+     can never drift out of relationship, and neither approaches a solid fill. */
+  --cg-glass-inner-opacity: 0.48;
+  --cg-glass-outer-opacity: calc(var(--cg-glass-inner-opacity) * 1.3);
 
   --cg-container: 1280px;
   color-scheme: light;
