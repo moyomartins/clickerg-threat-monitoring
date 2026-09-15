@@ -13,8 +13,12 @@ import {
   StatusPill,
   TextInput,
   Toggle,
+  MobileFilterControls,
   ViewModeSwitch,
   VisitorScanRow,
+  useMediaQuery,
+  type MobileFilterValues,
+  type MobileSortOption,
   type SortState,
   type VisitorStatus,
   type ViewMode,
@@ -44,6 +48,27 @@ const whyTone = (v: Visitor) => {
   if (v.summary.trim() === ',') return ' replay-card__why--none';
   return SETTLED.has(v.status) ? '' : ' replay-card__why--open';
 };
+
+/* The sort fields, with how each one's direction reads in words , a bare arrow
+   on "Spend" or "Last seen" tells the reader nothing about which end is which. */
+const SORT_OPTIONS: MobileSortOption[] = [
+  { value: 'lastSeen', label: 'Last seen', kind: 'date' },
+  { value: 'status', label: 'Status', kind: 'text' },
+  { value: 'confidence', label: 'Confidence', kind: 'amount' },
+  { value: 'spend', label: 'Spend', kind: 'amount' },
+  { value: 'visits', label: 'Visit count', kind: 'amount' },
+  { value: 'ip', label: 'IP address', kind: 'text' },
+  { value: 'location', label: 'Location', kind: 'text' },
+];
+
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All statuses' },
+  { value: 'blocked', label: 'Blocked' },
+  { value: 'ambiguous', label: 'Judgement call' },
+  { value: 'review', label: 'Under review' },
+  { value: 'allowed', label: 'Not blocked' },
+  { value: 'incomplete', label: 'Incomplete data' },
+];
 
 const WINDOWS = [
   { value: 'all', label: 'All time' },
@@ -149,6 +174,19 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
     setMinBot(0);
   };
 
+  /* The breakpoint the monitoring row already uses for its own narrow layout. */
+  const compact = useMediaQuery('(max-width: 767px)');
+
+  /* One applied state, two renderers. The mobile panel edits a draft and calls
+     this once on Apply, so there is no second filter state to drift. */
+  const applyFilters = (next: MobileFilterValues) => {
+    setStatus(next.status);
+    setCountry(next.country);
+    setWindow(next.window);
+    setPaidOnly(next.paidOnly);
+    setMinBot(next.minBot);
+  };
+
   const setViewMode = (next: ViewMode) => {
     setView(next);
     setExpanded(null);
@@ -195,6 +233,28 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
         </div>
       </div>
 
+      {compact ? (
+        <MobileFilterControls
+          query={query}
+          onQueryChange={setQuery}
+          values={{ status, country, window, paidOnly, minBot }}
+          defaults={{
+            status: DEFAULT_CONTEXT.status,
+            country: DEFAULT_CONTEXT.country,
+            window: DEFAULT_CONTEXT.window,
+            paidOnly: DEFAULT_CONTEXT.paidOnly,
+            minBot: DEFAULT_CONTEXT.minBot,
+          }}
+          onApply={applyFilters}
+          statusOptions={STATUS_OPTIONS}
+          countryOptions={[{ value: 'all', label: 'Everywhere' }, ...countries.map((c) => ({ value: c, label: c }))]}
+          windowOptions={WINDOWS}
+          sort={sort}
+          sortOptions={SORT_OPTIONS}
+          onSortChange={setSort}
+          loading={loading}
+        />
+      ) : (
       <FilterBar>
         <Field label="Search IP, city or campaign" htmlFor="q" grow>
           <TextInput
@@ -213,14 +273,7 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
               value={status}
               disabled={loading}
               onChange={(e) => setStatus(e.target.value)}
-              options={[
-                { value: 'all', label: 'All statuses' },
-                { value: 'blocked', label: 'Blocked' },
-                { value: 'ambiguous', label: 'Judgement call' },
-                { value: 'review', label: 'Under review' },
-                { value: 'allowed', label: 'Not blocked' },
-                { value: 'incomplete', label: 'Incomplete data' },
-              ]}
+              options={STATUS_OPTIONS}
             />
           </Field>
           <Field label="Country" htmlFor="country">
@@ -248,15 +301,7 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
                 value={sort.key}
                 disabled={loading}
                 onChange={(e) => setSort((x) => ({ ...x, key: e.target.value }))}
-                options={[
-                  { value: 'lastSeen', label: 'Last seen' },
-                  { value: 'status', label: 'Status' },
-                  { value: 'confidence', label: 'Confidence' },
-                  { value: 'spend', label: 'Spend' },
-                  { value: 'visits', label: 'Visit count' },
-                  { value: 'ip', label: 'IP address' },
-                  { value: 'location', label: 'Location' },
-                ]}
+                options={SORT_OPTIONS}
               />
               <Button
                 variant="ghost"
@@ -284,6 +329,7 @@ export function VisitorList({ visitors, loading, onOpen }: Props) {
           </Button>
         )}
       </FilterBar>
+      )}
 
       <div className="toolbar">
         <span className="toolbar__count" aria-live="polite">

@@ -30,13 +30,13 @@ export interface VisitorScanRowProps {
 
 /* The project draws its own icons inline, the way ViewModeSwitch does, rather
    than carrying an icon package for a handful of glyphs. */
-export const EyeIcon = () => (
+const EyeIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
     <path d="M1 8s2.5-4.5 7-4.5S15 8 15 8s-2.5 4.5-7 4.5S1 8 1 8z" />
     <circle cx="8" cy="8" r="2.25" />
   </svg>
 );
-export const EyeOffIcon = () => (
+const EyeOffIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
     <path d="M1 8s2.5-4.5 7-4.5c1.2 0 2.26.32 3.16.8M15 8s-2.5 4.5-7 4.5c-1.2 0-2.26-.32-3.16-.8" />
     <path d="M6.4 6.4a2.25 2.25 0 003.2 3.2" />

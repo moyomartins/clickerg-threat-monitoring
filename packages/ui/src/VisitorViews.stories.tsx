@@ -39,22 +39,21 @@ const expandedRow = {
   replay: representativeBehaviour(expandedVisitor),
 };
 
+/* ── The view switch ─────────────────────────────────────────────────────── */
+
 export const GridListSwitch: Story = { render: () => <SwitchDemo /> };
 export const ActiveGrid: Story = { render: () => <ViewModeSwitch value="grid" onChange={() => {}} /> };
 export const ActiveList: Story = { render: () => <ViewModeSwitch value="list" onChange={() => {}} /> };
 export const IconOnly: Story = { render: () => <SwitchDemo iconOnly /> };
-export const Labelled: Story = { render: () => <ViewModeSwitch value="list" onChange={() => {}} /> };
-export const CompactVisitorRow: Story = { render: () => <VisitorScanRow {...base} /> };
-export const ComfortableVisitorRow: Story = { render: () => <VisitorScanRow {...base} summary="Three paid clicks before the decision, scored 93% on our automation model." /> };
-export const ExpandableVisitorRow: Story = { render: () => <ExpandableDemo /> };
-export const GroupedEvidencePanel: Story = { render: () => <ExpandableDemo /> };
-export const ReplayFirstRow: Story = { render: () => <VisitorScanRow {...base} expanded /> };
-export const LongContentRow: Story = { render: () => <VisitorScanRow {...base} ip="2001:0db8:85a3:0000:0000:8a2e:0370:7334" location="Ho Chi Minh City, Vietnam, Southeast Asia" summary="Repeated paid arrivals from a long campaign name with no recorded engagement." /> };
+
+/* ── The desktop list row, one story per state it can be in ─────────────── */
+
 export const BlockedRow: Story = { render: () => <VisitorScanRow {...base} /> };
 export const NotBlockedRow: Story = { render: () => <VisitorScanRow {...base} status="allowed" summary="No concerning behaviour in this visitor's journey." confidence="18%" /> };
 export const JudgementCallRow: Story = { render: () => <VisitorScanRow {...base} status="ambiguous" summary="Converted once, but clicks arrive on a fixed cadence." /> };
 export const MissingDataRow: Story = { render: () => <VisitorScanRow {...base} status="incomplete" summary="Tag stopped reporting during the latest arrival." confidence="Not captured" /> };
-export const MobileRow: Story = { parameters: { viewport: { defaultViewport: 'mobile' } }, render: () => <VisitorScanRow {...base} /> };
+export const LongContentRow: Story = { render: () => <VisitorScanRow {...base} ip="2001:0db8:85a3:0000:0000:8a2e:0370:7334" location="Ho Chi Minh City, Vietnam, Southeast Asia" summary="Repeated paid arrivals from a long campaign name with no recorded engagement." /> };
+export const ExpandableVisitorRow: Story = { render: () => <ExpandableDemo /> };
 
 /* ── Threat monitoring on a phone ─────────────────────────────────────────
    The same VisitorScanRow the monitoring page renders. Below 768px it draws a

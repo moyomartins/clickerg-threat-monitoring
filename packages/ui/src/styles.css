@@ -625,6 +625,101 @@
 
 /* ---------------------------------------------------------- filter bar --- */
 
+/* ------------------------------------ threat monitoring, narrow controls --- */
+/* The desktop bar shows every control at once; at phone width that stack put
+   the first visitor most of a screen down. Search stays out because searching
+   is a primary action, and the rest collapses behind two triggers. */
+.cg-mfilters { display: grid; gap: var(--cg-space-1-25); min-width: 0; }
+.cg-mfilters__actions { display: flex; gap: var(--cg-space-1); min-width: 0; }
+.cg-mfilters__trigger {
+  display: flex; align-items: center; justify-content: center; gap: var(--cg-space-1);
+  flex: 1 1 0; min-width: 0; min-height: 44px; padding: 0 var(--cg-space-1-25);
+  font: inherit; font-size: var(--cg-text-sm); color: var(--cg-ink);
+  background: var(--cg-surface); border: var(--cg-border-w) solid var(--cg-border);
+  cursor: pointer;
+}
+.cg-mfilters__trigger svg { flex: none; width: 16px; height: 16px; }
+.cg-mfilters__trigger > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Open state is carried by the border weight as well as the tone, so it reads
+   with colour removed , the same rule the rest of the system follows. */
+.cg-mfilters__trigger[aria-expanded='true'] {
+  background: var(--cg-frame); border-color: var(--cg-ink);
+  box-shadow: inset 0 -2px 0 var(--cg-ink);
+}
+/* A number, never a coloured dot: the count is the information. */
+.cg-mfilters__badge {
+  flex: none; min-width: 18px; padding: 0 var(--cg-space-half);
+  font-family: var(--cg-font-mono); font-size: var(--cg-text-marker); text-align: center;
+  color: var(--cg-on-brand-acid); background: var(--cg-brand-acid);
+  border: var(--cg-border-w) solid var(--cg-on-brand-acid);
+}
+.cg-mfilters__trigger-value { color: var(--cg-muted); font-size: var(--cg-text-xs); }
+/* At the narrowest widths the label alone survives; the accessible name still
+   carries the current sort, so nothing is lost. */
+@media (max-width: 359px) {
+  .cg-mfilters__trigger-value { display: none; }
+}
+
+/* A disclosure in the document flow, not a floating sheet: it cannot render
+   off-screen, needs no scroll lock, and leaves the scroll position alone. */
+.cg-mfilters__panel {
+  display: grid; gap: var(--cg-space-1-25);
+  min-width: 0; box-sizing: border-box; padding: var(--cg-space-1-5);
+  background: var(--cg-surface); border: var(--cg-border-w) solid var(--cg-ink);
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* No fill mode: the panel's base style is already visible, so the entrance
+     only ever adds to it. `both` would hold opacity 0 before the animation
+     starts, leaving the panel invisible wherever animations do not run. */
+  .cg-mfilters__panel { animation: cg-mfilters-open 120ms ease-out; }
+}
+/* Movement only. Animating opacity from zero makes the panel briefly absent
+   rather than briefly offset , which reads as a flash, and leaves it genuinely
+   invisible on any frame the animation has not reached yet. */
+@keyframes cg-mfilters-open {
+  from { transform: translateY(-4px); }
+  to   { transform: none; }
+}
+.cg-mfilters__panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--cg-space-1); }
+.cg-mfilters__panel-title { margin: 0; font-size: var(--cg-text-body); font-weight: var(--cg-weight-mid); color: var(--cg-ink); }
+.cg-mfilters__panel-title:focus-visible { outline: none; box-shadow: var(--cg-focus); }
+/* `iconOnly` buttons carry no intrinsic glyph size, so it is set here rather
+   than left to the viewBox. */
+.cg-mfilters__panel-head .cg-btn svg { width: 14px; height: 14px; }
+.cg-mfilters__panel-foot {
+  display: flex; gap: var(--cg-space-1); justify-content: flex-end;
+  padding-top: var(--cg-space-1); border-top: var(--cg-border-w) solid var(--cg-rule);
+}
+.cg-mfilters__panel-foot .cg-btn { min-height: 44px; }
+
+.cg-mfilters__directions { display: grid; gap: var(--cg-space-half); margin: 0; padding: 0; border: 0; }
+.cg-mfilters__directions legend {
+  padding: 0 0 var(--cg-space-half); font-size: var(--cg-text-marker); color: var(--cg-muted);
+  letter-spacing: var(--cg-tracking-label); text-transform: uppercase;
+}
+.cg-mfilters__direction {
+  display: flex; align-items: center; gap: var(--cg-space-1); min-height: 44px;
+  font-size: var(--cg-text-sm); color: var(--cg-ink); cursor: pointer;
+}
+.cg-mfilters__direction svg { width: 16px; height: 16px; flex: none; }
+
+/* No space is reserved when nothing is active. Chips wrap rather than scroll. */
+.cg-mfilters__summary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cg-space-1); min-width: 0; }
+.cg-mfilters__chips { display: flex; flex-wrap: wrap; gap: var(--cg-space-half); list-style: none; margin: 0; padding: 0; min-width: 0; }
+.cg-mfilters__chip {
+  display: flex; align-items: center; gap: var(--cg-space-half); min-width: 0;
+  padding: 0 0 0 var(--cg-space-1); font-size: var(--cg-text-xs); color: var(--cg-ink);
+  background: var(--cg-frame); border: var(--cg-border-w) solid var(--cg-border);
+}
+.cg-mfilters__chip > span { min-width: 0; overflow-wrap: anywhere; }
+.cg-mfilters__chip-remove {
+  display: flex; align-items: center; justify-content: center;
+  flex: none; width: 32px; min-height: 32px; padding: 0;
+  border: 0; border-left: var(--cg-border-w) solid var(--cg-border);
+  background: transparent; color: var(--cg-body); cursor: pointer;
+}
+.cg-mfilters__chip-remove svg { width: 12px; height: 12px; }
+
 .cg-filterbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--cg-space-2);
   padding: var(--cg-space-1-5); border: var(--cg-border-w) solid var(--cg-border);
   background: var(--cg-surface); border-radius: var(--cg-radius); }
