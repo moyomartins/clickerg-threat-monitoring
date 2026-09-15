@@ -1,6 +1,6 @@
 export type VisitorStatus = 'blocked' | 'allowed' | 'review' | 'ambiguous' | 'incomplete';
 
-const LABELS: Record<VisitorStatus, string> = {
+export const STATUS_LABELS: Record<VisitorStatus, string> = {
   blocked: 'Blocked',
   allowed: 'Not blocked',
   review: 'Under review',
@@ -19,7 +19,7 @@ export function StatusPill({ status, label, className = '' }: StatusPillProps) {
   return (
     <span className={`cg-status cg-status--${status} ${className}`.trim()}>
       {status !== 'blocked' && <span className="cg-status__dot" aria-hidden="true" />}
-      {label ?? LABELS[status]}
+      {label ?? STATUS_LABELS[status]}
     </span>
   );
 }

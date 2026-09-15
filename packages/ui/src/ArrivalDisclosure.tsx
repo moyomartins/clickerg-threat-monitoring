@@ -35,6 +35,16 @@ export interface ArrivalDisclosureProps {
 }
 
 const CLOSE_DELAY_MS = 150;
+
+/* Hover-to-reveal is a pointer affordance, not a universal one. A touch screen
+   still dispatches compatibility mouse events after a tap, which is how a
+   hover-opened panel gets stuck open on iOS and Android with no way to dismiss
+   it by "moving away". Devices that cannot truly hover therefore get the tap
+   and keyboard paths only , the desktop behaviour itself is unchanged. */
+const canHover = () =>
+  typeof window === 'undefined' ||
+  !window.matchMedia ||
+  window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const GAP = 8;
 
 export function ArrivalDisclosure({
@@ -172,8 +182,8 @@ export function ArrivalDisclosure({
         aria-expanded={open}
         aria-describedby={popoverId}
         onClick={show}
-        onMouseEnter={show}
-        onMouseLeave={scheduleHide}
+        onMouseEnter={() => canHover() && show()}
+        onMouseLeave={() => canHover() && scheduleHide()}
         onFocus={show}
         onBlur={scheduleHide}
         onKeyDown={onKeyDown}
@@ -189,8 +199,8 @@ export function ArrivalDisclosure({
         aria-labelledby={titleId}
         className={`cg-arrival-pop cg-arrival-pop--${placement}`}
         style={{ top: style.top, left: style.left }}
-        onMouseEnter={cancelHide}
-        onMouseLeave={scheduleHide}
+        onMouseEnter={() => canHover() && cancelHide()}
+        onMouseLeave={() => canHover() && scheduleHide()}
       >
         <p className="cg-arrival-pop__title" id={titleId}>
           {label}

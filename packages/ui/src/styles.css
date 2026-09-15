@@ -110,12 +110,52 @@
 .cg-visitor-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; background: var(--cg-surface); border: var(--cg-border-w) solid var(--cg-border); }
 .cg-visitor-row--blocked { border-color: var(--cg-ink); }
 .cg-visitor-row__main { display: grid; grid-template-columns: 110px minmax(135px, 1.1fr) minmax(200px, 2fr) repeat(4, minmax(72px, .75fr)); gap: var(--cg-space-1-5); align-items: center; min-width: 0; padding: var(--cg-space-1-5); border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-.cg-visitor-row__main:hover { background: var(--cg-frame); }
+@media (hover: hover) and (pointer: fine) {
+  .cg-visitor-row__main:hover { background: var(--cg-frame); }
+}
 .cg-visitor-row__identity, .cg-visitor-row__fact { display: grid; gap: 2px; min-width: 0; }
 .cg-visitor-row__identity b { font-size: var(--cg-text-body); font-weight: var(--cg-weight-mid); overflow-wrap: anywhere; }
 .cg-visitor-row small { color: var(--cg-muted); font-size: var(--cg-text-marker); line-height: var(--cg-leading-tight); }
 .cg-visitor-row__summary { min-width: 0; font-size: var(--cg-text-sm); color: var(--cg-body); overflow-wrap: anywhere; }
 .cg-visitor-row__fact b { font-family: var(--cg-font-mono); font-size: var(--cg-text-mono-sm); font-weight: var(--cg-weight-body); color: var(--cg-ink); }
+/* --- Threat monitoring, narrow: the dense operational row --- */
+/* One fixed-height line per visitor , verdict, address, place, control ,
+   because a phone list is scanned rather than read, and every figure a reader
+   has to stop and interpret costs roughly a full extra row of height. At 46px
+   a 667px screen holds about twelve visitors instead of three.
+   Everything omitted here is still on desktop and on the journey screen. */
+.cg-visitor-row--compact { grid-template-columns: minmax(0, 1fr); }
+.cg-visitor-row__compact { display: flex; align-items: stretch; min-width: 0; }
+.cg-visitor-row__compact-main {
+  /* Every track may shrink to zero: an `auto` track sizes to its max-content,
+     which a nowrap address would push straight past the viewport. The place
+     sits in the `fr` track, so it is what gives way first. */
+  display: grid; grid-template-columns: auto minmax(0, auto) minmax(0, 1fr);
+  align-items: center; gap: var(--cg-space-1);
+  flex: 1; min-width: 0; min-height: 44px; padding: 0 var(--cg-space-1-25);
+  border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.cg-visitor-row__compact-status { min-width: 0; }
+/* Truncation, not wrapping: the row's height is its whole value, so a long
+   value gives up characters rather than taking a second line. */
+.cg-visitor-row__compact-ip {
+  min-width: 0; font-size: var(--cg-text-mono-sm); font-weight: var(--cg-weight-body);
+  color: var(--cg-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cg-visitor-row__compact-loc {
+  min-width: 0; text-align: right;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cg-visitor-row__eye {
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 44px; width: 44px; min-height: 44px; padding: 0;
+  border: 0; border-left: var(--cg-border-w) solid var(--cg-rule);
+  background: var(--cg-surface); color: var(--cg-body); cursor: pointer;
+}
+.cg-visitor-row__eye svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: square; }
+/* The open eye reads better with a solid pupil than an outlined one. */
+.cg-visitor-row__eye svg circle { fill: currentColor; stroke: none; }
+
 .cg-visitor-row__expand { min-height: 100%; padding: 0 var(--cg-space-1); border: 0; border-left: var(--cg-border-w) solid var(--cg-rule); background: var(--cg-surface); font: inherit; font-size: var(--cg-text-marker); color: var(--cg-body); cursor: pointer; }
 .cg-visitor-row__detail { grid-column: 1 / -1; display: grid; grid-template-columns: 180px minmax(0, 1fr); align-items: start; gap: var(--cg-space-2); padding: var(--cg-space-1-5); border-top: var(--cg-border-w) solid var(--cg-rule); background: var(--cg-frame); }
 .cg-visitor-row__detail > .cg-replay { width: 180px; }
@@ -158,14 +198,10 @@
 @media (max-width: 767px) {
   .cg-view-switch, .cg-view-switch__button { min-height: 44px; }
   .cg-view-switch--icons .cg-view-switch__button { width: 44px; }
-  .cg-visitor-row__main { grid-template-columns: minmax(0, 1fr) repeat(2, minmax(0, .8fr)); gap: var(--cg-space-1); padding: var(--cg-space-1-5); }
-  .cg-visitor-row__status { grid-column: 1 / -1; }
-  .cg-visitor-row__identity { grid-column: 1 / 2; }
-  .cg-visitor-row__summary { grid-column: 1 / -1; }
-  .cg-visitor-row__fact:nth-of-type(4), .cg-visitor-row__fact:nth-of-type(5) { display: none; }
-  .cg-visitor-row__expand { min-height: 44px; }
+  /* Below this width the row renders compact instead , there are no desktop
+     columns here to squeeze, so none are restyled. */
   .cg-visitor-row__detail { grid-template-columns: 1fr; }
-  .cg-visitor-row__detail > .cg-replay { width: min(100%, 220px); }
+  .cg-visitor-row__detail > .cg-replay { width: min(100%, 260px); margin-inline: auto; }
   .cg-visitor-row__detail-header { flex-wrap: wrap; }
   .cg-visitor-row__arrival { flex-basis: 100%; }
   .cg-visitor-row__open { width: 100%; min-height: 44px; }
@@ -229,11 +265,108 @@
 .cg-journey { display: grid; grid-template-columns: repeat(5, minmax(150px, 1fr)); align-items: stretch; gap: var(--cg-space-1-5);
   list-style: none; margin: 0; padding: 0 0 var(--cg-space-1); overflow-x: auto; }
 .cg-journey > li { display: flex; min-width: 0; }
+/* ---------------------------------------------- journey , stacked (touch) --- */
+/* One arrival per row, read top to bottom. Nothing here is wider than its
+   parent, so the document never scrolls sideways at any width. */
+.cg-journey--stacked {
+  display: flex; flex-direction: column;
+  grid-template-columns: none;
+  width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box;
+  gap: var(--cg-space-1); overflow-x: visible; padding-bottom: 0;
+}
+.cg-journey--stacked > li { display: block; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; }
+
+.cg-journey__jump {
+  display: inline-flex; align-items: center; min-height: 44px;
+  margin: 0 0 var(--cg-space-2); padding: 0 var(--cg-space-1-5);
+  font: inherit; font-size: var(--cg-text-sm); color: var(--cg-ink);
+  background: var(--cg-surface); border: var(--cg-border-w) solid var(--cg-absence);
+  cursor: pointer;
+}
+
+.cg-visit-m {
+  width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box;
+  background: var(--cg-surface); border: var(--cg-border-w) solid var(--cg-border);
+}
+/* The decisive arrival keeps the treatment it has on desktop: a 2px red edge,
+   never a fill, plus the verdict strip and the reflection inside the panel. */
+.cg-visit-m--decisive { border: var(--cg-border-w-strong) solid var(--cg-absence); }
+
+.cg-visit-m__heading { margin: 0; font: inherit; }
+/* The whole summary is the tap target , never the chevron alone. */
+.cg-visit-m__trigger {
+  display: flex; align-items: flex-start; gap: var(--cg-space-1-5);
+  width: 100%; min-width: 0; min-height: 44px; box-sizing: border-box;
+  padding: var(--cg-space-1-5); margin: 0;
+  font: inherit; text-align: left; color: inherit;
+  background: transparent; border: 0; cursor: pointer;
+}
+.cg-visit-m__summary { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.cg-visit-m__line { display: flex; align-items: baseline; justify-content: space-between; gap: var(--cg-space-1); min-width: 0; }
+.cg-visit-m__no { font-family: var(--cg-font-mono); font-size: var(--cg-text-mono-sm); color: var(--cg-ink); }
+.cg-visit-m__conf { font-family: var(--cg-font-mono); font-size: var(--cg-text-mono-sm); color: var(--cg-ink); }
+.cg-visit-m__tag { font-size: var(--cg-text-xs); color: var(--cg-body); min-width: 0; }
+.cg-visit-m__time { font-size: var(--cg-text-xs); color: var(--cg-muted); text-align: right; white-space: nowrap; }
+.cg-visit-m__source {
+  font-size: var(--cg-text-xs); color: var(--cg-muted); min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* Status in words, not only in colour. */
+.cg-visit-m__flag {
+  justify-self: start; margin-top: 2px; padding: 1px 6px;
+  font-family: var(--cg-font-mono); font-size: var(--cg-text-marker);
+  letter-spacing: var(--cg-tracking-label); text-transform: uppercase;
+  color: var(--cg-absence); border: var(--cg-border-w) solid var(--cg-absence);
+}
+.cg-visit-m__chevron { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--cg-muted); transition: transform 120ms ease; }
+.cg-visit-m__trigger[aria-expanded='true'] .cg-visit-m__chevron { transform: rotate(180deg); }
+
+/* `hidden` has to win over the panel's own display. */
+.cg-visit-m__panel[hidden] { display: none; }
+.cg-visit-m__panel {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: grid; gap: var(--cg-space-1);
+  width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box;
+  padding: var(--cg-space-2); border-top: var(--cg-border-w) solid var(--cg-rule);
+}
+/* Fluid, never a squeezed desktop width, and never so tall it owns the screen. */
+.cg-visit-m__replay { width: 100%; max-width: 360px; min-width: 0; margin-inline: auto; }
+.cg-visit-m__replay > * { width: 100%; min-width: 0; box-sizing: border-box; }
+
+.cg-visit-m__signal {
+  display: grid; grid-template-columns: minmax(0, 42%) minmax(0, 58%);
+  gap: var(--cg-space-1-5); align-items: start;
+  padding: var(--cg-space-1) 0; border-top: var(--cg-border-w) solid var(--cg-rule);
+}
+.cg-visit-m__signal:first-of-type { border-top: 0; }
+/* Labels wrap as words; only genuinely long technical values may break anywhere. */
+.cg-visit-m__signal .cg-chip__label { overflow-wrap: break-word; }
+.cg-visit-m__signal--long .cg-chip__value { overflow-wrap: anywhere; }
+
+.cg-visit-m__why { padding-top: var(--cg-space-1); border-top: var(--cg-border-w) solid var(--cg-rule); }
+.cg-visit-m__why-title { margin: 0 0 var(--cg-space-half); font-size: var(--cg-text-sm); font-weight: var(--cg-weight-mid); color: var(--cg-ink); }
+.cg-visit-m__verdict { margin-top: 0; }
+/* The reflection is decoration: it must never intercept a tap or a scroll. */
+.cg-visit-m__panel .cg-visit__reflection-logo { touch-action: none; }
+
+/* Only rows whose values are genuinely long give up the two-column shape. */
+@media (max-width: 340px) {
+  .cg-visit-m__signal--long { grid-template-columns: 1fr; gap: 2px; }
+  .cg-visit-m__signal--long .cg-chip__value { text-align: left; }
+}
+
 .cg-visit { display: flex; flex: 1; flex-direction: column; min-width: 0; height: 100%; box-sizing: border-box;
   background: var(--cg-surface); border: var(--cg-border-w) solid var(--cg-border); padding: var(--cg-space-1-25); }
 .cg-visit--decisive {
   position: relative; isolation: isolate; overflow: hidden;
   border: var(--cg-border-w-strong) solid var(--cg-absence);
+}
+/* The sweep runs on whichever element holds the mark: the card on desktop, the
+   disclosure panel when stacked. Driving it from the panel means a collapsed
+   arrival stops animating because the panel is `display: none`, which the
+   browser enforces , no bookkeeping of our own to get wrong. */
+.cg-visit--decisive,
+.cg-visit-m--decisive .cg-visit-m__panel {
   animation: cg-decisive-reflection-position var(--cg-reflection-duration) var(--cg-reflection-easing)
     var(--cg-reflection-delay, 2.6s) infinite both;
 }
@@ -288,7 +421,8 @@
 /* The light and the mask share one angle and one timed route, so the mark can
    never appear anywhere the reflection is not. The band is deliberately wider
    than the mask's core, so the light arrives before the mark and leaves after it. */
-.cg-visit--decisive::after {
+.cg-visit--decisive::after,
+.cg-visit-m--decisive .cg-visit-m__panel::after {
   content: ''; position: absolute; z-index: 1; pointer-events: none; user-select: none;
   inset: 0; opacity: var(--cg-reflection-presence);
   background: linear-gradient(var(--cg-reflection-angle), transparent 0 40%, rgba(192,57,43,.05) 44%, rgba(192,57,43,.12) 47%, rgba(192,57,43,.2) 50%, rgba(192,57,43,.12) 53%, rgba(192,57,43,.05) 56%, transparent 60% 100%);
@@ -325,7 +459,8 @@
 .cg-visit--reflection-phase-exiting   { animation-delay: calc(var(--cg-reflection-duration) * -0.21); }
 .cg-visit--reflection-phase-completed { animation-delay: calc(var(--cg-reflection-duration) * -0.245); }
 @media (prefers-reduced-motion: reduce) {
-  .cg-visit--decisive { animation: none; }
+  .cg-visit--decisive,
+  .cg-visit-m--decisive .cg-visit-m__panel { animation: none; }
   .cg-visit--decisive::after, .cg-visit__reflection-logo { opacity: 0; }
 }
 .cg-visit__rail { display: none; }
@@ -584,8 +719,14 @@
 .cg-stack { display: flex; flex-direction: column; }
 .cg-row { display: flex; align-items: center; flex-wrap: wrap; }
 
-@media (max-width: 900px) {
-  .cg-journey { grid-template-columns: repeat(5, 200px); }
+/* Between the desktop grid and the phone accordion the cards still work, but
+   only two at a time , five 200px columns at this width was the rule that
+   produced the sideways strip. */
+@media (max-width: 899.98px) {
+  .cg-journey:not(.cg-journey--stacked) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow-x: visible;
+  }
 }
 
 @media (max-width: 767px) {

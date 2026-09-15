@@ -146,7 +146,10 @@ export function VisitorDetail({ visitor, onBack, onStatusChange }: Props) {
       </DecisionHero>
 
       <JourneySection id="journey-replay-heading" count={journey.countLabel} insight={journey.insight}>
-      {journey.arrivalCount > 0 && <Journey labelledBy="journey-replay-heading">
+      {journey.arrivalCount > 0 && <Journey
+        labelledBy="journey-replay-heading"
+        decisiveArrival={visitor.decisiveIndex >= 0 ? visitor.decisiveIndex + 1 : undefined}
+      >
         {visitor.visits.map((visit, i) => {
           const explanation = arrivalExplanationFor(visitor, i);
           const arrivalTime = arrivalTimestamp(visit.at);

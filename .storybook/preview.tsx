@@ -19,7 +19,12 @@ const preview: Preview = {
     },
     viewport: {
       options: {
-        mobile: { name: 'Mobile', styles: { width: '390px', height: '844px' } },
+        /* The widths the journey has to survive. 320 is the floor , the
+           narrowest phone still in use , and the one that breaks layouts. */
+        mobile320: { name: 'Mobile 320', styles: { width: '320px', height: '720px' } },
+        mobile375: { name: 'Mobile 375', styles: { width: '375px', height: '812px' } },
+        mobile: { name: 'Mobile 390', styles: { width: '390px', height: '844px' } },
+        mobile430: { name: 'Mobile 430', styles: { width: '430px', height: '932px' } },
         tablet: { name: 'Tablet', styles: { width: '768px', height: '1024px' } },
         desktop: { name: 'Desktop', styles: { width: '1280px', height: '900px' } },
       },

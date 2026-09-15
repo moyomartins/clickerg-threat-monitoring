@@ -1,8 +1,18 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import { ArrivalDisclosure } from './ArrivalDisclosure';
 import { GlassMark } from './GlassMark';
 import { SignalChip, type SignalChipProps } from './SignalChip';
 import { PageReplay, type ReplayBehaviour } from './PageReplay';
+import { useMediaQuery } from './useMediaQuery';
 
 export type Channel = 'paid' | 'organic' | 'direct' | 'referral';
 
@@ -47,6 +57,32 @@ export interface VisitEntryProps {
   stage?: string;
 }
 
+/**
+ * The journey is one list of arrivals rendered two ways. Below the stacked
+ * breakpoint , or on a touch device that cannot hover , each arrival becomes a
+ * tap-controlled disclosure instead of a card in a row, because a row of cards
+ * at phone width can only be delivered by shrinking them past legibility or by
+ * scrolling sideways, and neither is an acceptable way to read evidence.
+ *
+ * The accordion state lives on `Journey` rather than on each arrival so that
+ * opening one closes the last, and so the page that maps visitor data into
+ * `VisitEntry` never has to know which presentation is in play.
+ */
+interface JourneyDisclosure {
+  stacked: boolean;
+  expanded: number | null;
+  toggle: (index: number) => void;
+  idFor: (index: number) => { item: string; panel: string; trigger: string };
+}
+
+const JourneyContext = createContext<JourneyDisclosure | null>(null);
+
+/* Phone widths always stack. So does any pointer that cannot hover, up to the
+   desktop grid's own breakpoint: a coarse pointer has no way to reach a
+   hover-revealed disclosure, so it needs the explicit control regardless of
+   how wide the device reports itself to be. */
+const STACKED_QUERY = '(max-width: 599.98px), ((hover: none) and (pointer: coarse) and (max-width: 899.98px))';
+
 export function VisitEntry({
   index,
   timestamp,
@@ -63,8 +99,17 @@ export function VisitEntry({
   reflectionPhase,
   verdict,
 }: VisitEntryProps) {
+  const journey = useContext(JourneyContext);
+  const stacked = journey?.stacked ?? false;
+  const ids = journey?.idFor(index);
+  const open = stacked && journey?.expanded === index;
+
   const frozen = reflectionPhase !== undefined && reflectionPhase !== 'autonomous';
-  const reflection = useAutonomousReflection(decisive && !frozen);
+  /* Stacked: the sweep is scheduled only while this arrival is actually open.
+     A collapsed panel is `hidden`, so its card would otherwise animate where
+     nobody can see it. Expanding does not *trigger* the sweep , it lets the
+     autonomous schedule resume, which is why nothing here reads a tap. */
+  const reflection = useAutonomousReflection(decisive && !frozen && (!stacked || open));
   const phaseClass = frozen
     ? ` cg-visit--reflection-phase-${reflectionPhase}`
     : reflection.running
@@ -113,6 +158,93 @@ export function VisitEntry({
       </div>
     </>
   );
+
+  if (stacked && ids) {
+    const longValue = (value?: string) => (value ?? '').length > 22;
+    return (
+      <li
+        id={ids.item}
+        className={`cg-visit-m${decisive ? ' cg-visit-m--decisive' : ''}`}
+        style={reflectionStyle}
+      >
+        <h3 className="cg-visit-m__heading">
+          <button
+            type="button"
+            id={ids.trigger}
+            className="cg-visit-m__trigger cg-focusable"
+            aria-expanded={open}
+            aria-controls={ids.panel}
+            onClick={() => journey?.toggle(index)}
+          >
+            <span className="cg-visit-m__summary">
+              <span className="cg-visit-m__line">
+                <span className="cg-visit-m__no">visit {index}</span>
+                <span className="cg-visit-m__conf">{confidence}%</span>
+              </span>
+              <span className="cg-visit-m__line">
+                <span className="cg-visit-m__tag">
+                  {CHANNEL_LABELS[channel]}
+                  {cost ? ` · ${cost}` : ''}
+                </span>
+                {timestampIso ? (
+                  <time className="cg-visit-m__time" dateTime={timestampIso} aria-label={timestampLabel}>
+                    {timestamp}
+                  </time>
+                ) : (
+                  <span className="cg-visit-m__time">{timestamp}</span>
+                )}
+              </span>
+              {source && <span className="cg-visit-m__source">{source}</span>}
+              {decisive && <span className="cg-visit-m__flag">decisive arrival</span>}
+            </span>
+            <svg className="cg-visit-m__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
+            </svg>
+          </button>
+        </h3>
+
+        <div
+          id={ids.panel}
+          className={`cg-visit-m__panel${decisive ? phaseClass : ''}`}
+          role="region"
+          aria-labelledby={ids.trigger}
+          hidden={!open}
+        >
+          {decisive && (
+            <span ref={reflection.ref} className="cg-visit__reflection-logo" aria-hidden="true">
+              <GlassMark />
+            </span>
+          )}
+          {replay !== undefined && (
+            <div className="cg-visit-m__replay">
+              <PageReplay behaviour={replay} size="card" />
+            </div>
+          )}
+
+          {source && (
+            <SignalChip label="Source" value={source} severity="neutral" className="cg-visit-m__signal cg-visit-m__signal--long" />
+          )}
+
+          {signals.map((s) => (
+            <SignalChip
+              key={s.label}
+              {...s}
+              className={`cg-visit-m__signal${longValue(s.value) ? ' cg-visit-m__signal--long' : ''}`}
+            />
+          ))}
+
+          {explanation && (
+            <div className="cg-visit-m__why">
+              <p className="cg-visit-m__why-title">{explanation.title}</p>
+              {explanation.content}
+            </div>
+          )}
+
+          {verdict && <div className="cg-visit__verdict cg-visit-m__verdict">{verdict}</div>}
+        </div>
+      </li>
+    );
+  }
 
   if (!explanation) {
     return <li className={cardClassName} style={reflectionStyle}>{card}</li>;
@@ -186,6 +318,61 @@ function useAutonomousReflection(active: boolean) {
   return { ref, running };
 }
 
-export function Journey({ children, labelledBy }: { children: ReactNode; labelledBy?: string }) {
-  return <ol className="cg-journey" aria-labelledby={labelledBy}>{children}</ol>;
+export function Journey({
+  children,
+  labelledBy,
+  decisiveArrival,
+}: {
+  children: ReactNode;
+  labelledBy?: string;
+  /** 1-based visit number of the decisive arrival, when the journey has one. */
+  decisiveArrival?: number;
+}) {
+  const stacked = useMediaQuery(STACKED_QUERY);
+  const base = useId().replace(/:/g, '');
+  const [expanded, setExpanded] = useState<number | null>(null);
+  const [touched, setTouched] = useState(false);
+
+  /* A blocked journey opens at the arrival where blocking happened, so the
+     answer is on screen without hunting for it. Only until the reader makes a
+     choice of their own , after that their choice stands, including a
+     deliberate collapse. */
+  useEffect(() => {
+    if (stacked && !touched && decisiveArrival !== undefined) setExpanded(decisiveArrival);
+  }, [stacked, touched, decisiveArrival]);
+
+  const idFor = (index: number) => ({
+    item: `${base}-arrival-${index}`,
+    panel: `${base}-arrival-${index}-panel`,
+    trigger: `${base}-arrival-${index}-trigger`,
+  });
+
+  const toggle = (index: number) => {
+    setTouched(true);
+    setExpanded((current) => (current === index ? null : index));
+  };
+
+  /* The only programmatic scroll in the section. Expanding and collapsing
+     never move the page, so the reader keeps their place. */
+  const jump = () => {
+    if (decisiveArrival === undefined) return;
+    setTouched(true);
+    setExpanded(decisiveArrival);
+    document
+      .getElementById(idFor(decisiveArrival).item)
+      ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  };
+
+  return (
+    <JourneyContext.Provider value={{ stacked, expanded, toggle, idFor }}>
+      {stacked && decisiveArrival !== undefined && (
+        <button type="button" className="cg-journey__jump cg-focusable" onClick={jump}>
+          Jump to blocked arrival
+        </button>
+      )}
+      <ol className={`cg-journey${stacked ? ' cg-journey--stacked' : ''}`} aria-labelledby={labelledBy}>
+        {children}
+      </ol>
+    </JourneyContext.Provider>
+  );
 }

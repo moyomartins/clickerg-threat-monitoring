@@ -24,13 +24,21 @@ function Card({ args }: { args: VisitEntryProps }) {
   return <Journey><VisitEntry {...args} last /></Journey>;
 }
 
+/**
+ * The same invariant in both presentations: an arrival never reaches past the
+ * list that holds it, and the list never scrolls sideways. At desktop widths
+ * the arrival is a card; below the stacked breakpoint it is an accordion item.
+ */
 function assertCardFits(canvasElement: HTMLElement) {
-  const card = canvasElement.querySelector('.cg-visit') as HTMLElement;
   const row = canvasElement.querySelector('.cg-journey') as HTMLElement;
-  const cardBounds = card.getBoundingClientRect();
+  const arrival = canvasElement.querySelector('.cg-visit, .cg-visit-m') as HTMLElement;
+  expect(arrival).not.toBeNull();
+  const arrivalBounds = arrival.getBoundingClientRect();
   const rowBounds = row.getBoundingClientRect();
-  expect(cardBounds.left).toBeGreaterThanOrEqual(rowBounds.left);
-  expect(cardBounds.right).toBeLessThanOrEqual(rowBounds.right);
+  expect(arrivalBounds.left).toBeGreaterThanOrEqual(Math.floor(rowBounds.left));
+  expect(arrivalBounds.right).toBeLessThanOrEqual(Math.ceil(rowBounds.right));
+  // Nothing may produce a sideways scrollbar, at any width.
+  expect(row.scrollWidth).toBeLessThanOrEqual(row.clientWidth + 1);
 }
 
 const meta = {
@@ -346,7 +354,7 @@ export const ReflectionReducedMotion: Story = {
     const inner = [...(reduced?.cssRules ?? [])].filter(
       (rule): rule is CSSStyleRule => rule instanceof CSSStyleRule,
     );
-    const stops = inner.find((rule) => rule.selectorText === '.cg-visit--decisive');
+    const stops = inner.find((rule) => rule.selectorText.includes('.cg-visit--decisive'));
     await expect(stops?.style.animationName).toBe('none');
 
     const hides = inner.find((rule) => rule.selectorText.includes('.cg-visit__reflection-logo'));
@@ -434,7 +442,7 @@ export const ReflectionScaleComparison: Story = {
 
 export const ReflectionNarrowCard: Story = {
   name: 'Reflection · narrow card',
-  parameters: { viewport: { defaultViewport: 'mobile' } },
+  parameters: { viewport: { defaultViewport: 'tablet' } },
   args: { ...decisiveArgs, reflectionPhase: 'active' },
   play: async ({ canvasElement }) => {
     assertCardFits(canvasElement);
@@ -604,6 +612,406 @@ export const ReflectionCleansUpOnUnmount: Story = {
       await expect(removed).toContain('visibilitychange');
     } finally {
       document.removeEventListener = original;
+    }
+  },
+};
+
+/* ── The journey on a phone ───────────────────────────────────────────────
+   Same components, same data, same `Journey`/`VisitEntry` the production page
+   uses , only the viewport differs. There is no Storybook-only accordion. */
+
+const at = (viewport: 'mobile320' | 'mobile375' | 'mobile' | 'mobile430') => ({
+  viewport: { defaultViewport: viewport },
+});
+
+const mobileJourney = (args: Partial<VisitEntryProps>[], decisiveArrival?: number) => () => (
+  <Journey labelledBy="mobile-journey-heading" decisiveArrival={decisiveArrival}>
+    {args.map((a, i) => (
+      <VisitEntry key={i} {...defaultArgs} index={i + 1} {...a} />
+    ))}
+  </Journey>
+);
+
+const arrivals: Partial<VisitEntryProps>[] = [
+  { confidence: 39, timestamp: '14/08/2025, 11:43', cost: '£7.34' },
+  { confidence: 65, timestamp: '14/08/2025, 12:26', cost: '£5.06' },
+  {
+    confidence: 82, timestamp: '14/08/2025, 15:21', cost: '£5.39',
+    decisive: true, verdict: 'blocked here',
+    // A blocked arrival that never moved the mouse , absence drawn, not blank.
+    replay: { scrollPct: 0, dwellSec: 3, clicks: 1, mouseMoves: 0 },
+    signals: [
+      { label: 'Interaction', value: '0% scrolled, 3s', severity: 'high' },
+      { label: 'Bot probability', value: '94%', severity: 'high' },
+      { label: 'VPN / proxy', value: 'Datacenter IP', severity: 'high' },
+      { label: 'Click cadence', value: '0.9s between clicks', severity: 'high' },
+    ],
+    explanation: { title: 'Why this arrival was decisive', content: <p>Cumulative confidence crossed the threshold.</p> },
+  },
+  { confidence: 92, timestamp: '15/08/2025, 03:36', cost: '£6.46' },
+  { confidence: 98, timestamp: '15/08/2025, 04:20', cost: '£6.88' },
+];
+
+const expandTrigger = async (canvasElement: HTMLElement, position: number) => {
+  const trigger = canvasElement.querySelectorAll('.cg-visit-m__trigger')[position] as HTMLElement;
+  await userEvent.click(trigger);
+  return trigger;
+};
+
+const assertNoSidewaysScroll = async (canvasElement: HTMLElement) => {
+  const list = canvasElement.querySelector('.cg-journey') as HTMLElement;
+  await expect(list.classList.contains('cg-journey--stacked')).toBe(true);
+  await expect(list.scrollWidth).toBeLessThanOrEqual(list.clientWidth + 1);
+  await expect(getComputedStyle(list).overflowX).not.toBe('auto');
+  // Nothing inside may reach past the list box.
+  for (const el of canvasElement.querySelectorAll<HTMLElement>('.cg-visit-m *')) {
+    const box = el.getBoundingClientRect();
+    if (box.width === 0) continue;
+    await expect(box.right).toBeLessThanOrEqual(Math.ceil(list.getBoundingClientRect().right) + 1);
+  }
+};
+
+export const MobileAllCollapsed: Story = {
+  name: 'Mobile · all collapsed',
+  parameters: at('mobile'),
+  render: mobileJourney(arrivals),
+  play: async ({ canvasElement }) => {
+    // No decisive arrival passed: nothing opens on its own.
+    const triggers = canvasElement.querySelectorAll('.cg-visit-m__trigger');
+    await expect(triggers).toHaveLength(5);
+    for (const t of triggers) await expect(t).toHaveAttribute('aria-expanded', 'false');
+    await expect(canvasElement.querySelector('.cg-visit')).toBeNull();
+    await expect(canvasElement.querySelector('.cg-journey__jump')).toBeNull();
+    await assertNoSidewaysScroll(canvasElement);
+  },
+};
+
+export const MobileNormalExpanded: Story = {
+  name: 'Mobile · a normal arrival expanded',
+  parameters: at('mobile'),
+  render: mobileJourney(arrivals),
+  play: async ({ canvasElement }) => {
+    const trigger = await expandTrigger(canvasElement, 0);
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    // The button opens its own panel, and the panel is the one it names.
+    const panel = canvasElement.querySelector(`#${CSS.escape(trigger.getAttribute('aria-controls')!)}`) as HTMLElement;
+    await expect(panel).not.toBeNull();
+    await expect(panel.hidden).toBe(false);
+    await expect(panel.querySelector('.cg-replay')).not.toBeNull();
+
+    // One at a time: opening the next closes this one.
+    await expandTrigger(canvasElement, 1);
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    await expect(canvasElement.querySelectorAll('[aria-expanded="true"]')).toHaveLength(1);
+
+    // And the open one can be closed again.
+    await expandTrigger(canvasElement, 1);
+    await expect(canvasElement.querySelectorAll('[aria-expanded="true"]')).toHaveLength(0);
+  },
+};
+
+export const MobileDecisiveExpanded: Story = {
+  name: 'Mobile · decisive arrival expanded by default',
+  parameters: at('mobile'),
+  render: mobileJourney(arrivals, 3),
+  play: async ({ canvasElement }) => {
+    const items = [...canvasElement.querySelectorAll('.cg-visit-m')];
+    const decisive = items.findIndex((li) => li.classList.contains('cg-visit-m--decisive'));
+    await expect(decisive).toBe(2);
+    // A blocked journey opens where the blocking happened, without being asked.
+    await expect(items[decisive].querySelector('.cg-visit-m__trigger')).toHaveAttribute('aria-expanded', 'true');
+    await expect(canvasElement.querySelectorAll('[aria-expanded="true"]')).toHaveLength(1);
+    // Status in words, and the verdict strip still present in full.
+    await expect(within(items[decisive] as HTMLElement).getByText('decisive arrival')).toBeVisible();
+    await expect(within(items[decisive] as HTMLElement).getByText('blocked here')).toBeVisible();
+
+    // A reader's own choice survives , it is not reopened underneath them.
+    await expandTrigger(canvasElement, 0);
+    await expect(items[decisive].querySelector('.cg-visit-m__trigger')).toHaveAttribute('aria-expanded', 'false');
+  },
+};
+
+export const MobileJumpToBlocked: Story = {
+  name: 'Mobile · jump to blocked arrival',
+  parameters: at('mobile'),
+  render: mobileJourney(arrivals, 3),
+  play: async ({ canvasElement }) => {
+    await expandTrigger(canvasElement, 0);
+    const jump = canvasElement.querySelector('.cg-journey__jump') as HTMLElement;
+    await expect(jump).not.toBeNull();
+    await expect(jump.getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
+
+    await userEvent.click(jump);
+    const decisive = canvasElement.querySelector('.cg-visit-m--decisive') as HTMLElement;
+    await expect(decisive.querySelector('.cg-visit-m__trigger')).toHaveAttribute('aria-expanded', 'true');
+    await expect(canvasElement.querySelectorAll('[aria-expanded="true"]')).toHaveLength(1);
+  },
+};
+
+export const MobileLongEvidence: Story = {
+  name: 'Mobile · long evidence values',
+  parameters: at('mobile'),
+  render: mobileJourney([
+    {
+      ...LongContent.args,
+      confidence: 96,
+      source: 'Google Ads · enterprise-cloud-security-platform · “how to stop repeated click-fraud campaigns without blocking genuine customers”',
+    } as Partial<VisitEntryProps>,
+  ]),
+  play: async ({ canvasElement }) => {
+    await expandTrigger(canvasElement, 0);
+    await assertNoSidewaysScroll(canvasElement);
+    // Long technical values are allowed to break anywhere; labels are not.
+    const long = canvasElement.querySelector('.cg-visit-m__signal--long .cg-chip__value') as HTMLElement;
+    await expect(getComputedStyle(long).overflowWrap).toBe('anywhere');
+    const label = canvasElement.querySelector('.cg-visit-m__signal .cg-chip__label') as HTMLElement;
+    await expect(getComputedStyle(label).overflowWrap).not.toBe('anywhere');
+  },
+};
+
+export const MobileMissingEvidence: Story = {
+  name: 'Mobile · missing evidence',
+  parameters: at('mobile'),
+  render: mobileJourney([
+    {
+      confidence: 41, replay: null, source: undefined, cost: undefined,
+      signals: [
+        { label: 'Interaction', severity: 'unknown' },
+        { label: 'Bot probability', value: '—', severity: 'unknown' },
+      ],
+    },
+  ]),
+  play: async ({ canvasElement }) => {
+    await expandTrigger(canvasElement, 0);
+    // Absence is drawn, never a blank frame.
+    await expect(canvasElement.querySelector('.cg-replay')).not.toBeNull();
+    await expect(within(canvasElement).getByText('not captured')).toBeVisible();
+    await assertNoSidewaysScroll(canvasElement);
+  },
+};
+
+export const MobileOrganicArrival: Story = {
+  name: 'Mobile · organic arrival',
+  parameters: at('mobile'),
+  render: mobileJourney([
+    { channel: 'organic', cost: undefined, source: 'google.com · “product reviews”', confidence: 24 },
+  ]),
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).getByText(/Organic search/)).toBeVisible();
+    // No cost shown where none applies.
+    await expect(within(canvasElement).queryByText(/£/)).toBeNull();
+  },
+};
+
+export const MobileMixedTraffic: Story = {
+  name: 'Mobile · mixed traffic',
+  parameters: at('mobile'),
+  render: mobileJourney([
+    { channel: 'paid', cost: '£4.06', confidence: 30 },
+    { channel: 'organic', cost: undefined, source: 'google.com · “pricing”', confidence: 44 },
+    { channel: 'direct', cost: undefined, source: undefined, confidence: 58 },
+    { channel: 'referral', cost: undefined, source: 'news.example.com', confidence: 71 },
+  ]),
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelectorAll('.cg-visit-m')).toHaveLength(4);
+    await assertNoSidewaysScroll(canvasElement);
+  },
+};
+
+export const MobileReducedMotion: Story = {
+  name: 'Mobile · reduced motion',
+  parameters: at('mobile'),
+  render: mobileJourney(arrivals, 3),
+  play: async ({ canvasElement }) => {
+    // The decorative layer is present but governed by the same rule as desktop.
+    const mark = canvasElement.querySelector('.cg-visit__reflection-logo');
+    await expect(mark).toHaveAttribute('aria-hidden', 'true');
+    await expect(getComputedStyle(mark as HTMLElement).pointerEvents).toBe('none');
+
+    const rules = [...document.styleSheets].flatMap((sheet) => {
+      try { return [...sheet.cssRules]; } catch { return []; }
+    });
+    const reduced = rules.find(
+      (rule): rule is CSSMediaRule =>
+        rule instanceof CSSMediaRule && rule.conditionText.includes('prefers-reduced-motion'),
+    );
+    const inner = [...(reduced?.cssRules ?? [])].filter((r): r is CSSStyleRule => r instanceof CSSStyleRule);
+    await expect(inner.find((r) => r.selectorText.includes('.cg-visit--decisive'))?.style.animationName).toBe('none');
+  },
+};
+
+export const MobileAt320: Story = {
+  name: 'Mobile · 320px',
+  parameters: at('mobile320'),
+  render: mobileJourney(arrivals, 3),
+  play: async ({ canvasElement }) => {
+    await assertNoSidewaysScroll(canvasElement);
+    // The replay stays inside the card and keeps its evidence legible.
+    const replay = canvasElement.querySelector('.cg-visit-m__panel:not([hidden]) .cg-replay') as HTMLElement;
+    const item = canvasElement.querySelector('.cg-visit-m--decisive') as HTMLElement;
+    await expect(replay.getBoundingClientRect().right).toBeLessThanOrEqual(item.getBoundingClientRect().right);
+    // Drawn absence stays fully inside the preview, and the caption stays readable.
+    const mark = canvasElement.querySelector('.cg-visit-m__panel:not([hidden]) .cg-replay__mark') as HTMLElement;
+    await expect(mark).not.toBeNull();
+    await expect(mark.getBoundingClientRect().right).toBeLessThanOrEqual(replay.getBoundingClientRect().right + 1);
+    const caption = canvasElement.querySelector('.cg-visit-m__panel:not([hidden]) .cg-replay__caption') as HTMLElement;
+    await expect(caption.textContent).toMatch(/of the page seen/);
+  },
+};
+
+export const MobileAt390: Story = {
+  name: 'Mobile · 390px',
+  parameters: at('mobile'),
+  render: mobileJourney(arrivals, 3),
+  play: async ({ canvasElement }) => {
+    await assertNoSidewaysScroll(canvasElement);
+    for (const t of canvasElement.querySelectorAll('.cg-visit-m__trigger')) {
+      // The whole summary is the target, comfortably past the 44px minimum.
+      await expect(t.getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
+    }
+  },
+};
+
+export const TabletTransition: Story = {
+  name: 'Tablet · cards, two columns, no sideways scroll',
+  parameters: { viewport: { defaultViewport: 'tablet' } },
+  render: mobileJourney(arrivals, 3),
+  play: async ({ canvasElement }) => {
+    const list = canvasElement.querySelector('.cg-journey') as HTMLElement;
+    // Above the stacked breakpoint the cards return , but only two at a time.
+    await expect(list.classList.contains('cg-journey--stacked')).toBe(false);
+    await expect(canvasElement.querySelectorAll('.cg-visit').length).toBeGreaterThan(0);
+    await expect(getComputedStyle(list).gridTemplateColumns.split(' ')).toHaveLength(2);
+    await expect(list.scrollWidth).toBeLessThanOrEqual(list.clientWidth + 1);
+  },
+};
+
+export const DesktopPreserved: Story = {
+  name: 'Desktop · journey unchanged',
+  parameters: { viewport: { defaultViewport: 'desktop' } },
+  render: mobileJourney(arrivals, 3),
+  play: async ({ canvasElement }) => {
+    const list = canvasElement.querySelector('.cg-journey') as HTMLElement;
+    await expect(list.classList.contains('cg-journey--stacked')).toBe(false);
+    await expect(canvasElement.querySelectorAll('.cg-visit-m')).toHaveLength(0);
+    await expect(canvasElement.querySelector('.cg-journey__jump')).toBeNull();
+    // Five columns, the approved desktop grid.
+    await expect(getComputedStyle(list).gridTemplateColumns.split(' ')).toHaveLength(5);
+    const decisive = canvasElement.querySelector('.cg-visit--decisive') as HTMLElement;
+    await expect(getComputedStyle(decisive).animationName).toBe('cg-decisive-reflection-position');
+    await expect(within(canvasElement).getByText('blocked here')).toBeVisible();
+  },
+};
+
+export const MobileTenArrivals: Story = {
+  name: 'Mobile · ten arrivals',
+  parameters: at('mobile'),
+  render: mobileJourney(
+    Array.from({ length: 10 }, (_, i) => ({
+      confidence: 20 + i * 8,
+      timestamp: `1${i < 5 ? 4 : 5}/08/2025, 0${i}:1${i}`,
+      decisive: i === 6,
+      verdict: i === 6 ? 'blocked here' : undefined,
+    })),
+    7,
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelectorAll('.cg-visit-m')).toHaveLength(10);
+    // However long the journey, exactly one arrival is open.
+    await expect(canvasElement.querySelectorAll('[aria-expanded="true"]')).toHaveLength(1);
+    await assertNoSidewaysScroll(canvasElement);
+  },
+};
+
+export const MobileAt375: Story = {
+  name: 'Mobile · 375px',
+  parameters: at('mobile375'),
+  render: mobileJourney(arrivals, 3),
+  play: async ({ canvasElement }) => assertNoSidewaysScroll(canvasElement),
+};
+
+export const MobileAt430: Story = {
+  name: 'Mobile · 430px',
+  parameters: at('mobile430'),
+  render: mobileJourney(arrivals, 3),
+  play: async ({ canvasElement }) => assertNoSidewaysScroll(canvasElement),
+};
+
+export const MobileReflectionOnlyWhenOpen: Story = {
+  name: 'Mobile · reflection runs only while expanded',
+  parameters: at('mobile'),
+  render: mobileJourney(arrivals, 3),
+  play: async ({ canvasElement }) => {
+    const item = canvasElement.querySelector('.cg-visit-m--decisive') as HTMLElement;
+    const panel = item.querySelector('.cg-visit-m__panel') as HTMLElement;
+    const trigger = item.querySelector('.cg-visit-m__trigger') as HTMLElement;
+
+    // Open: the decorative layer is rendered, inert, and out of the a11y tree.
+    await expect(panel.hidden).toBe(false);
+    const mark = panel.querySelector('.cg-visit__reflection-logo') as HTMLElement;
+    await expect(mark).toHaveAttribute('aria-hidden', 'true');
+    await expect(getComputedStyle(mark).pointerEvents).toBe('none');
+
+    // Collapsed: the panel leaves the layout, so the browser itself stops the
+    // sweep , a `display: none` element runs no animation.
+    await userEvent.click(trigger);
+    await expect(panel.hidden).toBe(true);
+    await expect(getComputedStyle(panel).display).toBe('none');
+    const sweeps = item
+      .getAnimations({ subtree: true })
+      .filter((a) => (a as CSSAnimation).animationName === 'cg-decisive-reflection-position');
+    await expect(sweeps).toHaveLength(0);
+
+    // Reopening resumes the autonomous schedule , the tap does not drive it.
+    await userEvent.click(trigger);
+    await expect(panel.hidden).toBe(false);
+    await expect(getComputedStyle(panel).animationName).toBe('cg-decisive-reflection-position');
+  },
+};
+
+export const DesktopHoverPreserved: Story = {
+  name: 'Desktop · hover still opens the disclosure',
+  parameters: { viewport: { defaultViewport: 'desktop' } },
+  args: {
+    ...decisiveArgs,
+    explanation: { title: 'Why this arrival was blocked', content: <p>Four high-severity signals agreed.</p> },
+  },
+  play: async ({ canvasElement }) => {
+    const card = canvasElement.querySelector('.cg-visit--decisive') as HTMLElement;
+    await expect(card).toHaveAttribute('aria-expanded', 'false');
+    await userEvent.hover(card);
+    await expect(card).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.unhover(card);
+  },
+};
+
+export const TouchDeviceNoHover: Story = {
+  name: 'Touch · hover does not reveal, tap does',
+  parameters: { viewport: { defaultViewport: 'desktop' } },
+  args: DesktopHoverPreserved.args,
+  play: async ({ canvasElement }) => {
+    const card = canvasElement.querySelector('.cg-visit--decisive') as HTMLElement;
+
+    /* Report a touch screen. A real one still dispatches compatibility mouse
+       events after a tap, which is exactly how a hover-opened panel gets stuck
+       open with no way to dismiss it by moving away. */
+    const real = window.matchMedia;
+    window.matchMedia = ((query: string) =>
+      query.includes('hover: hover')
+        ? ({ matches: false, media: query, addEventListener() {}, removeEventListener() {} } as unknown as MediaQueryList)
+        : real.call(window, query)) as typeof window.matchMedia;
+
+    try {
+      card.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+      card.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      await expect(card).toHaveAttribute('aria-expanded', 'false');
+
+      // The explicit path still works on the same device.
+      await userEvent.click(card);
+      await expect(card).toHaveAttribute('aria-expanded', 'true');
+    } finally {
+      window.matchMedia = real;
     }
   },
 };
